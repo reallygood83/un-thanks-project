@@ -113,7 +113,10 @@ const HomePage: React.FC = () => {
               </Link>
             </div>
             <div className="about-image">
-              <img src="/images/project-illustration.jpg" alt="6.25 참전국 감사 프로젝트" />
+              {/* 이미지가 없으므로 제거하고 나중에 추가 */}
+              <div className="placeholder-image">
+                6.25 참전국 감사 프로젝트 이미지
+              </div>
             </div>
           </div>
         </div>
