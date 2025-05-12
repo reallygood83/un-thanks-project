@@ -4,6 +4,9 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 
+// Database connection
+import { connectToDatabase } from './services/dbConnection';
+
 // Routes
 import countryRoutes from './routes/countries';
 import letterRoutes from './routes/letters';
@@ -11,8 +14,12 @@ import letterRoutes from './routes/letters';
 // Load environment variables
 dotenv.config();
 
+// Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Connect to MongoDB
+connectToDatabase();
 
 // Middleware
 app.use(cors());

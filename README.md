@@ -22,9 +22,16 @@
 ### 백엔드
 - Node.js
 - Express
-- MongoDB
+- MongoDB (편지 데이터 저장)
 - Google Translate API
 - Nodemailer
+
+## 주요 업데이트
+
+- MongoDB를 활용한 편지 데이터 관리 시스템 구현
+- 국가별 맞춤형 편지 템플릿 디자인 추가
+- 실시간 번역 미리보기 기능 구현
+- 참전국 통계 대시보드 추가
 
 ## 프로젝트 시작하기
 
@@ -52,6 +59,8 @@ npm run dev
 ```bash
 cd ../backend
 npm install
+# .env.example을 .env로 복사하고 필요한 환경 변수 설정
+cp .env.example .env
 npm run dev
 ```
 
@@ -60,24 +69,31 @@ npm run dev
 ## 디렉토리 구조
 
 ```
-un_thanks_project/
-├── frontend/            # 프론트엔드 (React)
+un-thanks-project/
+├── frontend/                   # 프론트엔드 (React)
+│   ├── public/                 # 정적 파일 (이미지 등)
+│   │   └── images/             # 프로젝트 이미지
 │   ├── src/
-│   │   ├── components/  # 재사용 가능한 컴포넌트
-│   │   ├── pages/       # 페이지 컴포넌트
-│   │   ├── data/        # 정적 데이터 (참전국 정보 등)
-│   │   ├── styles/      # 글로벌 스타일
-│   │   └── utils/       # 유틸리티 함수
-│   └── public/          # 정적 파일 (이미지 등)
+│   │   ├── components/         # 재사용 가능한 컴포넌트
+│   │   │   ├── common/         # 공통 컴포넌트
+│   │   │   ├── countries/      # 국가 관련 컴포넌트
+│   │   │   └── letters/        # 편지 관련 컴포넌트
+│   │   ├── pages/              # 페이지 컴포넌트
+│   │   ├── data/               # 정적 데이터 (참전국 정보 등)
+│   │   ├── styles/             # 글로벌 스타일
+│   │   └── utils/              # 유틸리티 함수
+│   ├── package.json
+│   └── vite.config.ts
 │
-└── backend/             # 백엔드 (Node.js/Express)
+└── backend/                    # 백엔드 (Node.js/Express)
     ├── src/
-    │   ├── routes/      # API 라우트
-    │   ├── controllers/ # 컨트롤러
-    │   ├── models/      # 데이터 모델
-    │   ├── services/    # 비즈니스 로직
-    │   └── config/      # 설정 파일
-    └── .env             # 환경 변수 (미포함)
+    │   ├── models/             # MongoDB 모델
+    │   ├── routes/             # API 라우트
+    │   ├── services/           # 비즈니스 로직
+    │   └── server.ts           # 메인 서버 파일
+    ├── .env.example            # 환경 변수 예제
+    ├── package.json
+    └── tsconfig.json
 ```
 
 ## 환경 변수 설정
@@ -86,12 +102,12 @@ un_thanks_project/
 
 ```
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/un_thanks_project
-JWT_SECRET=your_jwt_secret
-GOOGLE_TRANSLATE_API_KEY=your_google_translate_api_key
+MONGODB_URI=mongodb://localhost:27017/un-thanks-project
+GOOGLE_API_KEY=your_google_api_key
 EMAIL_SERVICE=gmail
 EMAIL_USER=your_email@gmail.com
-EMAIL_PASSWORD=your_email_password
+EMAIL_PASSWORD=your_email_app_password
+FRONTEND_URL=http://localhost:3000
 ```
 
 ## 참여 방법

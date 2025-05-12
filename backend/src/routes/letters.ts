@@ -1,23 +1,9 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import * as letterService from '../services/letterService';
+import { translateText } from '../services/translationService';
 
 const router = express.Router();
-
-// In-memory storage for letters (would be a database in a real app)
-interface Letter {
-  id: string;
-  name: string;
-  email: string;
-  school: string;
-  grade: string;
-  letterContent: string;
-  translatedContent: string;
-  originalContent: boolean;
-  countryId: string;
-  createdAt: Date;
-}
-
-const letters: Letter[] = [];
 
 // GET all letters
 router.get('/', async (req, res) => {
@@ -25,18 +11,12 @@ router.get('/', async (req, res) => {
     // Get query parameters
     const { countryId } = req.query;
     
-    // Filter letters if country ID is provided
-    let filteredLetters = letters;
-    if (countryId) {
-      filteredLetters = letters.filter(letter => letter.countryId === countryId);
-    }
-    
-    // Sort by creation date (newest first)
-    filteredLetters.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    // Get letters with optional country filter
+    const letters = await letterService.getLetters(countryId as string);
     
     // Return letters with personal information removed
-    const sanitizedLetters = filteredLetters.map(letter => ({
-      id: letter.id,
+    const sanitizedLetters = letters.map(letter => ({
+      id: letter._id,
       name: letter.name,
       school: letter.school,
       grade: letter.grade,
@@ -63,7 +43,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const letter = letters.find(l => l.id === id);
+    const letter = await letterService.getLetterById(id);
     
     if (!letter) {
       return res.status(404).json({
@@ -74,7 +54,7 @@ router.get('/:id', async (req, res) => {
     
     // Return letter with personal information removed
     const sanitizedLetter = {
-      id: letter.id,
+      id: letter._id,
       name: letter.name,
       school: letter.school,
       grade: letter.grade,
@@ -92,6 +72,24 @@ router.get('/:id', async (req, res) => {
     console.error('Error fetching letter:', error);
     res.status(500).json({
       message: 'An error occurred while fetching the letter',
+      success: false
+    });
+  }
+});
+
+// GET letter statistics
+router.get('/stats/country', async (req, res) => {
+  try {
+    const stats = await letterService.getLetterStatsByCountry();
+    
+    res.status(200).json({
+      success: true,
+      data: stats
+    });
+  } catch (error) {
+    console.error('Error fetching letter statistics:', error);
+    res.status(500).json({
+      message: 'An error occurred while fetching letter statistics',
       success: false
     });
   }
@@ -118,12 +116,12 @@ router.post('/', async (req, res) => {
       });
     }
     
-    // Mock translation
+    // TODO: 실제 번역 API 연동 (현재는 목업)
+    // const translatedContent = await translateText(letterContent, countryId);
     const translatedContent = `[Translated version of: ${letterContent}]`;
     
-    // Create and store the new letter
-    const newLetter: Letter = {
-      id: uuidv4(),
+    // Create the new letter
+    const newLetter = await letterService.createLetter({
       name,
       email,
       school: school || '',
@@ -133,18 +131,16 @@ router.post('/', async (req, res) => {
       originalContent: !!originalContent,
       countryId,
       createdAt: new Date()
-    };
+    });
     
-    letters.push(newLetter);
-    
-    console.log(`New letter saved with ID: ${newLetter.id} for country: ${countryId}`);
+    console.log(`New letter saved with ID: ${newLetter._id} for country: ${countryId}`);
     
     // Return success response with translated content
     res.status(201).json({
       message: 'Letter successfully submitted',
       success: true,
       data: {
-        id: newLetter.id,
+        id: newLetter._id,
         translatedContent,
         originalContent: letterContent
       }
