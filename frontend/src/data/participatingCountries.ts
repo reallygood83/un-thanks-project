@@ -202,6 +202,126 @@ export const PARTICIPATING_COUNTRIES: ParticipatingCountry[] = [
     relationship: '6.25 전쟁 참전을 계기로 한국과 특별한 관계를 맺었으며, 이후 경제 및 문화 교류가 지속되고 있다.'
   },
   {
+    id: 'greece',
+    nameKo: '그리스',
+    nameEn: 'Greece',
+    supportType: 'combat',
+    flagCode: 'gr',
+    troops: 10255,
+    period: {
+      start: '1950.11',
+      end: '1958.5'
+    },
+    casualties: {
+      killed: 186,
+      wounded: 617,
+      missing: 0
+    },
+    contributions: '연인원 약 10,255명의 \'스파르타 대대\'와 공군을 파병했다. 미 제1기병사단에 배속되어 장진호 전투와 해리고지 전투 등에서 활약했으며, 산악지형에서의 작전 능력이 뛰어났다.',
+    background: '유럽 남동부에 위치한 공화국으로, 서구 문명의 발상지이다. 그리스 내전에서 공산주의를 물리친 경험이 있었으며, 이를 바탕으로 6.25 전쟁에 참전했다.',
+    relationship: '6.25 전쟁 참전을 계기로 한국과 우호 관계를 맺었으며, 특히 전쟁 중 한국 고아들을 돕는 등 인도주의적 활동을 많이 펼쳤다. 이후 경제, 문화 등 다양한 분야에서 교류하고 있다.'
+  },
+  {
+    id: 'new-zealand',
+    nameKo: '뉴질랜드',
+    nameEn: 'New Zealand',
+    supportType: 'combat',
+    flagCode: 'nz',
+    troops: 6000,
+    period: {
+      start: '1950.7',
+      end: '1957.7'
+    },
+    casualties: {
+      killed: 45,
+      wounded: 79,
+      missing: 1
+    },
+    contributions: '연인원 약 6,000명의 \'케이포스\'를 파병했다. 영 연방 27보병여단에 합류하여 가평전투, 마량산 전투 등에서 활약했다.',
+    background: '영연방의 일원으로, 남태평양에 위치한 섬나라이다. 제2차 세계대전 이후 국제 평화를 지키기 위한 노력에 동참했다.',
+    relationship: '6.25 전쟁 참전을 계기로 한국과 외교 관계를 맺었으며, 이후 교역과 관광 등 다양한 분야에서 교류가 이루어지고 있다.'
+  },
+  {
+    id: 'france',
+    nameKo: '프랑스',
+    nameEn: 'France',
+    supportType: 'combat',
+    flagCode: 'fr',
+    troops: 3421,
+    period: {
+      start: '1950.10',
+      end: '1953.7'
+    },
+    casualties: {
+      killed: 269,
+      wounded: 1008,
+      missing: 18
+    },
+    contributions: '연인원 약 3,421명의 \'프랑스 대대\'를 파병했다. 미 제2보병사단에 배속되어 원주 전투, 쌍터널 전투, 치평리 전투, 단장의 능선 전투 등에서 활약했다.',
+    background: '서유럽에 위치한 공화국으로, 계몽주의와 자유, 평등, 박애의 가치를 중시한다. 당시에는 인도차이나 전쟁 중이었음에도 6.25 전쟁에 참전했다.',
+    relationship: '6.25 전쟁 참전을 계기로 한국과 외교 관계를 맺었으며, 이후 경제, 문화, 과학기술 등 다양한 분야에서 협력하고 있다.'
+  },
+  {
+    id: 'belgium',
+    nameKo: '벨기에',
+    nameEn: 'Belgium',
+    supportType: 'combat',
+    flagCode: 'be',
+    troops: 3498,
+    period: {
+      start: '1951.1',
+      end: '1955.6'
+    },
+    casualties: {
+      killed: 101,
+      wounded: 350,
+      missing: 5
+    },
+    contributions: '연인원 약 3,498명의 \'벨기에 대대\'를 파병했다. 영연방 군대와 함께 참전하여 많은 전투에서 활약했다.',
+    background: '서유럽에 위치한 입헌군주국으로, 유럽 연합의 주요 구성원이다. 국제 평화 유지 활동에 적극적으로 참여하는 전통을 가지고 있다.',
+    relationship: '6.25 전쟁 참전을 계기로 한국과 외교 관계를 맺었으며, 이후 통상, 문화 등 다양한 분야에서 협력하고 있다.'
+  },
+  {
+    id: 'south-africa',
+    nameKo: '남아프리카 연방',
+    nameEn: 'South Africa',
+    supportType: 'combat',
+    flagCode: 'za',
+    troops: 826,
+    period: {
+      start: '1950.11',
+      end: '1953.10'
+    },
+    casualties: {
+      killed: 34,
+      wounded: 74,
+      missing: 8
+    },
+    contributions: '연인원 약 826명의 공군을 파병했다. 제2차 비행전대를 구성하여 공군 작전에 참여했다.',
+    background: '아프리카 최남단에 위치한 국가로, 영연방의 일원이다. 당시에는 아파르트헤이트 정책을 시행 중이었지만, 국제사회의 일원으로서 6.25 전쟁에 참전했다.',
+    relationship: '6.25 전쟁 참전을 계기로 한국과 외교 관계를 맺었으며, 민주화 이후 더욱 활발한 교류가 이루어지고 있다.'
+  },
+  {
+    id: 'luxembourg',
+    nameKo: '룩셈부르크',
+    nameEn: 'Luxembourg',
+    supportType: 'combat',
+    flagCode: 'lu',
+    troops: 87,
+    period: {
+      start: '1951.1',
+      end: '1953.7'
+    },
+    casualties: {
+      killed: 2,
+      wounded: 13,
+      missing: 0
+    },
+    contributions: '연인원 약 87명의 \'룩셈부르크 소대\'를 파병했다. 벨기에 대대에 합류하여 참전했다.',
+    background: '서유럽에 위치한 작은 대공국으로, 벨기에, 네덜란드와 함께 베네룩스 3국으로 알려져 있다. 작은 국가임에도 국제 평화 유지를 위해 참전을 결정했다.',
+    relationship: '6.25 전쟁 참전을 계기로 한국과 외교 관계를 맺었으며, 비록 규모는 작지만 상호 존중의 관계를 유지하고 있다.'
+  },
+  {
     id: 'india',
     nameKo: '인도',
     nameEn: 'India',
@@ -226,6 +346,62 @@ export const PARTICIPATING_COUNTRIES: ParticipatingCountry[] = [
     relationship: '6.25 전쟁 당시 의료지원을 통해 한국과 인연을 맺었으며, 이후 교역, 투자 등 경제 협력이 활발하게 이루어지고 있다.'
   },
   {
+    id: 'denmark',
+    nameKo: '덴마크',
+    nameEn: 'Denmark',
+    supportType: 'medical',
+    flagCode: 'dk',
+    period: {
+      start: '1951.3',
+      end: '1953.7'
+    },
+    contributions: '적십자 병원선 \'유틀란디아\'호를 파견했다. 당시 세계 최고 수준의 병원선으로 많은 부상자들을 치료했다.',
+    background: '북유럽에 위치한 입헌군주국으로, 인도주의적 목적으로 의료 지원을 결정했다.',
+    relationship: '6.25 전쟁 당시 의료지원을 통해 한국과 인연을 맺었으며, 이후 환경, 에너지, 조선 등 다양한 분야에서 협력이 이루어지고 있다.'
+  },
+  {
+    id: 'norway',
+    nameKo: '노르웨이',
+    nameEn: 'Norway',
+    supportType: 'medical',
+    flagCode: 'no',
+    period: {
+      start: '1951.7',
+      end: '1954.10'
+    },
+    contributions: '노르웨이-스웨덴 적십자 이동외과병원(NORMASH)를 파견했다. 약 90,000명의 환자를 치료했다.',
+    background: '북유럽에 위치한 입헌군주국으로, 인도주의적 목적으로 의료 지원을 결정했다.',
+    relationship: '6.25 전쟁 당시 의료지원을 통해 한국과 인연을 맺었으며, 이후 해운, 조선, 수산업 등의 분야에서 협력이 이루어지고 있다.'
+  },
+  {
+    id: 'italy',
+    nameKo: '이탈리아',
+    nameEn: 'Italy',
+    supportType: 'medical',
+    flagCode: 'it',
+    period: {
+      start: '1951.11',
+      end: '1955.1'
+    },
+    contributions: '적십자 야전병원 의료진을 파견했다. 약 300명의 의료진이 참여했다.',
+    background: '남유럽에 위치한 공화국으로, 제2차 세계대전 패전국이었지만 인도주의적 목적으로 의료 지원을 결정했다.',
+    relationship: '6.25 전쟁 당시 의료지원을 통해 한국과 인연을 맺었으며, 이후 문화, 패션, 자동차 등 다양한 분야에서 교류가 이루어지고 있다.'
+  },
+  {
+    id: 'germany',
+    nameKo: '독일(서독)',
+    nameEn: 'West Germany',
+    supportType: 'medical',
+    flagCode: 'de',
+    period: {
+      start: '1954.3',
+      end: '1959.3'
+    },
+    contributions: '적십자 병원을 파견했다. 부산에 설치되었으며, 주로 재활 치료와 의학 교육에 기여했다.',
+    background: '제2차 세계대전 패전국으로 당시에는 동서독으로 분단된 상태였다. 서독은 국제사회로의 복귀를 위해 인도주의적 지원을 결정했다.',
+    relationship: '6.25 전쟁 당시 의료지원을 통해 한국과 인연을 맺었으며, 이후 통일 경험 공유, 과학기술, 자동차 등 다양한 분야에서 긴밀한 협력이 이루어지고 있다.'
+  },
+  {
     id: 'ethiopia',
     nameKo: '에티오피아',
     nameEn: 'Ethiopia',
@@ -244,5 +420,5 @@ export const PARTICIPATING_COUNTRIES: ParticipatingCountry[] = [
     contributions: '연인원 약 3,518명의 1개 보병대대 \'칵뉴부대\'를 파병했다. 아프리카에서 유일하게 전투병을 파견한 국가이다.',
     background: '아프리카 동부에 위치한 고대 문명국으로, 하일레 셀라시에 황제의 결단으로 참전을 결정했다.',
     relationship: '6.25 전쟁 참전을 계기로 한국과 특별한 관계를 맺었으며, 이후 개발협력 등의 분야에서 교류가 이어지고 있다.'
-  }
+  },
 ];
