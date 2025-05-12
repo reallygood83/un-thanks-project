@@ -2,7 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.js",
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/_lib/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/letters/*.js",
       "use": "@vercel/node"
     },
     {
