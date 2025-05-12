@@ -23,8 +23,19 @@ const PORT = process.env.PORT || 5000;
 connectToDatabase();
 
 // Middleware
-app.use(cors());
-app.use(helmet());
+// CORS 설정 - 모든 출처에서의 요청 허용
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://un-thanks-project.vercel.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Helmet 보안 헤더 설정 - CORS와 충돌하지 않도록 설정
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
+
 app.use(morgan('dev'));
 app.use(express.json());
 

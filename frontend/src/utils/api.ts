@@ -8,7 +8,8 @@ const getApiUrl = () => {
 
   // 프로덕션 환경에서는 현재 호스트의 URL 사용
   // Vercel 배포에서는 상대 경로 사용
-  const prodApiUrl = '/api';
+  // 배포 환경에 맞게 전체 URL로 수정
+  const prodApiUrl = window.location.origin + '/api';
 
   // 개발 환경 여부 확인 (Vite의 환경 변수 사용)
   const isDev = import.meta.env.DEV;
@@ -45,7 +46,8 @@ export const submitLetter = async (letterData: {
         headers: {
           'Content-Type': 'application/json'
         },
-        timeout: 10000 // 10초 타임아웃
+        timeout: 10000, // 10초 타임아웃
+        withCredentials: true // 크로스 도메인 요청에 쿠키 포함
       });
 
       console.log('API 응답:', response.data);
@@ -106,7 +108,7 @@ export const getLetters = async (countryId?: string) => {
     console.log('편지 목록 가져오기 URL:', url);
 
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, { withCredentials: true });
       console.log('API 응답:', response.data);
 
       // 서버 응답이 있고 성공 상태인 경우 데이터 사용

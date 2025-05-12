@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
     // 액션이 없으면 건강 상태 반환
     if (!action) {
       return res.status(200).json({
+        success: true, // 프론트엔드가 기대하는 success 필드 추가
         message: 'API is working!',
         status: 'ok'
       });
