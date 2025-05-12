@@ -138,31 +138,54 @@ export const getLetters = async (countryId?: string) => {
       console.log('API 응답 받음:', response.status, typeof response.data);
       console.log('API 응답 데이터:', response.data);
 
-      // 응답 처리 로직 개선
+      // 응답 처리 로직 개선 - 더 유연하게 처리
       if (response.data) {
         // 어떤 형식으로든 응답이 있으면 처리 시도
         const responseData = response.data;
+        console.log('API 응답 상세 데이터:', JSON.stringify(responseData).substring(0, 200) + '...');
 
         // success 필드가 있으면 그 값을 사용, 없으면 status 확인
         const isSuccess =
           responseData.success !== undefined ? responseData.success :
           responseData.status === 'ok' || response.status >= 200 && response.status < 300;
 
-        if (isSuccess && responseData.data) {
-          // 배열 확인 - 아니라면 배열로 변환 처리
-          const dataArray = Array.isArray(responseData.data)
-            ? responseData.data
-            : [responseData.data];
+        // 성공적인 응답이면 데이터 활용
+        if (isSuccess) {
+          // data 필드가 있는 경우
+          if (responseData.data) {
+            // 배열 확인 - 아니라면 배열로 변환 처리
+            const dataArray = Array.isArray(responseData.data)
+              ? responseData.data
+              : [responseData.data];
 
-          return {
-            success: true,
-            data: dataArray
-          };
+            console.log('API 응답 데이터 활용 (data 필드):', dataArray.length);
+            return {
+              success: true,
+              data: dataArray
+            };
+          }
+          // 자체가 배열인 경우
+          else if (Array.isArray(responseData)) {
+            console.log('API 응답 데이터 활용 (배열):', responseData.length);
+            return {
+              success: true,
+              data: responseData
+            };
+          }
+          // 아무 데이터도 없지만 성공이면 빈 배열 반환
+          else {
+            console.log('API 응답 성공이지만 데이터 필드 없음, 빈 배열 반환');
+            return {
+              success: true,
+              data: []
+            };
+          }
         }
       }
 
       // 응답이 있지만 형식이 예상과 다른 경우 더미 데이터 사용
       console.log('API 응답 형식이 예상과 다름, 더미 데이터 사용');
+      console.log('원본 응답:', JSON.stringify(response.data).substring(0, 200) + '...');
       throw new Error('API 응답 형식 불일치');
     } catch (error) {
       console.log('API 요청 실패, 로컬 더미 데이터 반환');

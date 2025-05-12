@@ -335,10 +335,13 @@ module.exports = async (req, res) => {
 
     // 알 수 없는 액션이거나 액션이 없는 경우 기본 응답
     console.log('[API] 알 수 없는 액션 또는 기본 응답:', action);
+
+    // 편지 목록 기본으로 반환 (data 필드 보장)
     return res.status(200).json({
       success: true,
       message: 'UN 참전국 감사 편지 API가 정상 작동 중입니다',
       status: 'ok',
+      data: letters, // 항상 data 필드 포함
       availableActions: ['getLetters', 'submitLetter', 'getCountries', 'getCountry', 'health'],
       timestamp: new Date().toISOString()
     });
