@@ -1,14 +1,12 @@
-// 편지 목록 조회 API 핸들러 - MongoDB 연동
-const { connectToDatabase } = require('./_lib/mongodb');
+// 레거시 getLetters API 핸들러 - 메인 핸들러로 리디렉션
 
 // CORS 헤더 설정
 function setCorsHeaders(res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    'Content-Type, Authorization, X-Requested-With'
   );
 }
 
@@ -23,9 +21,12 @@ module.exports = async function handler(req, res) {
       return res.status(200).end();
     }
 
+    console.log('[getLetters] 레거시 API 호출됨');
+    console.log('[getLetters] 메서드:', req.method);
+
     // GET 요청이 아니면 405 오류 반환
     if (req.method !== 'GET') {
-      console.error('허용되지 않은 메서드:', req.method);
+      console.error('[getLetters] 허용되지 않은 메서드:', req.method);
       return res.status(405).json({
         success: false,
         message: '허용되지 않은 HTTP 메서드입니다. GET 요청만 허용됩니다.'
@@ -33,91 +34,61 @@ module.exports = async function handler(req, res) {
     }
 
     // URL에서 쿼리 파라미터 추출
-    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-    const countryId = url.searchParams.get('countryId') || req.query?.countryId;
-
-    console.log('getLetters API 호출됨 - MongoDB 연동 버전', { countryId });
-
+    let url;
     try {
-      // MongoDB 연결
-      const { db } = await connectToDatabase();
-      const collection = db.collection('letters');
-
-      // 쿼리 조건 설정
-      const query = countryId ? { countryId } : {};
-      
-      // 편지 목록 조회 (최신순)
-      const letters = await collection
-        .find(query)
-        .sort({ createdAt: -1 })
-        .limit(100) // 결과 수 제한
-        .toArray();
-      
-      // 개인정보 제거하여 반환
-      const sanitizedLetters = letters.map(letter => ({
-        id: letter._id,
-        name: letter.name,
-        school: letter.school || '',
-        grade: letter.grade || '',
-        letterContent: letter.letterContent,
-        translatedContent: letter.translatedContent,
-        countryId: letter.countryId,
-        createdAt: letter.createdAt
-      }));
-
-      console.log(`편지 목록 조회 결과: ${sanitizedLetters.length}개 항목`);
-
-      // 성공 응답 반환
-      return res.status(200).json({
-        success: true,
-        data: sanitizedLetters
-      });
-    } catch (dbError) {
-      console.error('MongoDB 오류:', dbError);
-      
-      // 개발 환경에서 임시 데이터 반환
-      console.log('MongoDB 연결 실패, 임시 데이터 반환');
-      
-      // 임시 더미 데이터
-      const dummyLetters = [
-        {
-          id: 'dummy-1',
-          name: '홍길동',
-          school: '서울초등학교',
-          grade: '5학년',
-          letterContent: '감사합니다. 한국의 자유를 위해 도와주셔서 진심으로 감사드립니다.',
-          translatedContent: 'Thank you. I sincerely thank you for helping for the freedom of Korea.',
-          countryId: countryId || 'usa',
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: 'dummy-2',
-          name: '김철수',
-          school: '부산중학교',
-          grade: '2학년',
-          letterContent: '참전해주셔서 감사합니다. 여러분의 희생에 깊은 감사를 표합니다.',
-          translatedContent: 'Thank you for your participation. I express deep gratitude for your sacrifice.',
-          countryId: countryId || 'uk',
-          createdAt: new Date(Date.now() - 86400000).toISOString()
-        }
-      ];
-      
-      // 국가별 필터링 적용
-      const filteredLetters = countryId 
-        ? dummyLetters.filter(letter => letter.countryId === countryId)
-        : dummyLetters;
-      
-      return res.status(200).json({
-        success: true,
-        data: filteredLetters,
-        fallback: true
-      });
+      url = new URL(req.url, `https://${req.headers.host || 'vercel.app'}`);
+    } catch (urlError) {
+      console.error('[getLetters] URL 파싱 오류:', urlError);
+      url = { searchParams: { get: () => null } };
     }
+
+    // 국가 ID 추출
+    const countryId = url.searchParams.get('countryId') || req.query?.countryId;
+    console.log('[getLetters] 국가 ID:', countryId);
+
+    // 액션 파라미터를 첨부하여 메인 핸들러로 리디렉션
+    req.url = req.url || '/';
+    if (!req.url.includes('action=')) {
+      req.url += (req.url.includes('?') ? '&' : '?') + 'action=getLetters';
+    }
+
+    // 메인 핸들러로 요청 위임
+    const mainHandler = require('./index.js');
+    return await mainHandler(req, res);
   } catch (error) {
-    console.error('getLetters API 처리 중 오류:', error);
-    return res.status(500).json({
-      success: false,
-      message: '서버 오류가 발생했습니다: ' + error.message
+    console.error('[getLetters] 처리 중 오류:', error);
+
+    // 임시 더미 데이터
+    const dummyLetters = [
+      {
+        id: 'error-1',
+        name: '홍길동',
+        school: '서울초등학교',
+        grade: '5학년',
+        letterContent: '감사합니다. 한국의 자유를 위해 도와주셔서 진심으로 감사드립니다.',
+        translatedContent: 'Thank you. I sincerely thank you for helping for the freedom of Korea.',
+        countryId: 'usa',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'error-2',
+        name: '김철수',
+        school: '부산중학교',
+        grade: '2학년',
+        letterContent: '참전해주셔서 감사합니다. 여러분의 희생에 깊은 감사를 표합니다.',
+        translatedContent: 'Thank you for your participation. I express deep gratitude for your sacrifice.',
+        countryId: 'uk',
+        createdAt: new Date(Date.now() - 86400000).toISOString()
+      }
+    ];
+
+    // 프론트엔드에서 처리 가능하도록 항상 성공 응답 반환
+    return res.status(200).json({
+      success: true, // 프론트엔드 호환성을 위해 success: true 유지
+      message: '서버 내부 오류로 임시 데이터를 반환합니다',
+      data: dummyLetters,
+      error: error.message,
+      fallback: true
     });
   }
 };
