@@ -25,8 +25,10 @@ function handler(req, res) {
     }
   });
 
-  // 액션 기반 라우팅
-  const action = req.query?.action;
+  // 액션 기반 라우팅 - 수동 쿼리 파싱
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const params = url.searchParams;
+  const action = params.get('action') || req.query?.action;
 
   // 액션 기반 처리
   if (action === 'submitLetter' || action === 'createLetter') {
@@ -37,16 +39,22 @@ function handler(req, res) {
     return handleLettersList(req, res);
   }
 
-  if (action === 'getLetter' && req.query.id) {
-    return handleLetterDetail(req, res, req.query.id);
+  if (action === 'getLetter') {
+    const id = params.get('id') || req.query?.id;
+    if (id) {
+      return handleLetterDetail(req, res, id);
+    }
   }
 
   if (action === 'getCountries' || action === 'listCountries') {
     return handleCountriesList(req, res);
   }
 
-  if (action === 'getCountry' && req.query.id) {
-    return handleCountryDetail(req, res, req.query.id);
+  if (action === 'getCountry') {
+    const id = params.get('id') || req.query?.id;
+    if (id) {
+      return handleCountryDetail(req, res, id);
+    }
   }
 
   // 기존 경로 기반 라우팅 유지
@@ -70,21 +78,37 @@ function handler(req, res) {
     return handleCountryDetail(req, res, id);
   }
 
-  // 기본 응답: API 정보 반환
+  // 기본 응답: 더미 데이터 포함하여 반환
+  console.log('기본 API 응답 반환 - 액션 없음');
   return res.status(200).json({
     success: true,
     message: '통합 API가 정상 작동 중입니다',
     method: req.method,
     path: req.url || '/',
-    query: req.query || {},
+    data: [
+      {
+        id: 'default-1',
+        name: '기본 사용자',
+        school: '예시 학교',
+        grade: '3학년',
+        letterContent: '기본 API 응답에서 생성된 편지 내용입니다.',
+        translatedContent: 'This is a letter content from default API response.',
+        countryId: 'usa',
+        createdAt: new Date().toISOString()
+      }
+    ],
     timestamp: new Date().toISOString()
   });
 }
 
 // 편지 목록 조회 - 액션 기반
 function handleLettersList(req, res) {
-  const countryId = req.query?.countryId;
-  console.log('편지 목록 요청:', { countryId });
+  // 수동 URL 파싱
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const params = url.searchParams;
+
+  const countryId = params.get('countryId') || req.query?.countryId;
+  console.log('편지 목록 요청:', { countryId, url: req.url });
 
   // 더미 편지 데이터
   let letters = [
