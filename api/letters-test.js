@@ -61,14 +61,18 @@ async function parseBody(req) {
 
 // 편지 테스트 API 핸들러
 module.exports = async function handler(req, res) {
-  // 요청 로깅
+  // 요청 로깅 (더 자세한 정보 포함)
   console.log('편지 테스트 API 요청:', {
     method: req.method,
     url: req.url,
+    query: req.query,
     headers: {
       'content-type': req.headers['content-type'],
-      'user-agent': req.headers['user-agent']
-    }
+      'user-agent': req.headers['user-agent'],
+      'origin': req.headers['origin'],
+      'host': req.headers['host']
+    },
+    body: req.body ? '있음' : '없음'
   });
 
   // CORS 사전 요청 처리
@@ -115,9 +119,18 @@ module.exports = async function handler(req, res) {
     
     // POST 요청 처리 - 편지 제출 시뮬레이션
     if (req.method === 'POST') {
+      // POST 요청 처리 시작 로깅
+      console.log('POST 요청 처리 시작...');
+
       // 요청 본문 파싱
       let body;
       try {
+        console.log('요청 본문 파싱 시도:', {
+          bodyType: typeof req.body,
+          hasBody: !!req.body,
+          contentType: req.headers['content-type']
+        });
+
         body = await parseBody(req);
         console.log('Parsed request body:', body);
       } catch (error) {
