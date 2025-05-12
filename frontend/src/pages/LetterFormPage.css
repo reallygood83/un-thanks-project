@@ -132,27 +132,22 @@
   margin-bottom: 2rem;
 }
 
-.translation-preview {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+/* 편지 내용 미리보기 */
+.letter-content-preview {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: #f8f9fa;
   margin-bottom: 2.5rem;
   text-align: left;
 }
 
-.translation-box {
-  padding: 1.5rem;
-  border-radius: 8px;
-  background-color: #f8f9fa;
-}
-
-.translation-box h3 {
+.letter-content-preview h3 {
   font-size: 1.1rem;
   margin-bottom: 1rem;
   color: var(--primary-color);
 }
 
-.translation-box p {
+.letter-content-preview p {
   line-height: 1.7;
   white-space: pre-wrap;
 }
@@ -173,10 +168,6 @@
     gap: 0;
   }
   
-  .translation-preview {
-    grid-template-columns: 1fr;
-  }
-  
   .success-actions {
     flex-direction: column;
   }
@@ -184,4 +175,26 @@
   .success-actions .btn {
     width: 100%;
   }
+}
+
+.form-tip {
+  margin-top: -5px;
+  margin-bottom: 15px;
+  color: #666;
+  font-size: 14px;
+}
+
+/* 버튼 스타일 보강 */
+.btn.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn.btn-secondary:disabled {
+  background-color: #b0b5b9;
+  cursor: not-allowed;
 }

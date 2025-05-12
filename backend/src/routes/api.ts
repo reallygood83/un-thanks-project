@@ -109,26 +109,26 @@ router.post('/', async (req, res) => {
         countryId 
       } = req.body;
       
-      // 필수 필드 검증
-      if (!name || !email || !letterContent || !countryId) {
+      // 필수 필드 검증 (이메일 제외)
+      if (!name || !letterContent || !countryId) {
         return res.status(400).json({
           success: false,
           message: 'Missing required fields'
         });
       }
       
-      // 번역 수행
-      const translatedContent = await translateText(letterContent, countryId);
+      // 번역 없이 원본 내용만 저장
+      const translatedContent = ''; // 번역 비활성화
       
       // 새 편지 생성
       const newLetter = await createLetter({
         name,
-        email,
+        email: email || '',
         school: school || '',
         grade: grade || '',
         letterContent,
         translatedContent,
-        originalContent: !!originalContent,
+        originalContent: true, // 항상 true로 설정
         countryId,
         createdAt: new Date()
       });
@@ -138,8 +138,18 @@ router.post('/', async (req, res) => {
         success: true,
         data: {
           id: newLetter._id,
-          translatedContent,
           originalContent: letterContent
+        }
+      });
+    }
+    
+    // 번역 미리보기 액션 처리
+    if (action === 'translatePreview') {
+      // 번역 기능 비활성화로 미리보기도 빈 응답 제공
+      return res.status(200).json({
+        success: true,
+        data: {
+          translatedContent: ''
         }
       });
     }

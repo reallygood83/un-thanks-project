@@ -127,29 +127,13 @@
   border-radius: 2px;
 }
 
-.letter-content-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+.letter-content {
   padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 0 0 8px 8px;
 }
 
-.letter-content,
-.letter-translation {
-  background-color: #f8f9fa;
-  padding: 1rem;
-  border-radius: 4px;
-}
-
-.letter-content h4,
-.letter-translation h4 {
-  font-size: 1rem;
-  margin: 0 0 0.5rem;
-  color: #495057;
-}
-
-.letter-content p,
-.letter-translation p {
+.letter-content p {
   font-size: 1rem;
   line-height: 1.6;
   margin: 0;
@@ -169,10 +153,6 @@
 }
 
 @media (max-width: 768px) {
-  .letter-content-wrapper {
-    grid-template-columns: 1fr;
-  }
-  
   .letter-header {
     flex-direction: column;
     align-items: flex-start;

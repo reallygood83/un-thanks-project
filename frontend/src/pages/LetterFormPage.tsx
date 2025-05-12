@@ -16,16 +16,13 @@ const LetterFormPage: React.FC = () => {
   // Form state
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
     school: '',
     grade: '',
-    letterContent: '',
-    originalContent: true // If true, send the original Korean content too
+    letterContent: ''
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [translatedContent, setTranslatedContent] = useState('');
   
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -33,14 +30,6 @@ const LetterFormPage: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value
-    }));
-  };
-  
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: checked
     }));
   };
   
@@ -56,15 +45,14 @@ const LetterFormPage: React.FC = () => {
       // 데이터베이스에 편지 제출
       const response = await submitLetter({
         ...formData,
-        countryId: country.id
+        email: '', // 빈 이메일 전송 (백엔드 호환성)
+        countryId: country.id,
+        originalContent: true
       });
 
       if (!response.success) {
         throw new Error(response.error);
       }
-
-      // 응답에서 번역된 내용 가져오기
-      setTranslatedContent(response.data.translatedContent);
 
       // 성공 상태 표시
       setHasSubmitted(true);
@@ -90,15 +78,9 @@ const LetterFormPage: React.FC = () => {
           {hasSubmitted ? (
             <div className="submission-success">
               <h2>감사 편지가 성공적으로 게시되었습니다!</h2>
-              <div className="translation-preview">
-                <div className="translation-box">
-                  <h3>원문</h3>
-                  <p>{formData.letterContent}</p>
-                </div>
-                <div className="translation-box">
-                  <h3>번역본</h3>
-                  <p>{translatedContent}</p>
-                </div>
+              <div className="letter-content-preview">
+                <h3>작성한 편지</h3>
+                <p>{formData.letterContent}</p>
               </div>
               <div className="success-actions">
                 <button 
@@ -118,11 +100,9 @@ const LetterFormPage: React.FC = () => {
                   onClick={() => {
                     setFormData({
                       name: '',
-                      email: '',
                       school: '',
                       grade: '',
-                      letterContent: '',
-                      originalContent: true
+                      letterContent: ''
                     });
                     setHasSubmitted(false);
                   }}
@@ -157,17 +137,6 @@ const LetterFormPage: React.FC = () => {
                       id="name"
                       name="name"
                       value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="email">이메일 *</label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
                       onChange={handleChange}
                       required
                     />
@@ -211,45 +180,31 @@ const LetterFormPage: React.FC = () => {
               </div>
               
               <div className="form-section">
-                <h3>감사 편지 작성</h3>
+                <h3>편지 내용 *</h3>
+                <p className="form-tip">
+                  {country.nameKo}에 보내는 감사의 마음을 담아 편지를 작성해주세요.
+                </p>
+                
                 <div className="form-group">
-                  <label htmlFor="letterContent">편지 내용 *</label>
                   <textarea
                     id="letterContent"
                     name="letterContent"
+                    rows={10}
                     value={formData.letterContent}
                     onChange={handleChange}
-                    rows={10}
+                    placeholder={`${country.nameKo}에 참전해주셔서 감사합니다...`}
                     required
-                    placeholder={`${country.nameKo}에 보내는 감사의 마음을 담아 작성해주세요...`}
-                  ></textarea>
-                </div>
-                <div className="form-checkbox">
-                  <input
-                    type="checkbox"
-                    id="originalContent"
-                    name="originalContent"
-                    checked={formData.originalContent}
-                    onChange={handleCheckboxChange}
                   />
-                  <label htmlFor="originalContent">번역본과 함께 원문도 함께 게시</label>
                 </div>
               </div>
               
               <div className="form-actions">
-                <button 
-                  type="button" 
-                  className="btn btn-outline"
-                  onClick={() => navigate(`/countries/${country.id}`)}
-                >
-                  취소
-                </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="btn btn-primary"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? '게시 중...' : '편지 게시하기'}
+                  {isSubmitting ? '제출 중...' : '편지 보내기'}
                 </button>
               </div>
             </form>

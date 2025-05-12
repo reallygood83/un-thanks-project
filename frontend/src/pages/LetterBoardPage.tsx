@@ -10,7 +10,6 @@ interface Letter {
   school: string;
   grade: string;
   letterContent: string;
-  translatedContent: string;
   countryId: string;
   createdAt: string;
 }
@@ -150,15 +149,8 @@ const LetterBoardPage: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="letter-content-wrapper">
-                  <div className="letter-content">
-                    <h4>원문</h4>
-                    <p>{letter.letterContent}</p>
-                  </div>
-                  <div className="letter-translation">
-                    <h4>번역본</h4>
-                    <p>{letter.translatedContent}</p>
-                  </div>
+                <div className="letter-content">
+                  <p>{letter.letterContent}</p>
                 </div>
               </div>
             ))}

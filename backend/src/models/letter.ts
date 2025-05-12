@@ -14,11 +14,11 @@ export interface ILetter extends Document {
 
 const LetterSchema: Schema = new Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String, default: '' },
   school: { type: String, default: '' },
   grade: { type: String, default: '' },
   letterContent: { type: String, required: true },
-  translatedContent: { type: String, required: true },
+  translatedContent: { type: String, default: '' },
   originalContent: { type: Boolean, default: true },
   countryId: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }

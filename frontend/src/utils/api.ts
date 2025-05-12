@@ -313,10 +313,65 @@ export const getCountry = async (id: string) => {
   };
 };
 
+// 편지 미리 번역하기 함수
+export const translateLetter = async (letterContent: string, countryId: string) => {
+  try {
+    const apiUrl = `${API_BASE_URL}?action=translatePreview`;
+    console.log('번역 미리보기 API URL:', apiUrl);
+
+    try {
+      const response = await axios({
+        method: 'post',
+        url: apiUrl,
+        data: {
+          letterContent,
+          countryId
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        timeout: 10000 // 10초 타임아웃
+      });
+
+      console.log('번역 API 응답:', response.status, response.data);
+
+      if (response.data && response.data.success) {
+        return {
+          success: true,
+          translatedContent: response.data.data.translatedContent
+        };
+      }
+
+      // 응답이 있지만 성공이 아닌 경우 대체 데이터
+      throw new Error('번역 API 응답이 성공이 아님');
+    } catch (axiosError) {
+      console.log('번역 API 요청 실패, 대체 번역 반환');
+      
+      // API 요청 실패 시 대체 번역 제공
+      return {
+        success: true,
+        translatedContent: `[Translation preview: ${letterContent.substring(0, 30)}...]`,
+        fromLocal: true
+      };
+    }
+  } catch (error) {
+    console.error('번역 최종 오류:', error);
+    
+    // 최후의 방어선
+    return {
+      success: true,
+      translatedContent: `[Translation failed. Please try again later.]`,
+      fromFallback: true
+    };
+  }
+};
+
 export default {
   submitLetter,
   getLetters,
   getLetter,
   getCountries,
-  getCountry
+  getCountry,
+  translateLetter
 };

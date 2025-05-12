@@ -1,7 +1,6 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import * as letterService from '../services/letterService';
-import { translateText } from '../services/translationService';
 
 const router = express.Router();
 
@@ -14,14 +13,13 @@ router.get('/', async (req, res) => {
     // Get letters with optional country filter
     const letters = await letterService.getLetters(countryId as string);
     
-    // Return letters with personal information removed
+    // Return letters with personal information removed (번역 제외)
     const sanitizedLetters = letters.map(letter => ({
       id: letter._id,
       name: letter.name,
       school: letter.school,
       grade: letter.grade,
       letterContent: letter.letterContent,
-      translatedContent: letter.translatedContent,
       countryId: letter.countryId,
       createdAt: letter.createdAt
     }));
@@ -52,14 +50,13 @@ router.get('/:id', async (req, res) => {
       });
     }
     
-    // Return letter with personal information removed
+    // Return letter with personal information removed (번역 제외)
     const sanitizedLetter = {
       id: letter._id,
       name: letter.name,
       school: letter.school,
       grade: letter.grade,
       letterContent: letter.letterContent,
-      translatedContent: letter.translatedContent,
       countryId: letter.countryId,
       createdAt: letter.createdAt
     };
@@ -108,39 +105,38 @@ router.post('/', async (req, res) => {
       countryId 
     } = req.body;
     
-    // Validate required fields
-    if (!name || !email || !letterContent || !countryId) {
+    // Validate required fields (이메일 제외)
+    if (!name || !letterContent || !countryId) {
       return res.status(400).json({
         message: 'Missing required fields',
         success: false
       });
     }
     
-    // Google Translation API를 통한 번역 실행
-    const translatedContent = await translateText(letterContent, countryId);
+    // 번역 없이 원본 내용만 저장
+    const translatedContent = '';
     
     // Create the new letter
     const newLetter = await letterService.createLetter({
       name,
-      email,
+      email: email || '',
       school: school || '',
       grade: grade || '',
       letterContent,
       translatedContent,
-      originalContent: !!originalContent,
+      originalContent: true, // 항상 true로 설정
       countryId,
       createdAt: new Date()
     });
     
     console.log(`New letter saved with ID: ${newLetter._id} for country: ${countryId}`);
     
-    // Return success response with translated content
+    // Return success response (번역 제외)
     res.status(201).json({
       message: 'Letter successfully submitted',
       success: true,
       data: {
         id: newLetter._id,
-        translatedContent,
         originalContent: letterContent
       }
     });
