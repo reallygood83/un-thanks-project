@@ -7,8 +7,7 @@ const HomePage: React.FC = () => {
   // Count by support type
   const combatCount = PARTICIPATING_COUNTRIES.filter(c => c.supportType === 'combat').length;
   const medicalCount = PARTICIPATING_COUNTRIES.filter(c => c.supportType === 'medical').length;
-  const materialCount = 40; // From the data file, about 40 countries provided material support
-  const totalCount = combatCount + medicalCount + materialCount + 4; // Including 4 intent countries
+  const totalCount = combatCount + medicalCount; // Only combat and medical support countries
   
   return (
     <div className="home-page">
@@ -17,7 +16,7 @@ const HomePage: React.FC = () => {
           <div className="hero-content">
             <h1 className="hero-title">6.25 UN 참전국 감사 프로젝트</h1>
             <p className="hero-subtitle">
-              한국전쟁 당시 대한민국의 자유와 평화를 위해 도움을 준 67개국에 감사의 마음을 전합니다.
+              한국전쟁 당시 대한민국의 자유와 평화를 위해 전투병 파병 및 의료 지원을 제공한 국가들에 감사의 마음을 전합니다.
             </p>
             <div className="hero-buttons">
               <Link to="/countries" className="btn btn-hero">
@@ -51,10 +50,6 @@ const HomePage: React.FC = () => {
               <div className="stat-number">{medicalCount}</div>
               <div className="stat-label">의료 지원국</div>
             </div>
-            <div className="stat-item">
-              <div className="stat-number">{materialCount}</div>
-              <div className="stat-label">물자 지원국</div>
-            </div>
           </div>
         </div>
       </section>
@@ -67,7 +62,9 @@ const HomePage: React.FC = () => {
           </div>
           
           <div className="featured-countries">
-            {PARTICIPATING_COUNTRIES.slice(0, 6).map(country => (
+            {PARTICIPATING_COUNTRIES
+              .filter(country => country.supportType === 'combat' || country.supportType === 'medical')
+              .slice(0, 6).map(country => (
               <Link to={`/countries/${country.id}`} key={country.id} className="featured-country">
                 <img 
                   src={`https://flagcdn.com/w80/${country.flagCode}.png`}
@@ -80,8 +77,6 @@ const HomePage: React.FC = () => {
                 <p className="featured-type">
                   {country.supportType === 'combat' && '전투병 파병'}
                   {country.supportType === 'medical' && '의료 지원'}
-                  {country.supportType === 'material' && '물자 지원'}
-                  {country.supportType === 'intent' && '지원 의사'}
                 </p>
               </Link>
             ))}

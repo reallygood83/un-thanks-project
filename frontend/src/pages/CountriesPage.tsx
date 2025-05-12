@@ -11,6 +11,9 @@ const CountriesPage: React.FC = () => {
   // Filter countries based on selected type and search term
   const filteredCountries = useMemo(() => {
     return PARTICIPATING_COUNTRIES.filter(country => {
+      // Only include combat and medical support countries
+      const supportTypeMatch = country.supportType === 'combat' || country.supportType === 'medical';
+      
       // Filter by type
       const typeMatch = selectedType === 'all' || country.supportType === selectedType;
       
@@ -19,7 +22,7 @@ const CountriesPage: React.FC = () => {
         country.nameKo.toLowerCase().includes(searchTerm.toLowerCase()) ||
         country.nameEn.toLowerCase().includes(searchTerm.toLowerCase());
       
-      return typeMatch && searchMatch;
+      return supportTypeMatch && typeMatch && searchMatch;
     });
   }, [selectedType, searchTerm]);
   
@@ -60,14 +63,12 @@ const CountriesPage: React.FC = () => {
         <div className="countries-info">
           <h3>UN 참전국 현황</h3>
           <p>
-            6.25 전쟁 당시 대한민국의 자유와 평화를 수호하기 위해 유엔의 깃발 아래 연대한 국가는 총 67개국에 달합니다.
-            이들 국가는 전투병 파병, 의료 지원, 물자 지원 등 다양한 형태로 대한민국의 생존과 재건을 도왔습니다.
+            6.25 전쟁 당시 대한민국의 자유와 평화를 수호하기 위해 유엔의 깃발 아래 전투병 파병과 의료 지원으로 연대한 국가들이 있습니다.
+            이들 국가는 대한민국의 생존과 재건을 위해 큰 희생을 감내했습니다.
           </p>
           <ul>
             <li><strong>전투병 파병국 (16개국):</strong> 미국, 영국, 캐나다, 터키, 호주, 필리핀, 태국, 네덜란드, 콜롬비아, 그리스, 뉴질랜드, 프랑스, 에티오피아, 벨기에, 남아프리카 연방, 룩셈부르크</li>
             <li><strong>의료 지원국 (6개국):</strong> 인도, 덴마크, 스웨덴, 노르웨이, 이탈리아, 독일(서독)</li>
-            <li><strong>물자 지원국 (약 40개국):</strong> 과테말라, 대만, 레바논, 멕시코, 스위스, 아르헨티나, 일본 등</li>
-            <li><strong>지원 의사 표명국 (4개국):</strong> 니카라과, 볼리비아, 브라질, 스페인</li>
           </ul>
         </div>
       </div>

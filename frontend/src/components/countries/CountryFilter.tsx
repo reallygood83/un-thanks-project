@@ -1,7 +1,7 @@
 import React from 'react';
 import './CountryFilter.css';
 
-export type SupportType = 'all' | 'combat' | 'medical' | 'material' | 'intent';
+export type SupportType = 'all' | 'combat' | 'medical';
 
 interface CountryFilterProps {
   selectedType: SupportType;
@@ -38,18 +38,6 @@ const CountryFilter: React.FC<CountryFilterProps> = ({
             onClick={() => onTypeChange('medical')}
           >
             의료 지원국
-          </button>
-          <button 
-            className={`filter-btn ${selectedType === 'material' ? 'active' : ''}`}
-            onClick={() => onTypeChange('material')}
-          >
-            물자 지원국
-          </button>
-          <button 
-            className={`filter-btn ${selectedType === 'intent' ? 'active' : ''}`}
-            onClick={() => onTypeChange('intent')}
-          >
-            지원 의사 표명국
           </button>
         </div>
       </div>

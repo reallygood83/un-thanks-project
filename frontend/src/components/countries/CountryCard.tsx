@@ -15,10 +15,6 @@ const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
         return 'badge-combat';
       case 'medical':
         return 'badge-medical';
-      case 'material':
-        return 'badge-material';
-      case 'intent':
-        return 'badge-intent';
       default:
         return '';
     }
@@ -31,10 +27,6 @@ const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
         return '전투병 파병';
       case 'medical':
         return '의료 지원';
-      case 'material':
-        return '물자 지원';
-      case 'intent':
-        return '지원 의사';
       default:
         return '';
     }
