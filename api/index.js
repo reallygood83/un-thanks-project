@@ -2,10 +2,12 @@
 // CommonJS 스타일 사용
 
 function handler(req, res) {
-  // CORS 헤더 설정
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // CORS 헤더 설정 - 원래 요청의 Origin을 허용하도록 설정
+  const requestOrigin = req.headers.origin || '*';
+  res.setHeader('Access-Control-Allow-Origin', requestOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Credentials', 'true'); // 인증 정보 포함 허용
 
   // OPTIONS 요청 즉시 처리
   if (req.method === 'OPTIONS') {
@@ -142,16 +144,19 @@ function handleLetterSubmit(req, res) {
         countryId: data.countryId
       });
 
-      // 성공 응답
-      return res.status(200).json({
+      // 성공 응답 - 프론트엔드 기대 형식으로 반환
+      const responseData = {
         success: true,
         message: '편지가 성공적으로 제출되었습니다',
         data: {
           id: 'test-' + Date.now(),
-          translatedContent: '번역된 내용 (테스트 모드)',
+          translatedContent: '[번역된 내용]: ' + (data.letterContent ? data.letterContent.substring(0, 30) + '...' : ''),
           originalContent: data.letterContent || '원본 내용 (테스트 모드)'
         }
-      });
+      };
+
+      console.log('응답 데이터:', responseData);
+      return res.status(200).json(responseData);
     } catch (error) {
       console.error('요청 본문 파싱 오류:', error);
       return res.status(400).json({
