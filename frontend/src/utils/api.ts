@@ -3,16 +3,19 @@ import axios from 'axios';
 // Vercel API 엔드포인트
 // 배포 환경과 개발 환경 모두에서 작동하도록 동적 URL 설정
 const getApiUrl = () => {
-  // 개발 환경에서 테스트할 때 사용할 URL (localhost:5000)
-  const devApiUrl = 'http://localhost:5000/api';
-
-  // 프로덕션 환경에서는 현재 호스트의 URL 사용
-  // Vercel 배포에서는 상대 경로 사용
-  // 배포 환경에 맞게 전체 URL로 수정
-  const prodApiUrl = window.location.origin + '/api';
-
   // 개발 환경 여부 확인 (Vite의 환경 변수 사용)
   const isDev = import.meta.env.DEV;
+
+  // 개발 환경에서 테스트할 때 사용할 URL (localhost:5000)
+  const devApiUrl = 'http://localhost:5001/api';
+
+  // 프로덕션 환경에서는 항상 상대 경로 사용
+  // 브라우저가 자동으로 현재 호스트와 결합
+  const prodApiUrl = '/api';
+
+  // 배포 환경에 대한 로깅 추가
+  console.log('현재 환경:', isDev ? '개발' : '프로덕션');
+  console.log('API URL 기본 경로:', isDev ? devApiUrl : prodApiUrl);
 
   return isDev ? devApiUrl : prodApiUrl;
 };
@@ -38,6 +41,12 @@ export const submitLetter = async (letterData: {
     console.log('API URL:', apiUrl);
 
     try {
+      console.log('API 요청 보내는 중...', {
+        url: apiUrl,
+        method: 'post',
+        dataSize: JSON.stringify(letterData).length
+      });
+
       // 단일 엔드포인트로 모든 요청 처리
       const response = await axios({
         method: 'post',
@@ -47,21 +56,32 @@ export const submitLetter = async (letterData: {
           'Content-Type': 'application/json'
         },
         timeout: 10000, // 10초 타임아웃
-        withCredentials: true // 크로스 도메인 요청에 쿠키 포함
+        // withCredentials 속성 제거 - 크로스 도메인 이슈 방지
       });
 
-      console.log('API 응답:', response.data);
+      console.log('API 응답 받음:', response.status, typeof response.data);
+      console.log('API 응답 데이터:', response.data);
 
-      // 서버 응답 처리
-      if (response.data && response.data.success) {
-        return {
-          success: true,
-          data: response.data.data || {
-            id: '123456',
-            translatedContent: '번역된 내용: ' + letterData.letterContent.substring(0, 20) + '...',
-            originalContent: letterData.letterContent
-          }
-        };
+      // 서버 응답 처리 로직 개선
+      if (response.data) {
+        // 어떤 형식으로든 응답이 있으면 성공으로 처리
+        const responseData = response.data;
+
+        // success 필드가 있으면 그 값을 사용, 없으면 status/ok 확인
+        const isSuccess =
+          responseData.success !== undefined ? responseData.success :
+          responseData.status === 'ok' || response.status >= 200 && response.status < 300;
+
+        if (isSuccess) {
+          return {
+            success: true,
+            data: responseData.data || {
+              id: '123456',
+              translatedContent: '번역된 내용: ' + letterData.letterContent.substring(0, 20) + '...',
+              originalContent: letterData.letterContent
+            }
+          };
+        }
       }
 
       // 응답이 있지만 성공이 아닌 경우 로컬 데이터로 대체
@@ -108,15 +128,37 @@ export const getLetters = async (countryId?: string) => {
     console.log('편지 목록 가져오기 URL:', url);
 
     try {
-      const response = await axios.get(url, { withCredentials: true });
-      console.log('API 응답:', response.data);
+      console.log('편지 목록 요청 보내는 중...', url);
 
-      // 서버 응답이 있고 성공 상태인 경우 데이터 사용
-      if (response.data && response.data.success && Array.isArray(response.data.data)) {
-        return {
-          success: true,
-          data: response.data.data
-        };
+      const response = await axios.get(url, {
+        // withCredentials 속성 제거 - 크로스 도메인 이슈 방지
+        timeout: 10000 // 10초 타임아웃
+      });
+
+      console.log('API 응답 받음:', response.status, typeof response.data);
+      console.log('API 응답 데이터:', response.data);
+
+      // 응답 처리 로직 개선
+      if (response.data) {
+        // 어떤 형식으로든 응답이 있으면 처리 시도
+        const responseData = response.data;
+
+        // success 필드가 있으면 그 값을 사용, 없으면 status 확인
+        const isSuccess =
+          responseData.success !== undefined ? responseData.success :
+          responseData.status === 'ok' || response.status >= 200 && response.status < 300;
+
+        if (isSuccess && responseData.data) {
+          // 배열 확인 - 아니라면 배열로 변환 처리
+          const dataArray = Array.isArray(responseData.data)
+            ? responseData.data
+            : [responseData.data];
+
+          return {
+            success: true,
+            data: dataArray
+          };
+        }
       }
 
       // 응답이 있지만 형식이 예상과 다른 경우 더미 데이터 사용
