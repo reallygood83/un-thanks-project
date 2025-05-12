@@ -47,6 +47,15 @@
   text-decoration: none;
 }
 
+.nav-item a.unicon-link {
+  color: #ff5722;
+  font-weight: 600;
+}
+
+.nav-item a.unicon-link:hover {
+  color: #e64a19;
+}
+
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;

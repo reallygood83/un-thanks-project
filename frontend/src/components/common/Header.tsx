@@ -10,7 +10,7 @@ const Header: React.FC = () => {
       <div className="container">
         <div className="header-content">
           <div className="logo">
-            <Link to="/">
+            <Link to="/thanks-project">
               <h1>6.25 UN 참전국 감사 프로젝트</h1>
             </Link>
           </div>
@@ -18,10 +18,18 @@ const Header: React.FC = () => {
             <ul className="nav-list">
               <li className="nav-item">
                 <Link 
-                  to="/" 
-                  className={location.pathname === '/' ? 'active' : ''}
+                  to="/thanks-project" 
+                  className={location.pathname === '/thanks-project' ? 'active' : ''}
                 >
                   홈
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link 
+                  to="/" 
+                  className="unicon-link"
+                >
+                  UNICON 메인
                 </Link>
               </li>
               <li className="nav-item">
