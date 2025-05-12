@@ -7,6 +7,17 @@ const UNICONPage: React.FC = () => {
     <div className="unicon-page">
       <div className="container">
         <div className="unicon-header">
+          <div className="unicorn-image-container">
+            <div className="unicorn-image">
+              <div className="korea-map">
+                <div className="heart-symbol"></div>
+              </div>
+              <div className="unicorn-flying">
+                <div className="unicorn">🦄</div>
+                <div className="flying-path"></div>
+              </div>
+            </div>
+          </div>
           <h1 className="unicon-title">UNICON</h1>
           <p className="unicon-subtitle">Unification + Contents</p>
           <p className="unicon-description">통일 교육과 한반도 평화를 위한 컨텐츠 허브</p>
@@ -76,6 +87,7 @@ const UNICONPage: React.FC = () => {
         
         <div className="unicon-footer">
           <p>© 2025 UNICON - 통일 컨텐츠 허브. All rights reserved.</p>
+          <p className="creator-info">2025 안양 박달초 김문정</p>
         </div>
       </div>
     </div>

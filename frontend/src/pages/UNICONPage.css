@@ -9,6 +9,120 @@
   margin-bottom: 4rem;
 }
 
+.unicorn-image-container {
+  position: relative;
+  height: 240px;
+  margin: 0 auto 2rem;
+  max-width: 800px;
+}
+
+.unicorn-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.korea-map {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 150px;
+  background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Map_of_Korea-en.svg/800px-Map_of_Korea-en.svg.png') no-repeat center;
+  background-size: contain;
+  z-index: 1;
+}
+
+.heart-symbol {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  background-color: rgba(255, 0, 0, 0.7);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.heart-symbol:before {
+  content: "❤️";
+  font-size: 20px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.unicorn-flying {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.unicorn {
+  position: absolute;
+  font-size: 40px;
+  animation: fly 12s infinite linear;
+  z-index: 3;
+}
+
+.flying-path {
+  position: absolute;
+  width: 600px;
+  height: 200px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px dashed rgba(173, 216, 230, 0.5);
+  border-radius: 50%;
+}
+
+@keyframes fly {
+  0% {
+    left: 30%;
+    top: 50%;
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    left: 50%;
+    top: 30%;
+    transform: rotate(90deg) scale(1.1);
+  }
+  50% {
+    left: 70%;
+    top: 50%;
+    transform: rotate(180deg) scale(1);
+  }
+  75% {
+    left: 50%;
+    top: 70%;
+    transform: rotate(270deg) scale(1.1);
+  }
+  100% {
+    left: 30%;
+    top: 50%;
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+}
+
 .unicon-title {
   font-size: 3.5rem;
   font-weight: 700;
@@ -161,6 +275,14 @@
   text-align: center;
   color: #aaa;
   font-size: 0.9rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid #eee;
+}
+
+.creator-info {
+  margin-top: 0.5rem;
+  font-weight: 500;
+  color: #8a8a8a;
 }
 
 @media (max-width: 992px) {
@@ -187,6 +309,33 @@
     max-width: 500px;
     margin: 0 auto;
   }
+  
+  .unicorn-image-container {
+    height: 200px;
+  }
+  
+  .flying-path {
+    width: 350px;
+    height: 150px;
+  }
+  
+  .korea-map {
+    width: 70px;
+    height: 105px;
+  }
+  
+  .heart-symbol {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .heart-symbol:before {
+    font-size: 16px;
+  }
+  
+  .unicorn {
+    font-size: 30px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -204,5 +353,23 @@
   
   .card-overlay h3 {
     font-size: 1.5rem;
+  }
+  
+  .unicorn-image-container {
+    height: 160px;
+  }
+  
+  .flying-path {
+    width: 280px;
+    height: 120px;
+  }
+  
+  .korea-map {
+    width: 60px;
+    height: 90px;
+  }
+  
+  .unicorn {
+    font-size: 26px;
   }
 }
