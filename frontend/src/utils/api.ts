@@ -32,9 +32,10 @@ export const submitLetter = async (letterData: {
   originalContent?: boolean;
 }) => {
   try {
-    console.log('API URL:', `${API_BASE_URL}/letters`);
-    const response = await axios.post(`${API_BASE_URL}/letters`, letterData);
-    
+    console.log('API URL:', `${API_BASE_URL}/letters-test`);
+    // 테스트 API 엔드포인트 사용
+    const response = await axios.post(`${API_BASE_URL}/letters-test`, letterData);
+
     return {
       success: true,
       data: response.data.data
@@ -51,14 +52,14 @@ export const submitLetter = async (letterData: {
 // 편지 목록 가져오기
 export const getLetters = async (countryId?: string) => {
   try {
-    // API 엔드포인트 URL 설정
-    let url = `${API_BASE_URL}/letters`;
+    // API 엔드포인트 URL 설정 (테스트 API 사용)
+    let url = `${API_BASE_URL}/letters-test`;
     if (countryId) {
       url += `?countryId=${countryId}`;
     }
-    
+
     const response = await axios.get(url);
-    
+
     return {
       success: true,
       data: response.data.data

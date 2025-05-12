@@ -15,6 +15,14 @@
   ],
   "routes": [
     {
+      "src": "/api/test",
+      "dest": "/api/test.js"
+    },
+    {
+      "src": "/api/letters-test",
+      "dest": "/api/letters-test.js"
+    },
+    {
       "src": "/api",
       "dest": "/api/index.js"
     },
