@@ -1,14 +1,13 @@
 // /api/letters 엔드포인트 - 편지 목록 조회 및 편지 추가
-const { getLetters, addLetter } = require('../_lib/google-sheets');
+const { getLetters, addLetter } = require('../_lib/mongodb');
 
 export default async function handler(req, res) {
   console.log('API 요청 받음:', req.method, req.url);
   
-  // 환경 변수 확인 로그 (보안을 위해 키 자체는 출력하지 않음)
+  // 환경 변수 확인 로그
   console.log('환경 변수 확인:',
-    process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ? 'Service Account Email 있음' : '없음',
-    process.env.GOOGLE_PRIVATE_KEY ? 'Private Key 있음' : '없음',
-    process.env.GOOGLE_SPREADSHEET_ID ? 'Spreadsheet ID 있음' : '없음'
+    process.env.MONGODB_URI ? 'MongoDB URI 있음' : 'MongoDB URI 없음',
+    process.env.MONGODB_DB ? 'MongoDB DB 있음' : 'MongoDB DB 없음'
   );
   
   // CORS 헤더 설정
