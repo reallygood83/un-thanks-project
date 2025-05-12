@@ -19,6 +19,20 @@ export const getCountry = async (id: string) => {
   return response.data;
 };
 
+export const getLetters = async (countryId?: string) => {
+  let url = '/letters';
+  if (countryId) {
+    url += `?countryId=${countryId}`;
+  }
+  const response = await api.get(url);
+  return response.data;
+};
+
+export const getLetter = async (id: string) => {
+  const response = await api.get(`/letters/${id}`);
+  return response.data;
+};
+
 export const submitLetter = async (letterData: {
   name: string;
   email: string;

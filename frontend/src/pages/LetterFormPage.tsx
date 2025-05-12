@@ -93,7 +93,7 @@ const LetterFormPage: React.FC = () => {
           
           {hasSubmitted ? (
             <div className="submission-success">
-              <h2>감사 편지가 성공적으로 전송되었습니다!</h2>
+              <h2>감사 편지가 성공적으로 게시되었습니다!</h2>
               <div className="translation-preview">
                 <div className="translation-box">
                   <h3>원문</h3>
@@ -110,6 +110,12 @@ const LetterFormPage: React.FC = () => {
                   onClick={() => navigate(`/countries/${country.id}`)}
                 >
                   {country.nameKo} 정보로 돌아가기
+                </button>
+                <button 
+                  className="btn"
+                  onClick={() => navigate('/letters')}
+                >
+                  감사 편지 게시판 보기
                 </button>
                 <button 
                   className="btn btn-secondary"
@@ -140,8 +146,8 @@ const LetterFormPage: React.FC = () => {
                   className="country-flag-small"
                 />
                 <div>
-                  <h3>받는 곳: {country.nameKo} 대사관</h3>
-                  <p>작성한 편지는 {country.nameKo}어로 번역되어 전송됩니다.</p>
+                  <h3>받는 곳: {country.nameKo}</h3>
+                  <p>작성한 편지는 감사 편지 게시판에 저장되며, 다른 학생들과 공유됩니다.</p>
                 </div>
               </div>
               
@@ -230,7 +236,7 @@ const LetterFormPage: React.FC = () => {
                     checked={formData.originalContent}
                     onChange={handleCheckboxChange}
                   />
-                  <label htmlFor="originalContent">번역본과 함께 원문도 함께 전송</label>
+                  <label htmlFor="originalContent">번역본과 함께 원문도 함께 게시</label>
                 </div>
               </div>
               
@@ -247,7 +253,7 @@ const LetterFormPage: React.FC = () => {
                   className="btn btn-primary"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? '전송 중...' : '편지 보내기'}
+                  {isSubmitting ? '게시 중...' : '편지 게시하기'}
                 </button>
               </div>
             </form>

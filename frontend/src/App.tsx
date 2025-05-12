@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import CountriesPage from './pages/CountriesPage';
 import CountryDetailPage from './pages/CountryDetailPage';
 import LetterFormPage from './pages/LetterFormPage';
+import LetterBoardPage from './pages/LetterBoardPage';
 import AboutPage from './pages/AboutPage';
 
 const App: React.FC = () => {
@@ -26,6 +27,8 @@ const App: React.FC = () => {
           <Route path="/countries" element={<CountriesPage />} />
           <Route path="/countries/:countryId" element={<CountryDetailPage />} />
           <Route path="/write-letter/:countryId" element={<LetterFormPage />} />
+          <Route path="/write-letter" element={<CountriesPage />} />
+          <Route path="/letters" element={<LetterBoardPage />} />
           <Route path="/about" element={<AboutPage />} />
         </Routes>
       </main>
