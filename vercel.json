@@ -15,14 +15,8 @@
   ],
   "routes": [
     {
-      "src": "/api/direct-test",
-      "methods": ["GET", "POST", "OPTIONS"],
-      "dest": "/api/direct-test.js"
-    },
-    {
-      "src": "/api/submit-test",
-      "methods": ["GET", "POST", "OPTIONS"],
-      "dest": "/api/submit-test.js"
+      "src": "/api/api-test",
+      "dest": "/api/api-test.js"
     },
     {
       "src": "/api/(.*)",
@@ -34,56 +28,10 @@
       "continue": true
     },
     {
-      "src": "/api/(.*)",
-      "methods": ["OPTIONS"],
-      "dest": "/api/200.js"
-    },
-    {
-      "src": "/api/test",
-      "dest": "/api/test.js"
-    },
-    {
-      "src": "/api/letters-test",
-      "dest": "/api/letters-test.js"
-    },
-    {
-      "src": "/api",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/api/health",
-      "dest": "/api/health.js"
-    },
-    {
-      "src": "/api/debug-mongodb",
-      "dest": "/api/debug-mongodb.js"
-    },
-    {
-      "src": "/api/letters",
-      "dest": "/api/letters/index.js"
-    },
-    {
-      "src": "/api/letters/(.*)",
-      "dest": "/api/letters/[id].js?id=$1"
-    },
-    {
-      "src": "/api/countries",
-      "dest": "/api/countries/index.js"
-    },
-    {
-      "src": "/api/countries/(.*)",
-      "dest": "/api/countries/[id].js?id=$1"
-    },
-    {
       "src": "/(.*)",
       "dest": "/frontend/dist/$1"
     }
   ],
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    }
-  },
   "functions": {
     "api/**/*.js": {
       "memory": 1024,
