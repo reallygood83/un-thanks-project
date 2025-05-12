@@ -4,57 +4,166 @@
 function handler(req, res) {
   // CORS 헤더 설정
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+
   // OPTIONS 요청 즉시 처리
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-  
-  // 요청 로깅
-  console.log('API 요청:', {
+
+  // 모든 요청 정보 로깅
+  console.log('API 요청 받음:', {
     method: req.method,
     url: req.url,
-    query: req.query,
-    path: req.path,
+    query: req.query || {},
     headers: {
-      'content-type': req.headers['content-type']
+      'content-type': req.headers['content-type'],
+      'origin': req.headers['origin']
     }
   });
-  
-  // URL 경로에 따라 다른 핸들러 호출
+
+  // 액션 기반 라우팅
+  const action = req.query?.action;
+
+  // 액션 기반 처리
+  if (action === 'submitLetter' || action === 'createLetter') {
+    return handleLetterSubmit(req, res);
+  }
+
+  if (action === 'getLetters' || action === 'listLetters') {
+    return handleLettersList(req, res);
+  }
+
+  if (action === 'getLetter' && req.query.id) {
+    return handleLetterDetail(req, res, req.query.id);
+  }
+
+  if (action === 'getCountries' || action === 'listCountries') {
+    return handleCountriesList(req, res);
+  }
+
+  if (action === 'getCountry' && req.query.id) {
+    return handleCountryDetail(req, res, req.query.id);
+  }
+
+  // 기존 경로 기반 라우팅 유지
   const path = req.url.split('?')[0]; // 쿼리 매개변수 제거
-  
+
   if (path === '/api/letters' || path === '/api/letters-test') {
     return handleLetters(req, res);
   }
-  
+
   if (path.startsWith('/api/letters/')) {
     const id = path.replace('/api/letters/', '');
     return handleLetterDetail(req, res, id);
   }
-  
+
   if (path === '/api/countries') {
     return handleCountries(req, res);
   }
-  
+
   if (path.startsWith('/api/countries/')) {
     const id = path.replace('/api/countries/', '');
     return handleCountryDetail(req, res, id);
   }
-  
+
   // 기본 응답: API 정보 반환
   return res.status(200).json({
     success: true,
     message: '통합 API가 정상 작동 중입니다',
     method: req.method,
     path: req.url || '/',
+    query: req.query || {},
     timestamp: new Date().toISOString()
   });
 }
 
-// 편지 목록 또는 제출 처리
+// 편지 목록 조회 - 액션 기반
+function handleLettersList(req, res) {
+  const countryId = req.query?.countryId;
+  console.log('편지 목록 요청:', { countryId });
+
+  // 더미 편지 데이터
+  let letters = [
+    {
+      id: '1',
+      name: '홍길동',
+      school: '서울초등학교',
+      grade: '5학년',
+      letterContent: '감사합니다',
+      translatedContent: 'Thank you',
+      countryId: 'usa',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: '2',
+      name: '김철수',
+      school: '부산중학교',
+      grade: '2학년',
+      letterContent: '참전해주셔서 감사합니다',
+      translatedContent: 'Thank you for your participation',
+      countryId: 'uk',
+      createdAt: new Date(Date.now() - 86400000).toISOString()
+    }
+  ];
+
+  // 국가 필터링 적용
+  if (countryId) {
+    letters = letters.filter(letter => letter.countryId === countryId);
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: letters
+  });
+}
+
+// 편지 제출 - 액션 기반
+function handleLetterSubmit(req, res) {
+  // 요청 본문 로깅
+  console.log('편지 제출 요청');
+
+  // 요청 본문 읽기
+  let body = '';
+
+  req.on('data', chunk => {
+    body += chunk.toString();
+  });
+
+  req.on('end', () => {
+    try {
+      // JSON 파싱
+      const data = body ? JSON.parse(body) : {};
+      console.log('편지 데이터:', {
+        hasName: !!data.name,
+        hasEmail: !!data.email,
+        hasContent: !!data.letterContent,
+        countryId: data.countryId
+      });
+
+      // 성공 응답
+      return res.status(200).json({
+        success: true,
+        message: '편지가 성공적으로 제출되었습니다',
+        data: {
+          id: 'test-' + Date.now(),
+          translatedContent: '번역된 내용 (테스트 모드)',
+          originalContent: data.letterContent || '원본 내용 (테스트 모드)'
+        }
+      });
+    } catch (error) {
+      console.error('요청 본문 파싱 오류:', error);
+      return res.status(400).json({
+        success: false,
+        message: '유효하지 않은 요청 형식',
+        error: error.message
+      });
+    }
+  });
+}
+
+// 기존 편지 핸들러 (경로 기반)
 function handleLetters(req, res) {
   if (req.method === 'GET') {
     // 더미 편지 목록 반환
@@ -84,7 +193,7 @@ function handleLetters(req, res) {
       ]
     });
   }
-  
+
   if (req.method === 'POST') {
     // 편지 제출 성공 응답
     return res.status(200).json({
@@ -97,7 +206,7 @@ function handleLetters(req, res) {
       }
     });
   }
-  
+
   // 지원하지 않는 메서드
   return res.status(405).json({
     success: false,
@@ -130,7 +239,47 @@ function handleLetterDetail(req, res, id) {
   });
 }
 
-// 국가 목록
+// 국가 목록 - 액션 기반
+function handleCountriesList(req, res) {
+  // 더미 국가 데이터
+  const countries = [
+    {
+      id: 'usa',
+      nameKo: '미국',
+      nameEn: 'United States',
+      supportType: 'combat',
+      flagCode: 'us'
+    },
+    {
+      id: 'uk',
+      nameKo: '영국',
+      nameEn: 'United Kingdom',
+      supportType: 'combat',
+      flagCode: 'gb'
+    },
+    {
+      id: 'france',
+      nameKo: '프랑스',
+      nameEn: 'France',
+      supportType: 'combat',
+      flagCode: 'fr'
+    },
+    {
+      id: 'turkey',
+      nameKo: '터키',
+      nameEn: 'Turkey',
+      supportType: 'combat',
+      flagCode: 'tr'
+    }
+  ];
+
+  return res.status(200).json({
+    success: true,
+    data: countries
+  });
+}
+
+// 국가 목록 - 경로 기반
 function handleCountries(req, res) {
   if (req.method === 'GET') {
     return res.status(200).json({
@@ -153,7 +302,7 @@ function handleCountries(req, res) {
       ]
     });
   }
-  
+
   // 지원하지 않는 메서드
   return res.status(405).json({
     success: false,

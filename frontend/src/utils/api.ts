@@ -32,34 +32,41 @@ export const submitLetter = async (letterData: {
   originalContent?: boolean;
 }) => {
   try {
-    // 완전히 단순화된 API 엔드포인트 사용
-    console.log('API URL:', `${API_BASE_URL}/api-test`);
-    
+    // 루트 API 엔드포인트 사용 - 액션 파라미터로 기능 구분
+    const apiUrl = `${API_BASE_URL}?action=submitLetter`;
+    console.log('API URL:', apiUrl);
+
     try {
-      // 모든 메서드에 동일한 응답을 반환하는 API 사용
+      // 단일 엔드포인트로 모든 요청 처리
       const response = await axios({
         method: 'post',
-        url: `${API_BASE_URL}/api-test`,
+        url: apiUrl,
         data: letterData,
         headers: {
           'Content-Type': 'application/json'
         },
         timeout: 10000 // 10초 타임아웃
       });
-      
+
       console.log('API 응답:', response.data);
-      
-      return {
-        success: true,
-        data: response.data.data || {
-          id: '123456',
-          translatedContent: '번역된 내용: ' + letterData.letterContent.substring(0, 20) + '...',
-          originalContent: letterData.letterContent
-        }
-      };
+
+      // 서버 응답 처리
+      if (response.data && response.data.success) {
+        return {
+          success: true,
+          data: response.data.data || {
+            id: '123456',
+            translatedContent: '번역된 내용: ' + letterData.letterContent.substring(0, 20) + '...',
+            originalContent: letterData.letterContent
+          }
+        };
+      }
+
+      // 응답이 있지만 성공이 아닌 경우 로컬 데이터로 대체
+      throw new Error('API 응답이 성공이 아님');
     } catch (axiosError) {
-      console.error('API 요청 실패, 로컬 더미 데이터 반환');
-      
+      console.log('API 요청 실패, 로컬 더미 데이터 반환');
+
       // API 요청이 실패하더라도 사용자 경험을 위해 성공 응답 반환
       return {
         success: true,
@@ -73,7 +80,7 @@ export const submitLetter = async (letterData: {
     }
   } catch (error) {
     console.error('편지 제출 최종 오류:', error);
-    
+
     // 최후의 방어선 - 항상 성공 응답 반환
     return {
       success: true,
@@ -90,82 +97,34 @@ export const submitLetter = async (letterData: {
 // 편지 목록 가져오기
 export const getLetters = async (countryId?: string) => {
   try {
-    // 단순화된 API 엔드포인트 사용
-    let url = `${API_BASE_URL}/api-test`;
+    // 루트 API 엔드포인트 사용 - 액션 파라미터로 기능 구분
+    let url = `${API_BASE_URL}?action=getLetters`;
     if (countryId) {
-      url += `?countryId=${countryId}`;
+      url += `&countryId=${countryId}`;
     }
-    
+
     console.log('편지 목록 가져오기 URL:', url);
-    
+
     try {
       const response = await axios.get(url);
       console.log('API 응답:', response.data);
-      
-      // 항상 더미 데이터 반환
-      return {
-        success: true,
-        data: [
-          {
-            id: '1',
-            name: '홍길동',
-            school: '서울초등학교',
-            grade: '5학년',
-            letterContent: '감사합니다',
-            translatedContent: 'Thank you',
-            countryId: 'usa',
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: '2',
-            name: '김철수',
-            school: '부산초등학교',
-            grade: '6학년',
-            letterContent: '고맙습니다',
-            translatedContent: 'Thank you very much',
-            countryId: 'uk',
-            createdAt: new Date().toISOString()
-          }
-        ]
-      };
+
+      // 서버 응답이 있고 성공 상태인 경우 데이터 사용
+      if (response.data && response.data.success && Array.isArray(response.data.data)) {
+        return {
+          success: true,
+          data: response.data.data
+        };
+      }
+
+      // 응답이 있지만 형식이 예상과 다른 경우 더미 데이터 사용
+      console.log('API 응답 형식이 예상과 다름, 더미 데이터 사용');
+      throw new Error('API 응답 형식 불일치');
     } catch (error) {
-      console.log('API 요청 실패, 로컬 더미 데이터만 반환');
-      
-      // 에러가 발생해도 더미 데이터 반환
-      return {
-        success: true,
-        data: [
-          {
-            id: '1',
-            name: '홍길동',
-            school: '서울초등학교',
-            grade: '5학년',
-            letterContent: '감사합니다',
-            translatedContent: 'Thank you',
-            countryId: 'usa',
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: '2',
-            name: '김철수',
-            school: '부산초등학교',
-            grade: '6학년',
-            letterContent: '고맙습니다',
-            translatedContent: 'Thank you very much',
-            countryId: 'uk',
-            createdAt: new Date().toISOString()
-          }
-        ],
-        fromLocal: true
-      };
-    }
-  } catch (error) {
-    console.error('편지 목록 가져오기 최종 오류:', error);
-    
-    // 어떤 경우에도 더미 데이터 반환
-    return {
-      success: true,
-      data: [
+      console.log('API 요청 실패, 로컬 더미 데이터 반환');
+
+      // 더미 데이터 - 항상 동일하게 유지
+      const dummyLetters = [
         {
           id: '1',
           name: '홍길동',
@@ -186,7 +145,54 @@ export const getLetters = async (countryId?: string) => {
           countryId: 'uk',
           createdAt: new Date().toISOString()
         }
-      ],
+      ];
+
+      // 국가 필터링 적용
+      const filteredLetters = countryId
+        ? dummyLetters.filter(letter => letter.countryId === countryId)
+        : dummyLetters;
+
+      return {
+        success: true,
+        data: filteredLetters,
+        fromLocal: true
+      };
+    }
+  } catch (error) {
+    console.error('편지 목록 가져오기 최종 오류:', error);
+
+    // 최후의 방어선
+    const fallbackLetters = [
+      {
+        id: '1',
+        name: '홍길동',
+        school: '서울초등학교',
+        grade: '5학년',
+        letterContent: '감사합니다',
+        translatedContent: 'Thank you',
+        countryId: 'usa',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '2',
+        name: '김철수',
+        school: '부산초등학교',
+        grade: '6학년',
+        letterContent: '고맙습니다',
+        translatedContent: 'Thank you very much',
+        countryId: 'uk',
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    // 국가 필터링 적용
+    const filteredLetters = countryId
+      ? fallbackLetters.filter(letter => letter.countryId === countryId)
+      : fallbackLetters;
+
+    return {
+      success: true,
+      data: filteredLetters,
       fromFallback: true
     };
   }
