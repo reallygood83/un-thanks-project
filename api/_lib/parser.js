@@ -1,7 +1,7 @@
 // 요청 본문 파서 - 서버리스 함수에서 요청 본문을 올바르게 파싱하기 위한 유틸리티
 
 // 요청 본문 파싱 함수
-export async function parseBody(req) {
+async function parseBody(req) {
   if (req.body) {
     // 이미 파싱된 경우 (일반적으로 Vercel 환경에서 자동 파싱)
     if (typeof req.body === 'object' && !Buffer.isBuffer(req.body)) {
@@ -60,3 +60,8 @@ export async function parseBody(req) {
     });
   });
 }
+
+// CommonJS 모듈 내보내기
+module.exports = {
+  parseBody
+};

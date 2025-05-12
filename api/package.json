@@ -1,0 +1,12 @@
+{
+  "name": "un-thanks-project-api",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "mongodb": "^6.5.0",
+    "uuid": "^11.1.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

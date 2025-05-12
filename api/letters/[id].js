@@ -1,5 +1,5 @@
 // 특정 ID의 편지 조회 API
-import { connectToDatabase } from '../_lib/mongodb';
+const { connectToDatabase } = require('../_lib/mongodb');
 
 // CORS 헤더 설정 헬퍼 함수
 function setCorsHeaders(res) {
@@ -13,7 +13,7 @@ function setCorsHeaders(res) {
 }
 
 // 특정 ID의 편지 조회 API 핸들러
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS 사전 요청 처리
   if (req.method === 'OPTIONS') {
     setCorsHeaders(res);
@@ -35,10 +35,11 @@ export default async function handler(req, res) {
   }
 
   try {
+    // MongoDB 연결
     const { db } = await connectToDatabase();
     const collection = db.collection('letters');
     
-    // ID로 편지 조회
+    // ID로 편지 찾기
     const letter = await collection.findOne({ _id: id });
     
     // 편지가 없는 경우
@@ -53,8 +54,8 @@ export default async function handler(req, res) {
     const sanitizedLetter = {
       id: letter._id,
       name: letter.name,
-      school: letter.school,
-      grade: letter.grade,
+      school: letter.school || '',
+      grade: letter.grade || '',
       letterContent: letter.letterContent,
       translatedContent: letter.translatedContent,
       countryId: letter.countryId,
@@ -69,8 +70,8 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error(`ID ${id}의 편지 조회 오류:`, error);
     return res.status(500).json({
-      message: '서버 오류가 발생했습니다',
+      message: '서버 오류가 발생했습니다: ' + error.message,
       success: false
     });
   }
-}
+};

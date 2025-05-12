@@ -35,7 +35,7 @@ function checkRateLimit(ip) {
 /**
  * 서버리스 API 핸들러
  */
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // 요청 로깅 (IP 익명화)
   const clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
   const anonymizedIP = clientIP.replace(/\d+\.\d+$/, 'x.x'); // 마지막 두 옥텟을 x.x로 교체

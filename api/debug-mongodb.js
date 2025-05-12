@@ -1,5 +1,5 @@
 // MongoDB 연결 디버깅용 API
-import { connectToDatabase } from './_lib/mongodb';
+const { connectToDatabase } = require('./_lib/mongodb');
 
 // CORS 헤더 설정 헬퍼 함수
 function setCorsHeaders(res) {
@@ -13,7 +13,7 @@ function setCorsHeaders(res) {
 }
 
 // 디버깅 API 핸들러
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS 헤더 설정
   setCorsHeaders(res);
   

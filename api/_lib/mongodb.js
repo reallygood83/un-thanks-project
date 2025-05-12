@@ -1,5 +1,5 @@
 // MongoDB 연결 모듈 - 서버리스 환경에 최적화
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 
 // 환경 변수에서 MongoDB URI 가져오기
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/un-thanks-project';
@@ -14,7 +14,7 @@ if (!MONGODB_URI) {
 let cachedClient = null;
 let cachedDb = null;
 
-export async function connectToDatabase() {
+async function connectToDatabase() {
   // 이미 연결이 있으면 재사용
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb };
@@ -61,3 +61,8 @@ export async function connectToDatabase() {
     throw error;
   }
 }
+
+// 모듈 내보내기
+module.exports = {
+  connectToDatabase
+};

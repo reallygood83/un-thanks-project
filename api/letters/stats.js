@@ -1,5 +1,5 @@
 // 편지 통계 API
-import { connectToDatabase } from '../_lib/mongodb';
+const { connectToDatabase } = require('../_lib/mongodb');
 
 // CORS 헤더 설정 헬퍼 함수
 function setCorsHeaders(res) {
@@ -13,7 +13,7 @@ function setCorsHeaders(res) {
 }
 
 // 편지 통계 API 핸들러
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS 사전 요청 처리
   if (req.method === 'OPTIONS') {
     setCorsHeaders(res);
@@ -49,8 +49,8 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('편지 통계 조회 오류:', error);
     return res.status(500).json({
-      message: '서버 오류가 발생했습니다',
+      message: '서버 오류가 발생했습니다: ' + error.message,
       success: false
     });
   }
-}
+};

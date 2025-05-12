@@ -1,5 +1,5 @@
 // 특정 ID의 참전국 정보 조회 API
-import { PARTICIPATING_COUNTRIES } from '../../frontend/src/data/participatingCountries';
+const { PARTICIPATING_COUNTRIES } = require('../data/participatingCountries');
 
 // CORS 헤더 설정 헬퍼 함수
 function setCorsHeaders(res) {
@@ -13,7 +13,7 @@ function setCorsHeaders(res) {
 }
 
 // 특정 ID의 참전국 정보 조회 API 핸들러
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS 사전 요청 처리
   if (req.method === 'OPTIONS') {
     setCorsHeaders(res);
@@ -59,4 +59,4 @@ export default async function handler(req, res) {
       success: false
     });
   }
-}
+};

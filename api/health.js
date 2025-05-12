@@ -1,5 +1,5 @@
 // 헬스 체크 API
-import { connectToDatabase } from './_lib/mongodb';
+const { connectToDatabase } = require('./_lib/mongodb');
 
 // CORS 헤더 설정 헬퍼 함수
 function setCorsHeaders(res) {
@@ -13,7 +13,7 @@ function setCorsHeaders(res) {
 }
 
 // 헬스 체크 API 핸들러
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS 사전 요청 처리
   if (req.method === 'OPTIONS') {
     setCorsHeaders(res);
@@ -28,7 +28,6 @@ export default async function handler(req, res) {
     const { db } = await connectToDatabase();
     
     // 몽고DB 정보 가져오기
-    const adminDB = db.admin();
     const serverStatus = await db.command({ serverStatus: 1 });
     
     return res.status(200).json({
@@ -56,4 +55,4 @@ export default async function handler(req, res) {
       }
     });
   }
-}
+};

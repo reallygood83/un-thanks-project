@@ -1,7 +1,7 @@
 // 편지 API 엔드포인트 (GET, POST)
-import { connectToDatabase } from '../_lib/mongodb';
-import { parseBody } from '../_lib/parser';
-import { v4 as uuidv4 } from 'uuid';
+const { connectToDatabase } = require('../_lib/mongodb');
+const { parseBody } = require('../_lib/parser');
+const { v4: uuidv4 } = require('uuid');
 
 // CORS 헤더 설정 헬퍼 함수
 function setCorsHeaders(res) {
@@ -15,7 +15,7 @@ function setCorsHeaders(res) {
 }
 
 // 편지 목록 조회 또는 생성 API 핸들러
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS 사전 요청 처리
   if (req.method === 'OPTIONS') {
     setCorsHeaders(res);
@@ -141,4 +141,4 @@ export default async function handler(req, res) {
       success: false
     });
   }
-}
+};
