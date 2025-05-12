@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { PARTICIPATING_COUNTRIES } from '../data/participatingCountries';
-import { submitLetterToSheets } from '../utils/sheetsApi';
+import { submitLetter } from '../utils/api';
 import './LetterFormPage.css';
 
 const LetterFormPage: React.FC = () => {
@@ -44,14 +44,6 @@ const LetterFormPage: React.FC = () => {
     }));
   };
   
-  // Mock translation function (in a real app, this would call an API)
-  const translateLetter = async (content: string, targetLanguage: string) => {
-    // Simulating API call
-    console.log(`Translating to ${targetLanguage}...`);
-    return `[Translated content would appear here - in a real application, this would be the actual translation of "${content}" to ${targetLanguage}]`;
-  };
-  
-
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,8 +53,8 @@ const LetterFormPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Call the Google Sheets API to submit the letter
-      const response = await submitLetterToSheets({
+      // 데이터베이스에 편지 제출
+      const response = await submitLetter({
         ...formData,
         countryId: country.id
       });
@@ -71,13 +63,13 @@ const LetterFormPage: React.FC = () => {
         throw new Error(response.error);
       }
 
-      // Set the translated content from the response
+      // 응답에서 번역된 내용 가져오기
       setTranslatedContent(response.data.translatedContent);
 
-      // Show success state
+      // 성공 상태 표시
       setHasSubmitted(true);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('편지 제출 오류:', error);
       alert('편지 게시 중 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setIsSubmitting(false);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PARTICIPATING_COUNTRIES } from '../data/participatingCountries';
-import { getLettersFromSheets } from '../utils/sheetsApi';
+import { getLetters } from '../utils/api';
 import './LetterBoardPage.css';
 
 interface Letter {
@@ -24,13 +24,13 @@ const LetterBoardPage: React.FC = () => {
   const [error, setError] = useState('');
   const [selectedCountryId, setSelectedCountryId] = useState(countryIdParam || 'all');
   
-  // Fetch letters when component mounts or when countryId changes
+  // 컴포넌트 마운트 시 또는 국가 ID 변경 시 편지 목록 가져오기
   useEffect(() => {
     const fetchLetters = async () => {
       try {
         setLoading(true);
         const countryFilter = selectedCountryId === 'all' ? undefined : selectedCountryId;
-        const response = await getLettersFromSheets(countryFilter);
+        const response = await getLetters(countryFilter);
         
         if (response.success) {
           setLetters(response.data);
@@ -40,7 +40,7 @@ const LetterBoardPage: React.FC = () => {
         
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching letters:', err);
+        console.error('편지 목록 조회 오류:', err);
         setError('편지 목록을 불러오는데 실패했습니다.');
         setLoading(false);
       }
@@ -49,12 +49,12 @@ const LetterBoardPage: React.FC = () => {
     fetchLetters();
   }, [selectedCountryId]);
   
-  // Handle country filter change
+  // 국가 필터 변경 처리
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newCountryId = e.target.value;
     setSelectedCountryId(newCountryId);
     
-    // Update URL query parameter
+    // URL 쿼리 파라미터 업데이트
     if (newCountryId === 'all') {
       searchParams.delete('country');
     } else {
@@ -63,7 +63,7 @@ const LetterBoardPage: React.FC = () => {
     setSearchParams(searchParams);
   };
   
-  // Format date
+  // 날짜 포맷팅
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('ko-KR', {
@@ -73,7 +73,7 @@ const LetterBoardPage: React.FC = () => {
     });
   };
   
-  // Get country name by ID
+  // 국가 ID로 국가 이름 가져오기
   const getCountryName = (countryId: string) => {
     const country = PARTICIPATING_COUNTRIES.find(c => c.id === countryId);
     return country ? country.nameKo : '알 수 없는 국가';
