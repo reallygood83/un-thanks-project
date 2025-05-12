@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^1.9.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -11,6 +12,7 @@
     "googleapis": "^148.0.0",
     "helmet": "^7.0.0",
     "joi": "^17.9.2",
+    "mongodb": "^6.16.0",
     "mongoose": "^7.3.3",
     "morgan": "^1.10.0",
     "nodemailer": "^6.9.4",
@@ -30,6 +32,9 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "seed": "ts-node src/scripts/seed.ts",
+    "test:mongo": "node test/mongo-test.cjs",
+    "test:seed": "node test/seed-test.cjs"
   }
 }

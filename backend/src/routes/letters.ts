@@ -116,9 +116,8 @@ router.post('/', async (req, res) => {
       });
     }
     
-    // TODO: 실제 번역 API 연동 (현재는 목업)
-    // const translatedContent = await translateText(letterContent, countryId);
-    const translatedContent = `[Translated version of: ${letterContent}]`;
+    // Google Translation API를 통한 번역 실행
+    const translatedContent = await translateText(letterContent, countryId);
     
     // Create the new letter
     const newLetter = await letterService.createLetter({

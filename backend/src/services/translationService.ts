@@ -1,32 +1,39 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import Country from '../models/country';
 
 dotenv.config();
 
-// 국가별 언어 코드 매핑
-const COUNTRY_LANGUAGE_MAP: Record<string, string> = {
-  'usa': 'en', // 영어
-  'uk': 'en', // 영어
-  'turkey': 'tr', // 터키어
-  'canada': 'en', // 영어 (프랑스어도 가능하지만 영어 기본)
-  'australia': 'en', // 영어
-  'philippines': 'fil', // 필리핀어 (타갈로그어)
-  'thailand': 'th', // 태국어
-  'netherlands': 'nl', // 네덜란드어
-  'colombia': 'es', // 스페인어
-  'greece': 'el', // 그리스어
-  'new-zealand': 'en', // 영어
-  'france': 'fr', // 프랑스어
-  'belgium': 'nl', // 네덜란드어 (프랑스어, 독일어도 가능)
-  'south-africa': 'en', // 영어
-  'luxembourg': 'fr', // 프랑스어 (독일어, 룩셈부르크어도 가능)
-  'ethiopia': 'am', // 암하라어
-  'india': 'hi', // 힌디어
-  'sweden': 'sv', // 스웨덴어
-  'denmark': 'da', // 덴마크어
-  'norway': 'no', // 노르웨이어
-  'italy': 'it', // 이탈리아어
-  'germany': 'de', // 독일어
+/**
+ * 국가 ID로 언어 코드 조회
+ */
+export const getLanguageByCountryId = async (countryId: string): Promise<string> => {
+  try {
+    // MongoDB에서 국가 조회
+    const country = await Country.findById(countryId);
+
+    // 국가 데이터가 있으면 언어 코드 반환, 없으면 기본값 'en' 반환
+    return country?.language || 'en';
+  } catch (error) {
+    console.error(`Error getting language for country ID ${countryId}:`, error);
+    return 'en'; // 오류 발생 시 기본값 영어 반환
+  }
+};
+
+/**
+ * 국가 코드로 언어 코드 조회
+ */
+export const getLanguageByCountryCode = async (countryCode: string): Promise<string> => {
+  try {
+    // MongoDB에서 국가 조회
+    const country = await Country.findOne({ code: countryCode });
+
+    // 국가 데이터가 있으면 언어 코드 반환, 없으면 기본값 'en' 반환
+    return country?.language || 'en';
+  } catch (error) {
+    console.error(`Error getting language for country code ${countryCode}:`, error);
+    return 'en'; // 오류 발생 시 기본값 영어 반환
+  }
 };
 
 /**
@@ -36,28 +43,37 @@ const COUNTRY_LANGUAGE_MAP: Record<string, string> = {
 export const translateText = async (text: string, countryId: string): Promise<string> => {
   try {
     // 국가 ID로 언어 코드 찾기
-    const targetLanguage = COUNTRY_LANGUAGE_MAP[countryId] || 'en';
-    
-    // TODO: 실제 번역 API 연동
-    // 현재는 개발용 목업 응답
-    // Google Cloud Translation API 예시:
-    /*
-    const response = await axios.post(
-      `https://translation.googleapis.com/v2/translate`,
-      {
-        q: text,
-        target: targetLanguage,
-        format: 'text',
-      },
-      {
-        headers: { Authorization: `Bearer ${process.env.GOOGLE_API_KEY}` },
-      }
-    );
-    return response.data.translations[0].translatedText;
-    */
-    
-    // 개발용 목업 응답
-    return `[번역된 내용 (${targetLanguage}): ${text.substring(0, 30)}...]`;
+    const targetLanguage = await getLanguageByCountryId(countryId);
+
+    // Google API 키 확인
+    const apiKey = process.env.GOOGLE_API_KEY;
+    if (!apiKey || apiKey === 'your_google_api_key') {
+      // API 키가 설정되지 않은 경우 개발용 목업 응답 반환
+      return `[번역된 내용 (${targetLanguage}): ${text.substring(0, 30)}...]`;
+    }
+
+    // Google Cloud Translation API 호출
+    try {
+      const response = await axios.post(
+        `https://translation.googleapis.com/language/translate/v2`,
+        {},
+        {
+          params: {
+            q: text,
+            target: targetLanguage,
+            format: 'text',
+            key: apiKey
+          }
+        }
+      );
+
+      // 번역 결과 반환
+      return response.data.data.translations[0].translatedText;
+    } catch (apiError) {
+      console.error('Google Translate API error:', apiError);
+      // API 호출 오류 시 개발용 목업 응답 반환
+      return `[번역된 내용 (${targetLanguage}): ${text.substring(0, 30)}...]`;
+    }
   } catch (error) {
     console.error('Translation error:', error);
     // 오류 발생 시 원본 텍스트 반환
@@ -67,4 +83,6 @@ export const translateText = async (text: string, countryId: string): Promise<st
 
 export default {
   translateText,
+  getLanguageByCountryId,
+  getLanguageByCountryCode
 };
