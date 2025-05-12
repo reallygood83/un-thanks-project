@@ -21,18 +21,19 @@
   border: 1px solid #e0d3c0;
 }
 
+/* 종이 클립 이미지 대체 (CSS로 구현) */
 .letter-template::before {
   content: '';
   position: absolute;
   top: -10px;
   left: 15px;
-  width: 50px;
-  height: 80px;
-  background-image: url('/images/paper-clip.png');
-  background-size: contain;
-  background-repeat: no-repeat;
+  width: 16px;
+  height: 60px;
+  background-color: #a2a2a2;
+  border-radius: 8px;
   z-index: 2;
   transform: rotate(-5deg);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .letter-template-content {
@@ -96,17 +97,28 @@
   margin-top: 5px;
 }
 
+/* 감사 스탬프 CSS로 구현 */
 .letter-stamp {
   position: absolute;
   bottom: 40px;
   right: 60px;
   width: 80px;
   height: 80px;
-  background-image: url('/images/thank-you-stamp.png');
-  background-size: contain;
-  background-repeat: no-repeat;
+  border: 2px solid #cb5a5e;
+  border-radius: 50%;
   transform: rotate(15deg);
   opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #cb5a5e;
+  font-weight: bold;
+}
+
+.letter-stamp::before {
+  content: 'THANK YOU';
+  transform: rotate(-15deg);
 }
 
 .letter-footer {
@@ -126,6 +138,9 @@
   display: flex;
   align-items: center;
   font-size: 0.9rem;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 .letter-translation-toggle svg {
@@ -150,6 +165,7 @@
     height: 60px;
     bottom: 30px;
     right: 40px;
+    font-size: 10px;
   }
 }
 
