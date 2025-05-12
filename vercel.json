@@ -24,11 +24,18 @@
   "routes": [
     {
       "src": "/api/getLetters",
-      "dest": "/api/getLetters.js"
+      "dest": "/api/getLetters.js",
+      "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/submitLetter",
-      "dest": "/api/submitLetter.js"
+      "dest": "/api/submitLetter.js",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/translatePreview",
+      "dest": "/api/index.js?action=translatePreview",
+      "methods": ["POST", "OPTIONS"]
     },
     {
       "src": "/api/health",
@@ -36,7 +43,8 @@
     },
     {
       "src": "/api",
-      "dest": "/api/index.js"
+      "dest": "/api/index.js",
+      "methods": ["GET", "POST", "OPTIONS"]
     },
     {
       "src": "/(.*)",

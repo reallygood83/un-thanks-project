@@ -36,16 +36,14 @@ export const submitLetter = async (letterData: {
   originalContent?: boolean;
 }) => {
   try {
-    // 원래 방식으로 돌아가기: 액션 파라미터를 사용한 단일 API 엔드포인트
-    const apiUrl = `${API_BASE_URL}?action=submitLetter`;
+    // 쿼리 파라미터 대신 직접 경로 사용
+    const apiUrl = `${API_BASE_URL}/submitLetter`;
     console.log('API URL:', apiUrl);
 
-    // 데이터 전처리 - boolean 값을 문자열로 변환하여 API 호환성 개선
+    // 데이터 전처리 - originalContent를 불리언으로 명시적 변환
     const processedData = {
       ...letterData,
-      // originalContent를 명시적으로 문자열로 변환 ('true' 또는 'false')
-      originalContent: letterData.originalContent !== undefined ?
-                        String(letterData.originalContent) : 'true'
+      originalContent: Boolean(letterData.originalContent)
     };
 
     try {
@@ -65,8 +63,7 @@ export const submitLetter = async (letterData: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        timeout: 10000, // 10초 타임아웃
-        // withCredentials 속성 제거 - 크로스 도메인 이슈 방지
+        timeout: 10000 // 10초 타임아웃
       });
 
       console.log('API 응답 받음:', response.status, typeof response.data);
@@ -129,10 +126,10 @@ export const submitLetter = async (letterData: {
 // 편지 목록 가져오기
 export const getLetters = async (countryId?: string) => {
   try {
-    // 원래 방식으로 돌아가기: 액션 파라미터를 사용한 단일 API 엔드포인트
-    let url = `${API_BASE_URL}?action=getLetters`;
+    // 쿼리 파라미터 대신 직접 경로 사용
+    let url = `${API_BASE_URL}/getLetters`;
     if (countryId) {
-      url += `&countryId=${countryId}`;
+      url += `?countryId=${countryId}`;
     }
 
     console.log('편지 목록 가져오기 URL:', url);
@@ -316,7 +313,7 @@ export const getCountry = async (id: string) => {
 // 편지 미리 번역하기 함수
 export const translateLetter = async (letterContent: string, countryId: string) => {
   try {
-    const apiUrl = `${API_BASE_URL}?action=translatePreview`;
+    const apiUrl = `${API_BASE_URL}/translatePreview`;
     console.log('번역 미리보기 API URL:', apiUrl);
 
     try {
