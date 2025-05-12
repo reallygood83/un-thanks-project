@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { PARTICIPATING_COUNTRIES } from '../data/participatingCountries';
-import { submitLetter } from '../utils/api';
+import { submitLetterToSheets } from '../utils/sheetsApi';
 import './LetterFormPage.css';
 
 const LetterFormPage: React.FC = () => {
@@ -61,11 +61,15 @@ const LetterFormPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Call the API to submit the letter
-      const response = await submitLetter({
+      // Call the Google Sheets API to submit the letter
+      const response = await submitLetterToSheets({
         ...formData,
         countryId: country.id
       });
+
+      if (!response.success) {
+        throw new Error(response.error);
+      }
 
       // Set the translated content from the response
       setTranslatedContent(response.data.translatedContent);
@@ -74,7 +78,7 @@ const LetterFormPage: React.FC = () => {
       setHasSubmitted(true);
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('편지 전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+      alert('편지 게시 중 오류가 발생했습니다. 다시 시도해주세요.');
     } finally {
       setIsSubmitting(false);
     }

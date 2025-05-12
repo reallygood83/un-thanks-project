@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { PARTICIPATING_COUNTRIES } from '../data/participatingCountries';
-import { getLetters } from '../utils/api';
+import { getLettersFromSheets } from '../utils/sheetsApi';
 import './LetterBoardPage.css';
 
 interface Letter {
@@ -30,8 +30,14 @@ const LetterBoardPage: React.FC = () => {
       try {
         setLoading(true);
         const countryFilter = selectedCountryId === 'all' ? undefined : selectedCountryId;
-        const response = await getLetters(countryFilter);
-        setLetters(response.data);
+        const response = await getLettersFromSheets(countryFilter);
+        
+        if (response.success) {
+          setLetters(response.data);
+        } else {
+          throw new Error(response.error);
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error('Error fetching letters:', err);
