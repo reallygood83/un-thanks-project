@@ -40,20 +40,30 @@ export const submitLetter = async (letterData: {
     const apiUrl = `${API_BASE_URL}?action=submitLetter`;
     console.log('API URL:', apiUrl);
 
+    // 데이터 전처리 - boolean 값을 문자열로 변환하여 API 호환성 개선
+    const processedData = {
+      ...letterData,
+      // originalContent를 명시적으로 문자열로 변환 ('true' 또는 'false')
+      originalContent: letterData.originalContent !== undefined ?
+                        String(letterData.originalContent) : 'true'
+    };
+
     try {
       console.log('API 요청 보내는 중...', {
         url: apiUrl,
         method: 'post',
-        dataSize: JSON.stringify(letterData).length
+        dataSize: JSON.stringify(processedData).length
       });
+      console.log('전송 데이터:', JSON.stringify(processedData));
 
       // 단일 엔드포인트로 모든 요청 처리
       const response = await axios({
         method: 'post',
         url: apiUrl,
-        data: letterData,
+        data: processedData,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         timeout: 10000, // 10초 타임아웃
         // withCredentials 속성 제거 - 크로스 도메인 이슈 방지

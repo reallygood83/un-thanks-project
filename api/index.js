@@ -223,12 +223,36 @@ module.exports = async (req, res) => {
       // 요청 본문 파싱
       const body = await parseRequestBody(req);
       console.log('[API] 파싱된 요청 본문:', body);
+      console.log('[API] 요청 헤더:', req.headers);
 
-      // 필수 필드 검증
-      const { name, email, letterContent, countryId } = body;
+      // 비어있는 body 확인
+      if (!body || Object.keys(body).length === 0) {
+        console.error('[API] 요청 본문이 비어있거나 파싱 실패');
+        return res.status(400).json({
+          success: false,
+          message: '요청 본문이 비어있거나 파싱할 수 없습니다',
+          helpInfo: 'Content-Type: application/json 헤더를 확인하세요'
+        });
+      }
+
+      // 필수 필드 검증 - 더 상세한 로깅 추가
+      const { name, email, letterContent, countryId, originalContent } = body;
+      console.log('[API] 편지 필드 확인:', {
+        hasName: !!name,
+        hasEmail: !!email,
+        contentLength: letterContent ? letterContent.length : 0,
+        countryId,
+        originalContent,
+        bodyKeys: Object.keys(body)
+      });
 
       if (!name || !email || !letterContent || !countryId) {
-        console.log('[API] 필수 필드 누락:', { name, email, letterContent: !!letterContent, countryId });
+        console.log('[API] 필수 필드 누락:', {
+          hasName: !!name,
+          hasEmail: !!email,
+          hasContent: !!letterContent,
+          hasCountryId: !!countryId
+        });
         return res.status(400).json({
           success: false,
           message: '필수 항목이 누락되었습니다',
@@ -237,7 +261,8 @@ module.exports = async (req, res) => {
             !email ? 'email' : null,
             !letterContent ? 'letterContent' : null,
             !countryId ? 'countryId' : null
-          ].filter(Boolean)
+          ].filter(Boolean),
+          receivedFields: Object.keys(body)
         });
       }
 
