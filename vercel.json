@@ -2,25 +2,45 @@
   "version": 2,
   "builds": [
     {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist"
       }
-    },
-    {
-      "src": "api/package.json",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/api",
+      "dest": "/api/index.js"
+    },
+    {
+      "src": "/api/health",
+      "dest": "/api/health.js"
+    },
+    {
+      "src": "/api/debug-mongodb",
+      "dest": "/api/debug-mongodb.js"
+    },
+    {
+      "src": "/api/letters",
+      "dest": "/api/letters/index.js"
+    },
+    {
+      "src": "/api/letters/(.*)",
+      "dest": "/api/letters/[id].js?id=$1"
+    },
+    {
+      "src": "/api/countries",
+      "dest": "/api/countries/index.js"
+    },
+    {
+      "src": "/api/countries/(.*)",
+      "dest": "/api/countries/[id].js?id=$1"
     },
     {
       "src": "/(.*)",

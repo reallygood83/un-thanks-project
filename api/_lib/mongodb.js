@@ -2,12 +2,12 @@
 const { MongoClient } = require('mongodb');
 
 // 환경 변수에서 MongoDB URI 가져오기
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/un-thanks-project';
+const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB = process.env.MONGODB_DB || 'un-thanks-project';
 
-// 연결이 없는 경우 에러 발생
-if (!MONGODB_URI) {
-  throw new Error('환경 변수에 MONGODB_URI가 설정되어 있지 않습니다.');
+// 개발 환경에서만 기본 값 설정
+if (!MONGODB_URI && process.env.NODE_ENV !== 'production') {
+  console.warn('경고: 개발 환경에서 로컬 MongoDB를 사용합니다. 프로덕션에서는 MONGODB_URI를 설정해야 합니다.');
 }
 
 // 전역 변수로 캐싱하여 연결 재사용
@@ -20,19 +20,24 @@ async function connectToDatabase() {
     return { client: cachedClient, db: cachedDb };
   }
 
+  // MongoDB URI가 없는 경우 오류 발생
+  if (!MONGODB_URI) {
+    throw new Error('환경 변수에 MONGODB_URI가 설정되어 있지 않습니다.');
+  }
+
   // 서버리스 환경에서는 연결 풀링이 효율적
   const options = {
     maxPoolSize: 10, // 서버리스 함수에서는 작은 풀 사이즈가 적합
     connectTimeoutMS: 10000, // 연결 타임아웃 증가
     socketTimeoutMS: 45000, // 소켓 타임아웃 설정
     serverSelectionTimeoutMS: 10000, // 서버 선택 타임아웃 증가
-    ssl: true, // SSL 사용
-    tlsAllowInvalidCertificates: true, // 개발 환경을 위한 설정. 프로덕션에서는 false로 설정
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+    retryWrites: true,
+    w: 'majority'
   };
 
-  console.log('MongoDB 연결 시도...', { uri: MONGODB_URI.replace(/mongodb\+srv:\/\/([^:]+):[^@]+@/, 'mongodb+srv://$1:****@') });
+  console.log('MongoDB 연결 시도...', {
+    uri: MONGODB_URI ? MONGODB_URI.replace(/mongodb(\+srv)?:\/\/([^:]+):([^@]+)@/, 'mongodb$1://$2:****@') : 'undefined'
+  });
 
   try {
     // 서버리스 환경에서 연결 전략 최적화

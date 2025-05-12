@@ -5,17 +5,21 @@ import axios from 'axios';
 const getApiUrl = () => {
   // 개발 환경에서 테스트할 때 사용할 URL (localhost:5000)
   const devApiUrl = 'http://localhost:5000/api';
-  
+
   // 프로덕션 환경에서는 현재 호스트의 URL 사용
+  // Vercel 배포에서는 상대 경로 사용
   const prodApiUrl = '/api';
-  
+
   // 개발 환경 여부 확인 (Vite의 환경 변수 사용)
   const isDev = import.meta.env.DEV;
-  
+
   return isDev ? devApiUrl : prodApiUrl;
 };
 
 const API_BASE_URL = getApiUrl();
+
+// 디버깅을 위한 API URL 로깅
+console.log('API 베이스 URL:', API_BASE_URL);
 
 // 새 편지 제출
 export const submitLetter = async (letterData: {
