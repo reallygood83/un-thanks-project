@@ -1,48 +1,69 @@
+// /api/letters 엔드포인트 - 편지 목록 조회 및 편지 추가
+const { getLetters, addLetter } = require('../_lib/google-sheets');
+
 export default async function handler(req, res) {
+  // CORS 헤더 설정
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,OPTIONS,PATCH,DELETE,POST,PUT'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+  
+  // OPTIONS 요청 처리 (CORS preflight)
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  // GET 요청 처리 (편지 목록 조회)
+  if (req.method === 'GET') {
+    const countryId = req.query.countryId;
+    const result = await getLetters(countryId);
+    
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(500).json(result);
+    }
+  }
+  
+  // POST 요청 처리 (새 편지 추가)
   if (req.method === 'POST') {
     try {
-      const { 
-        name, 
-        email, 
-        school, 
-        grade, 
-        letterContent, 
-        originalContent, 
-        countryId 
-      } = req.body;
+      const letterData = req.body;
       
-      // Validate required fields
-      if (!name || !email || !letterContent || !countryId) {
+      // 필수 필드 검증
+      if (!letterData.name || !letterData.email || !letterData.letterContent || !letterData.countryId) {
         return res.status(400).json({
-          message: 'Missing required fields',
-          success: false
+          success: false,
+          error: 'Missing required fields'
         });
       }
       
-      // In a production environment, this would:
-      // 1. Use a translation API to translate the content
-      // 2. Send an email to the appropriate embassy
-      // 3. Store the letter data in a database
-
-      // Mock translation for demo purposes
-      const translatedContent = `[This would be the translated version of: ${letterContent}]`;
+      const result = await addLetter(letterData);
       
-      return res.status(201).json({
-        message: 'Letter successfully submitted',
-        success: true,
-        data: {
-          translatedContent,
-          originalContent: letterContent
-        }
-      });
+      if (result.success) {
+        return res.status(201).json(result);
+      } else {
+        return res.status(500).json(result);
+      }
     } catch (error) {
-      console.error('Error submitting letter:', error);
+      console.error('Error processing request:', error);
       return res.status(500).json({
-        message: 'An error occurred while submitting your letter',
-        success: false
+        success: false,
+        error: 'Server error processing request'
       });
     }
   }
   
-  return res.status(405).json({ message: 'Method not allowed' });
+  // 지원하지 않는 HTTP 메소드
+  return res.status(405).json({
+    success: false,
+    error: `Method ${req.method} Not Allowed`
+  });
 }

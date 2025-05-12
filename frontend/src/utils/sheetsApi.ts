@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// 구글 Apps Script 웹 앱 URL (배포 후 실제 URL로 변경 필요)
-const SHEETS_API_URL = 'https://script.google.com/macros/s/your-deployment-id/exec';
+// Vercel Serverless Functions API 엔드포인트
+// 로컬 개발 환경과 배포 환경에서 모두 작동하도록 상대 경로 사용
+const LETTERS_API_URL = '/api/letters';
 
 // 새 편지 제출
 export const submitLetterToSheets = async (letterData: {
@@ -13,10 +14,7 @@ export const submitLetterToSheets = async (letterData: {
   countryId: string;
 }) => {
   try {
-    const response = await axios.post(SHEETS_API_URL, {
-      action: 'addLetter',
-      letter: letterData
-    });
+    const response = await axios.post(LETTERS_API_URL, letterData);
     
     return {
       success: true,
@@ -26,7 +24,7 @@ export const submitLetterToSheets = async (letterData: {
     console.error('Error submitting letter to Google Sheets:', error);
     return {
       success: false,
-      error: 'Failed to submit letter'
+      error: error.response?.data?.error || 'Failed to submit letter'
     };
   }
 };
@@ -34,24 +32,23 @@ export const submitLetterToSheets = async (letterData: {
 // 편지 목록 가져오기
 export const getLettersFromSheets = async (countryId?: string) => {
   try {
-    // GET 요청 사용
-    const url = new URL(SHEETS_API_URL);
-    url.searchParams.append('action', 'getLetters');
+    // API 엔드포인트 URL 설정
+    let url = LETTERS_API_URL;
     if (countryId) {
-      url.searchParams.append('countryId', countryId);
+      url += `?countryId=${countryId}`;
     }
     
-    const response = await axios.get(url.toString());
+    const response = await axios.get(url);
     
     return {
       success: true,
       data: response.data.data
     };
   } catch (error) {
-    console.error('Error fetching letters from Google Sheets:', error);
+    console.error('Error fetching letters from API:', error);
     return {
       success: false,
-      error: 'Failed to fetch letters'
+      error: error.response?.data?.error || 'Failed to fetch letters'
     };
   }
 };
@@ -59,21 +56,17 @@ export const getLettersFromSheets = async (countryId?: string) => {
 // 특정 ID의 편지 가져오기
 export const getLetterFromSheets = async (id: string) => {
   try {
-    const url = new URL(SHEETS_API_URL);
-    url.searchParams.append('action', 'getLetter');
-    url.searchParams.append('id', id);
-    
-    const response = await axios.get(url.toString());
+    const response = await axios.get(`${LETTERS_API_URL}/${id}`);
     
     return {
       success: true,
       data: response.data.data
     };
   } catch (error) {
-    console.error(`Error fetching letter with ID ${id} from Google Sheets:`, error);
+    console.error(`Error fetching letter with ID ${id} from API:`, error);
     return {
       success: false,
-      error: 'Failed to fetch letter'
+      error: error.response?.data?.error || 'Failed to fetch letter'
     };
   }
 };
