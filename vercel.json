@@ -15,7 +15,19 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "/api/getLetters",
+      "dest": "/api/getLetters.js"
+    },
+    {
+      "src": "/api/submitLetter",
+      "dest": "/api/submitLetter.js"
+    },
+    {
+      "src": "/api/health",
+      "dest": "/api/health.js"
+    },
+    {
+      "src": "/api",
       "dest": "/api/index.js"
     },
     {
