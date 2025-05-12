@@ -36,8 +36,8 @@ export const submitLetter = async (letterData: {
   originalContent?: boolean;
 }) => {
   try {
-    // 직접 서브 경로 API 엔드포인트 사용
-    const apiUrl = `${API_BASE_URL.replace(/\/$/, '')}/submitLetter`;
+    // 원래 방식으로 돌아가기: 액션 파라미터를 사용한 단일 API 엔드포인트
+    const apiUrl = `${API_BASE_URL}?action=submitLetter`;
     console.log('API URL:', apiUrl);
 
     try {
@@ -119,10 +119,10 @@ export const submitLetter = async (letterData: {
 // 편지 목록 가져오기
 export const getLetters = async (countryId?: string) => {
   try {
-    // 직접 서브 경로 API 엔드포인트 사용
-    let url = `${API_BASE_URL.replace(/\/$/, '')}/getLetters`;
+    // 원래 방식으로 돌아가기: 액션 파라미터를 사용한 단일 API 엔드포인트
+    let url = `${API_BASE_URL}?action=getLetters`;
     if (countryId) {
-      url += `?countryId=${countryId}`;
+      url += `&countryId=${countryId}`;
     }
 
     console.log('편지 목록 가져오기 URL:', url);
