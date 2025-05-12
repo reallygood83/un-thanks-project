@@ -1,7 +1,4 @@
-// 단일 통합 API 핸들러 - 서버리스 환경 최적화
-// 이 파일은 모든 API 요청을 처리하며 데이터베이스 의존성 없이 작동합니다
-
-// 메모리 내 데이터 저장소 (서버리스 환경에서는 재시작마다 초기화됨)
+// UN 감사 편지 API - 서버리스 함수 최적화 버전
 const letters = [
   {
     id: 'sample-1',
@@ -22,20 +19,10 @@ const letters = [
     translatedContent: 'Thank you for your participation. I express deep gratitude for your sacrifice.',
     countryId: 'uk',
     createdAt: new Date('2025-05-02').toISOString()
-  },
-  {
-    id: 'sample-3',
-    name: '이영희',
-    school: '대전고등학교',
-    grade: '1학년',
-    letterContent: '대한민국의 자유와 평화를 위해 싸워주셔서 감사합니다.',
-    translatedContent: 'Thank you for fighting for the freedom and peace of South Korea.',
-    countryId: 'turkey',
-    createdAt: new Date('2025-05-03').toISOString()
   }
 ];
 
-// 참전국 데이터
+// 참전국 샘플 데이터
 const countries = [
   {
     id: 'usa',
@@ -44,8 +31,7 @@ const countries = [
     participationType: 'combat',
     region: 'North America',
     flag: '/flags/usa.png',
-    language: 'en',
-    description: '미국은 한국전쟁에서 가장 많은 병력을 파견한 국가로, UN군의 중추적 역할을 담당했습니다.'
+    language: 'en'
   },
   {
     id: 'uk',
@@ -54,8 +40,7 @@ const countries = [
     participationType: 'combat',
     region: 'Europe',
     flag: '/flags/uk.png',
-    language: 'en',
-    description: '영국은 미국에 이어 두 번째로 많은 병력을 파견한 유럽 국가입니다.'
+    language: 'en'
   },
   {
     id: 'turkey',
@@ -64,63 +49,44 @@ const countries = [
     participationType: 'combat',
     region: 'Middle East',
     flag: '/flags/turkey.png',
-    language: 'tr',
-    description: '터키는 미국 다음으로 많은 병력을 파견한 국가로, 군인들의 용맹함으로 유명합니다.'
-  },
-  {
-    id: 'canada',
-    name: '캐나다 (Canada)',
-    code: 'canada',
-    participationType: 'combat',
-    region: 'North America',
-    flag: '/flags/canada.png',
-    language: 'en',
-    description: '캐나다는 육해공군을 모두 파견하여 UN군의 일원으로 참전했습니다.'
+    language: 'tr'
   }
 ];
 
-// ID 생성 헬퍼 함수
-function generateId() {
-  return 'letter-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
-}
-
-// API 핸들러
-module.exports = function handler(req, res) {
-  // CORS 헤더 설정 - 모든 출처에서의 요청 허용
+// API 핸들러 함수
+module.exports = async (req, res) => {
+  // CORS 헤더 설정
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  // OPTIONS 요청 즉시 처리
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  // OPTIONS 요청 처리
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-
-  console.log(`API 요청: ${req.method} ${req.url}`);
   
+  console.log(`[API] ${req.method} ${req.url}`);
+  
+  // URL 파라미터 추출 - Vercel 환경용 최적화
+  const url = new URL(req.url, `https://${req.headers.host || 'vercel.app'}`);
+  const action = url.searchParams.get('action');
+  
+  // 요청 본문 사전 파싱 (Vercel 환경에서 자동으로 수행될 수 있음)
+  let body = {};
+  if (req.body) {
+    body = typeof req.body === 'object' ? req.body : 
+           typeof req.body === 'string' ? JSON.parse(req.body) : {};
+  }
+  
+  console.log('[API] Action:', action);
+  console.log('[API] Has body:', !!req.body);
+  
+  // API 라우팅 - action 파라미터 기반
   try {
-    // URL에서 action 파라미터 직접 추출
-    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-    const action = url.searchParams.get('action');
-    
-    console.log('요청 액션:', action);
-
-    // action이 없는 경우 기본 응답
-    if (!action) {
-      console.log('액션 없음 - 기본 응답');
-      return res.status(200).json({
-        success: true,
-        message: 'API is working!',
-        status: 'ok',
-        data: letters.slice(0, 2) // 기본 데이터 제공
-      });
-    }
-
     // 편지 목록 조회
     if (action === 'getLetters') {
-      console.log('getLetters 액션 처리');
       const countryId = url.searchParams.get('countryId');
-      const filteredLetters = countryId
+      const filteredLetters = countryId 
         ? letters.filter(letter => letter.countryId === countryId)
         : letters;
       
@@ -129,120 +95,83 @@ module.exports = function handler(req, res) {
         data: filteredLetters
       });
     }
-
+    
     // 편지 제출
     if (action === 'submitLetter' && req.method === 'POST') {
-      console.log('submitLetter 액션 처리 (POST)');
-      
-      // 요청 본문 읽기
-      let body = '';
-
-      req.on('data', chunk => {
-        body += chunk.toString();
-      });
-
-      req.on('end', () => {
+      // 요청 본문이 이미 파싱된 경우 사용, 아니면 직접 파싱
+      if (Object.keys(body).length === 0) {
+        // 직접 요청 본문 읽기 (Vercel에서 자동 파싱되지 않은 경우)
+        const chunks = [];
+        for await (const chunk of req) {
+          chunks.push(chunk);
+        }
+        const rawBody = Buffer.concat(chunks).toString();
         try {
-          // JSON 파싱
-          const data = body ? JSON.parse(body) : {};
-          console.log('편지 데이터 받음:', {
-            hasName: !!data.name,
-            hasEmail: !!data.email,
-            contentLength: data.letterContent ? data.letterContent.length : 0,
-            countryId: data.countryId
-          });
-
-          // 필수 필드 검증
-          if (!data.name || !data.email || !data.letterContent || !data.countryId) {
-            return res.status(400).json({
-              success: false,
-              message: '필수 항목이 누락되었습니다.'
-            });
-          }
-
-          // 새 편지 생성
-          const newLetter = {
-            id: generateId(),
-            name: data.name,
-            email: data.email,
-            school: data.school || '',
-            grade: data.grade || '',
-            letterContent: data.letterContent,
-            translatedContent: `[${data.countryId} 언어로 번역]: ${data.letterContent.substring(0, 30)}...`,
-            countryId: data.countryId,
-            createdAt: new Date().toISOString()
-          };
-
-          // 메모리에 저장 (서버리스 함수 재시작 시 초기화됨)
-          letters.unshift(newLetter);
-          console.log('새 편지 저장됨:', newLetter.id);
-
-          // 성공 응답
-          return res.status(201).json({
-            success: true,
-            message: '편지가 성공적으로 제출되었습니다',
-            data: {
-              id: newLetter.id,
-              translatedContent: newLetter.translatedContent,
-              originalContent: data.letterContent
-            }
-          });
-        } catch (error) {
-          console.error('요청 처리 중 오류:', error);
+          body = JSON.parse(rawBody);
+        } catch (e) {
+          console.error('[API] JSON 파싱 오류:', e);
           return res.status(400).json({
             success: false,
-            message: '잘못된 요청 형식: ' + error.message
+            message: '잘못된 요청 형식'
           });
         }
+      }
+      
+      // 필수 필드 검증
+      const { name, email, letterContent, countryId } = body;
+      if (!name || !email || !letterContent || !countryId) {
+        return res.status(400).json({
+          success: false,
+          message: '필수 항목이 누락되었습니다'
+        });
+      }
+      
+      // 새 편지 생성
+      const id = 'letter-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      const newLetter = {
+        id,
+        name,
+        email,
+        school: body.school || '',
+        grade: body.grade || '',
+        letterContent,
+        translatedContent: `[번역된 내용]: ${letterContent.substring(0, 30)}...`,
+        countryId,
+        createdAt: new Date().toISOString()
+      };
+      
+      // 메모리에 저장 (인메모리 저장이므로 서버 재시작시 리셋됨)
+      letters.unshift(newLetter);
+      
+      // 성공 응답
+      return res.status(201).json({
+        success: true,
+        data: {
+          id: newLetter.id,
+          translatedContent: newLetter.translatedContent,
+          originalContent: letterContent
+        }
       });
-
-      // 요청이 비동기적으로 처리되므로 여기서 응답하지 않음
-      return;
     }
-
+    
     // 국가 목록 조회
     if (action === 'getCountries') {
-      console.log('getCountries 액션 처리');
       return res.status(200).json({
         success: true,
         data: countries
       });
     }
-
-    // 특정 국가 조회
-    if (action === 'getCountry') {
-      console.log('getCountry 액션 처리');
-      const id = url.searchParams.get('id');
-      if (!id) {
-        return res.status(400).json({
-          success: false,
-          message: '국가 ID가 필요합니다'
-        });
-      }
-
-      const country = countries.find(c => c.id === id);
-      if (!country) {
-        return res.status(404).json({
-          success: false,
-          message: `ID ${id}에 해당하는 국가를 찾을 수 없습니다`
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        data: country
-      });
-    }
-
-    // 지원하지 않는 액션
-    console.log('지원하지 않는 액션:', action);
-    return res.status(400).json({
-      success: false,
-      message: `지원하지 않는 액션: ${action}`
+    
+    // 알 수 없는 액션이거나 액션이 없는 경우 기본 응답
+    return res.status(200).json({
+      success: true,
+      message: 'API is working!',
+      status: 'ok',
+      data: letters // 기본 데이터 포함
     });
-
+    
   } catch (error) {
-    console.error('API 처리 중 오류:', error);
+    console.error('[API] 오류:', error);
     return res.status(500).json({
       success: false,
       message: '서버 오류: ' + error.message
