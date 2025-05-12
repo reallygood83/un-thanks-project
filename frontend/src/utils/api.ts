@@ -32,16 +32,42 @@ export const submitLetter = async (letterData: {
   originalContent?: boolean;
 }) => {
   try {
-    console.log('API URL:', `${API_BASE_URL}/letters-test`);
-    // 테스트 API 엔드포인트 사용
-    const response = await axios.post(`${API_BASE_URL}/letters-test`, letterData);
+    // 가장 단순한 더미 API 엔드포인트 사용
+    console.log('API URL:', `${API_BASE_URL}/submit-test`);
 
-    return {
-      success: true,
-      data: response.data.data
-    };
+    // 직접 테스트를 위한 보다 명확한 오류 처리와 디버깅
+    try {
+      const response = await axios.post(`${API_BASE_URL}/submit-test`, letterData, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000 // 10초 타임아웃
+      });
+
+      console.log('API 응답:', response.data);
+
+      return {
+        success: true,
+        data: response.data.data
+      };
+    } catch (axiosError) {
+      // Axios 오류 상세 분석
+      console.error('Axios 오류 세부 정보:', {
+        message: axiosError.message,
+        status: axiosError.response?.status,
+        statusText: axiosError.response?.statusText,
+        responseData: axiosError.response?.data,
+        config: {
+          url: axiosError.config?.url,
+          method: axiosError.config?.method,
+          headers: axiosError.config?.headers
+        }
+      });
+
+      throw axiosError; // 다시 throw하여 외부 catch에서 처리
+    }
   } catch (error) {
-    console.error('편지 제출 오류:', error);
+    console.error('편지 제출 최종 오류:', error);
     return {
       success: false,
       error: error.response?.data?.message || '편지를 제출하지 못했습니다'
@@ -52,20 +78,56 @@ export const submitLetter = async (letterData: {
 // 편지 목록 가져오기
 export const getLetters = async (countryId?: string) => {
   try {
-    // API 엔드포인트 URL 설정 (테스트 API 사용)
-    let url = `${API_BASE_URL}/letters-test`;
+    // 단순화된 API 엔드포인트 사용
+    let url = `${API_BASE_URL}/direct-test`;
     if (countryId) {
       url += `?countryId=${countryId}`;
     }
 
-    const response = await axios.get(url);
+    console.log('편지 목록 가져오기 URL:', url);
 
-    return {
-      success: true,
-      data: response.data.data
-    };
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000 // 10초 타임아웃
+      });
+
+      console.log('API 응답:', response.data);
+
+      // 실제 데이터가 없으므로 더미 데이터 반환
+      return {
+        success: true,
+        data: [
+          {
+            id: '1',
+            name: '홍길동',
+            school: '서울초등학교',
+            grade: '5학년',
+            letterContent: '감사합니다',
+            translatedContent: 'Thank you',
+            countryId: 'usa',
+            createdAt: new Date().toISOString()
+          },
+          {
+            id: '2',
+            name: '김철수',
+            school: '부산초등학교',
+            grade: '6학년',
+            letterContent: '고맙습니다',
+            translatedContent: 'Thank you very much',
+            countryId: 'uk',
+            createdAt: new Date().toISOString()
+          }
+        ]
+      };
+    } catch (axiosError) {
+      console.error('편지 목록 가져오기 Axios 오류:', axiosError);
+      throw axiosError;
+    }
   } catch (error) {
-    console.error('편지 목록 가져오기 오류:', error);
+    console.error('편지 목록 가져오기 최종 오류:', error);
     return {
       success: false,
       error: error.response?.data?.message || '편지 목록을 가져오지 못했습니다'

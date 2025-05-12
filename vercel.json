@@ -15,6 +15,16 @@
   ],
   "routes": [
     {
+      "src": "/api/direct-test",
+      "methods": ["GET", "POST", "OPTIONS"],
+      "dest": "/api/direct-test.js"
+    },
+    {
+      "src": "/api/submit-test",
+      "methods": ["GET", "POST", "OPTIONS"],
+      "dest": "/api/submit-test.js"
+    },
+    {
       "src": "/api/(.*)",
       "headers": {
         "Access-Control-Allow-Origin": "*",
