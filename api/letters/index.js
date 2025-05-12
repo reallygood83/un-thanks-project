@@ -1,12 +1,13 @@
 // 편지 API 엔드포인트 (GET, POST)
 import { connectToDatabase } from '../_lib/mongodb';
+import { parseBody } from '../_lib/parser';
 import { v4 as uuidv4 } from 'uuid';
 
 // CORS 헤더 설정 헬퍼 함수
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE');
   res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
@@ -62,6 +63,19 @@ export default async function handler(req, res) {
     
     // POST 요청 처리 - 새 편지 생성
     if (req.method === 'POST') {
+      // 요청 본문 파싱
+      let body;
+      try {
+        body = await parseBody(req);
+        console.log('Parsed request body:', body);
+      } catch (error) {
+        console.error('Body parsing error:', error);
+        return res.status(400).json({
+          message: '요청 본문 파싱 오류: ' + error.message,
+          success: false
+        });
+      }
+      
       const { 
         name, 
         email, 
@@ -70,7 +84,7 @@ export default async function handler(req, res) {
         letterContent, 
         originalContent, 
         countryId 
-      } = req.body;
+      } = body;
       
       // 필수 필드 유효성 검사
       if (!name || !email || !letterContent || !countryId) {
@@ -99,7 +113,8 @@ export default async function handler(req, res) {
       };
       
       // 데이터베이스에 저장
-      await collection.insertOne(newLetter);
+      const result = await collection.insertOne(newLetter);
+      console.log('Insert result:', result);
       
       // 성공 응답 반환
       return res.status(201).json({
@@ -122,7 +137,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('편지 API 오류:', error);
     return res.status(500).json({
-      message: '서버 오류가 발생했습니다',
+      message: '서버 오류가 발생했습니다: ' + error.message,
       success: false
     });
   }
