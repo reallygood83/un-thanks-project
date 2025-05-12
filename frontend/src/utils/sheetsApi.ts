@@ -1,8 +1,22 @@
 import axios from 'axios';
 
 // Vercel Serverless Functions API 엔드포인트
-// 로컬 개발 환경과 배포 환경에서 모두 작동하도록 상대 경로 사용
-const LETTERS_API_URL = '/api/letters';
+// 배포 환경과 개발 환경 모두에서 작동하도록 동적 URL 설정
+const getApiUrl = () => {
+  // 개발 환경에서 테스트할 때 사용할 URL (localhost:3000 또는 실제 배포된 URL)
+  const devApiUrl = 'http://localhost:3000/api/letters';
+  
+  // 프로덕션 환경에서는 현재 호스트의 URL 사용
+  const prodApiUrl = `${window.location.origin}/api/letters`;
+  
+  // 개발 환경 여부 확인 (Vite의 환경 변수 사용)
+  const isDev = import.meta.env.DEV;
+  
+  console.log('API URL:', isDev ? devApiUrl : prodApiUrl);
+  return isDev ? devApiUrl : prodApiUrl;
+};
+
+const LETTERS_API_URL = getApiUrl();
 
 // 새 편지 제출
 export const submitLetterToSheets = async (letterData: {
