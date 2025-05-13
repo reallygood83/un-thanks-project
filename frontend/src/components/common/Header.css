@@ -11,6 +11,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
+  position: relative;
 }
 
 .logo h1 {
@@ -18,6 +19,7 @@
   font-weight: 700;
   color: var(--primary-color);
   margin: 0;
+  transition: color 0.3s ease;
 }
 
 .logo a {
@@ -38,7 +40,13 @@
 .nav-item a {
   font-weight: 500;
   font-size: 1rem;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, transform 0.2s ease;
+  display: block;
+  padding: 0.25rem 0;
+}
+
+.nav-item a:hover {
+  transform: translateY(-2px);
 }
 
 .nav-item a:hover, 
@@ -47,31 +55,103 @@
   text-decoration: none;
 }
 
+/* UNICON 메인 링크 스타일 */
 .nav-item a.unicon-link {
   color: #ff5722;
   font-weight: 600;
 }
 
-.nav-item a.unicon-link:hover {
+.nav-item a.unicon-link:hover,
+.nav-item a.unicon-link.active {
   color: #e64a19;
 }
 
-@media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    padding: 1rem 0;
+/* 미래로 AI 설문 링크 스타일 */
+.nav-item a.survey-link {
+  color: #0078ff;
+  font-weight: 600;
+}
+
+.nav-item a.survey-link:hover,
+.nav-item a.survey-link.active {
+  color: #0060cc;
+}
+
+/* 모바일 메뉴 토글 버튼 */
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  cursor: pointer;
+  z-index: 120;
+}
+
+.mobile-menu-toggle span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: var(--primary-color);
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 992px) {
+  .mobile-menu-toggle {
+    display: flex;
   }
   
-  .logo {
-    margin-bottom: 1rem;
+  .nav {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 70%;
+    max-width: 300px;
+    height: 100vh;
+    background-color: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+    z-index: 110;
+    overflow-y: auto;
+    padding: 4rem 2rem 2rem;
+  }
+  
+  .nav.open {
+    right: 0;
   }
   
   .nav-list {
+    flex-direction: column;
     width: 100%;
-    justify-content: space-between;
+    gap: 1.5rem;
   }
   
   .nav-item {
     margin-left: 0;
+    width: 100%;
+  }
+  
+  .nav-item a {
+    font-size: 1.1rem;
+    padding: 0.5rem 0;
+    display: block;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo h1 {
+    font-size: 1.2rem;
+  }
+  
+  .nav {
+    width: 85%;
+  }
+}
+
+@media (max-width: 576px) {
+  .logo h1 {
+    font-size: 1rem;
   }
 }
