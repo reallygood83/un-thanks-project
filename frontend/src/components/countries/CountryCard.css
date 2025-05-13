@@ -1,0 +1,76 @@
+.country-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.country-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.country-flag {
+  margin-right: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.country-name {
+  font-size: 1.25rem;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.country-name-en {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-left: 0.5rem;
+}
+
+.country-card-body {
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+}
+
+.country-contribution {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.country-stat {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.stat-label {
+  font-weight: 500;
+}
+
+.stat-value {
+  font-weight: 600;
+}
+
+.country-card-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.country-card-footer .btn {
+  flex: 1;
+  text-align: center;
+  margin: 0 0.5rem;
+}
+
+.country-card-footer .btn:first-child {
+  margin-left: 0;
+}
+
+.country-card-footer .btn:last-child {
+  margin-right: 0;
+}

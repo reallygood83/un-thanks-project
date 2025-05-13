@@ -1,0 +1,181 @@
+.letter-template {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  font-family: 'Nanum Myeongjo', serif;
+}
+
+.letter-template-paper {
+  background-color: #fff9f2;
+  background-image: 
+    linear-gradient(90deg, rgba(217, 185, 145, 0.1) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(217, 185, 145, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  transform: rotate(0.5deg);
+  border: 1px solid #e0d3c0;
+}
+
+/* 종이 클립 이미지 대체 (CSS로 구현) */
+.letter-template::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  width: 16px;
+  height: 60px;
+  background-color: #a2a2a2;
+  border-radius: 8px;
+  z-index: 2;
+  transform: rotate(-5deg);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.letter-template-content {
+  position: relative;
+  z-index: 1;
+}
+
+.letter-header {
+  margin-bottom: 24px;
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed #c9baa3;
+}
+
+.letter-header img.country-flag {
+  display: block;
+  width: 60px;
+  height: 40px;
+  margin: 0 auto 10px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.letter-header h2 {
+  font-size: 1.8rem;
+  margin: 5px 0;
+  color: #5e4b3e;
+  font-weight: 600;
+}
+
+.letter-header .letter-date {
+  font-size: 0.9rem;
+  color: #84725e;
+  margin-top: 5px;
+}
+
+.letter-body {
+  line-height: 1.7;
+  color: #3a3328;
+  margin-bottom: 30px;
+  white-space: pre-line;
+  font-size: 1.05rem;
+}
+
+.letter-signature {
+  text-align: right;
+  margin-top: 30px;
+}
+
+.letter-signature .writer-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #5e4b3e;
+  margin: 0;
+}
+
+.letter-signature .writer-school {
+  font-size: 0.9rem;
+  color: #84725e;
+  margin-top: 5px;
+}
+
+/* 감사 스탬프 CSS로 구현 */
+.letter-stamp {
+  position: absolute;
+  bottom: 40px;
+  right: 60px;
+  width: 80px;
+  height: 80px;
+  border: 2px solid #cb5a5e;
+  border-radius: 50%;
+  transform: rotate(15deg);
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #cb5a5e;
+  font-weight: bold;
+}
+
+.letter-stamp::before {
+  content: 'THANK YOU';
+  transform: rotate(-15deg);
+}
+
+.letter-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed #c9baa3;
+  font-size: 0.85rem;
+  color: #84725e;
+}
+
+.letter-translation-toggle {
+  cursor: pointer;
+  color: #6b5b4a;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.letter-translation-toggle svg {
+  margin-right: 5px;
+}
+
+@media (max-width: 768px) {
+  .letter-template-paper {
+    padding: 25px;
+  }
+  
+  .letter-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .letter-body {
+    font-size: 1rem;
+  }
+  
+  .letter-stamp {
+    width: 60px;
+    height: 60px;
+    bottom: 30px;
+    right: 40px;
+    font-size: 10px;
+  }
+}
+
+@media print {
+  .letter-template {
+    max-width: 100%;
+  }
+  
+  .letter-template-paper {
+    box-shadow: none;
+    border: none;
+  }
+}

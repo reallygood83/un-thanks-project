@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/direct-submit",
+      "dest": "api/direct-submit.js",
+      "methods": ["GET", "POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/test-api",
+      "dest": "api/test-api.js",
+      "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"]
+    },
+    {
+      "src": "/api/submitLetter",
+      "dest": "api/submitLetter/index.js"
+    },
+    {
+      "src": "/api/getLetters",
+      "dest": "api/getLetters/index.js"
+    },
+    {
+      "src": "/api/health",
+      "dest": "api/health/index.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+      }
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/dist/$1"
+    }
+  ]
+}
