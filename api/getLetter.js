@@ -1,5 +1,5 @@
-// /api/getLetter 엔드포인트 - 특정 ID 편지 조회
-const { getLetter } = require('./letters');
+// /api/getLetter 엔드포인트 - 특정 ID 편지 조회 (MongoDB 직접 연결 버전)
+const { getLetterFromMongo } = require('./mongo-direct');
 
 // CORS 헤더 설정
 function setCorsHeaders(res) {
@@ -17,7 +17,7 @@ function setCorsHeaders(res) {
 
 // 특정 ID 편지 조회 API 핸들러
 module.exports = async (req, res) => {
-  console.log('getLetter API 호출:', req.method, req.url);
+  console.log('getLetter API 호출 (MongoDB 직접 연결):', req.method, req.url);
   
   // CORS 헤더 설정
   setCorsHeaders(res);
@@ -63,7 +63,7 @@ module.exports = async (req, res) => {
       id = req.query.id;
     }
     
-    console.log('편지 ID:', id);
+    console.log('MongoDB에서 조회할 편지 ID:', id);
     
     // ID가 없으면 오류 반환
     if (!id) {
@@ -74,12 +74,12 @@ module.exports = async (req, res) => {
       });
     }
     
-    // 편지 조회
-    const result = await getLetter(id);
+    // MongoDB에서 직접 편지 조회
+    const result = await getLetterFromMongo(id);
     
     // 결과 처리
     if (result.success) {
-      console.log('편지 조회 성공:', id);
+      console.log('편지 MongoDB 조회 성공:', id);
       return res.status(200).json({
         success: true,
         data: result.data
@@ -90,7 +90,16 @@ module.exports = async (req, res) => {
         return res.status(404).json({
           success: false,
           error: result.error,
-          message: '요청한 편지를 찾을 수 없습니다'
+          message: '요청한 편지를 MongoDB에서 찾을 수 없습니다'
+        });
+      }
+      
+      // ID 형식 오류는 400
+      if (result.error.includes('유효하지 않은 ID 형식')) {
+        return res.status(400).json({
+          success: false,
+          error: result.error,
+          message: 'MongoDB ObjectId 형식이 아닙니다'
         });
       }
       
@@ -98,11 +107,11 @@ module.exports = async (req, res) => {
       return res.status(500).json({
         success: false,
         error: result.error,
-        message: '편지 조회 중 오류가 발생했습니다'
+        message: '편지 MongoDB 조회 중 오류가 발생했습니다'
       });
     }
   } catch (error) {
-    console.error('getLetter 처리 중 오류:', error);
+    console.error('getLetter MongoDB 처리 중 오류:', error);
     
     // 오류시 더미 데이터로 응답 (프론트엔드 호환성 유지)
     return res.status(200).json({
@@ -117,7 +126,8 @@ module.exports = async (req, res) => {
         createdAt: new Date().toISOString()
       },
       error: error.message,
-      fallback: true
+      fallback: true,
+      message: '오류 발생, 더미 데이터로 응답합니다'
     });
   }
 };

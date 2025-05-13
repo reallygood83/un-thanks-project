@@ -1,6 +1,7 @@
-// API 진입점 - 개별 API 핸들러로 라우팅
+// API 진입점 - 개별 API 핸들러로 라우팅 (MongoDB 직접 연결 버전)
 const submitLetter = require('./submitLetter');
 const getLetters = require('./getLetters');
+const getLetter = require('./getLetter');
 const health = require('./health');
 
 // CORS 헤더 설정
@@ -44,14 +45,20 @@ module.exports = async (req, res) => {
     
     // /api/submitLetter 경로 처리
     if (path.endsWith('/submitLetter')) {
-      console.log('[API Index] submitLetter 핸들러로 위임');
+      console.log('[API Index] submitLetter 핸들러로 위임 (MongoDB 직접 연결)');
       return submitLetter(req, res);
     }
 
     // /api/getLetters 경로 처리
     if (path.endsWith('/getLetters')) {
-      console.log('[API Index] getLetters 핸들러로 위임');
+      console.log('[API Index] getLetters 핸들러로 위임 (MongoDB 직접 연결)');
       return getLetters(req, res);
+    }
+    
+    // /api/getLetter/:id 경로 처리
+    if (path.includes('/getLetter/')) {
+      console.log('[API Index] getLetter 핸들러로 위임 (MongoDB 직접 연결)');
+      return getLetter(req, res);
     }
 
     // /api/health 경로 처리
@@ -64,14 +71,17 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       success: true,
       status: 'ok',
-      message: 'UN 참전국 감사 편지 API',
-      version: '1.2.0',
+      message: 'UN 참전국 감사 편지 API (MongoDB 직접 연결 버전)',
+      version: '2.0.0',
+      database: 'MongoDB',
       endpoints: [
         '/api/submitLetter - 편지 제출 (POST)',
         '/api/getLetters - 편지 목록 조회 (GET)',
+        '/api/getLetter/:id - 단일 편지 조회 (GET)',
         '/api/health - 서버 상태 확인 (GET)'
       ],
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      storage: 'MongoDB 직접 연결 (메모리 기반 데이터 저장 사용 안함)'
     });
   } catch (error) {
     console.error('[API Index] 오류:', error);

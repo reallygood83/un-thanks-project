@@ -1,5 +1,5 @@
-// /api/getLetters 엔드포인트 - 편지 목록 조회
-const { getLetters } = require('./letters');
+// /api/getLetters 엔드포인트 - 편지 목록 조회 (MongoDB 직접 연결 버전)
+const { getLettersFromMongo } = require('./mongo-direct');
 
 // CORS 헤더 설정
 function setCorsHeaders(res) {
@@ -17,7 +17,7 @@ function setCorsHeaders(res) {
 
 // 편지 목록 조회 API 핸들러
 module.exports = async (req, res) => {
-  console.log('getLetters API 호출:', req.method, req.url);
+  console.log('getLetters API 호출 (MongoDB 직접 연결):', req.method, req.url);
   
   // CORS 헤더 설정
   setCorsHeaders(res);
@@ -63,32 +63,32 @@ module.exports = async (req, res) => {
     page = page || 1;
     limit = limit || 20;
     
-    console.log('편지 목록 조회 파라미터:', { countryId, page, limit });
+    console.log('편지 목록 조회 파라미터 (MongoDB 직접 조회):', { countryId, page, limit });
     
-    // 편지 목록 조회
-    const result = await getLetters({ countryId, page, limit });
+    // MongoDB에서 직접 편지 목록 조회
+    const result = await getLettersFromMongo({ countryId, page, limit });
     
     // 결과 처리
     if (result.success) {
-      console.log('편지 목록 조회 성공:', result.data.length);
+      console.log('편지 목록 MongoDB 조회 성공:', result.data.length);
       
       return res.status(200).json({
         success: true,
         data: result.data,
-        total: result.pagination.total,
-        page: result.pagination.page,
-        pages: result.pagination.pages
+        total: result.total,
+        page: result.page,
+        pages: result.pages
       });
     } else {
-      console.error('편지 목록 조회 실패:', result.error);
+      console.error('편지 목록 MongoDB 조회 실패:', result.error);
       return res.status(500).json({
         success: false,
         error: result.error,
-        message: '편지 목록 조회 중 오류가 발생했습니다'
+        message: '편지 목록 MongoDB 조회 중 오류가 발생했습니다'
       });
     }
   } catch (error) {
-    console.error('getLetters 처리 중 오류:', error);
+    console.error('getLetters MongoDB 처리 중 오류:', error);
     
     // 오류시 더미 데이터로 응답 (프론트엔드 호환성 유지)
     const dummyLetters = [
@@ -119,7 +119,8 @@ module.exports = async (req, res) => {
       page: 1,
       pages: 1,
       error: error.message,
-      fallback: true
+      fallback: true,
+      message: '오류 발생, 더미 데이터로 응답합니다'
     });
   }
 };

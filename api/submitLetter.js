@@ -1,5 +1,5 @@
-// /api/submitLetter 엔드포인트 - 편지 제출 처리
-const { addLetter } = require('./letters');
+// /api/submitLetter 엔드포인트 - 편지 제출 처리 (MongoDB 직접 연결 버전)
+const { addLetterToMongo } = require('./mongo-direct');
 
 // CORS 헤더 설정
 function setCorsHeaders(res) {
@@ -17,7 +17,7 @@ function setCorsHeaders(res) {
 
 // 편지 제출 API 핸들러
 module.exports = async (req, res) => {
-  console.log('submitLetter API 호출:', req.method);
+  console.log('submitLetter API 호출 (MongoDB 직접 연결):', req.method);
   
   // CORS 헤더 설정
   setCorsHeaders(res);
@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
     // 편지 데이터 추출
     const { name, school, grade, letterContent, countryId } = req.body;
     
-    console.log('편지 데이터 수신:', { 
+    console.log('편지 데이터 수신 (MongoDB 직접 저장):', { 
       name, 
       school: school || '(없음)', 
       grade: grade || '(없음)', 
@@ -65,36 +65,40 @@ module.exports = async (req, res) => {
       });
     }
     
-    // 편지 저장
-    const result = await addLetter({
+    // 편지 데이터 구성
+    const letterData = {
       name,
-      school,
-      grade,
+      school: school || '',
+      grade: grade || '',
       letterContent,
-      countryId
-    });
+      countryId,
+      createdAt: new Date()
+    };
+    
+    // MongoDB에 직접 편지 저장
+    const result = await addLetterToMongo(letterData);
     
     // 결과 처리
     if (result.success) {
-      console.log('편지 저장 성공:', result.letter.id);
+      console.log('편지 MongoDB 저장 성공:', result.data.id);
       return res.status(201).json({
         success: true,
         data: {
-          id: result.letter.id,
+          id: result.data.id,
           originalContent: letterContent
         },
-        message: '편지가 성공적으로 저장되었습니다'
+        message: '편지가 성공적으로 MongoDB에 저장되었습니다'
       });
     } else {
-      console.error('편지 저장 실패:', result.error);
+      console.error('편지 MongoDB 저장 실패:', result.error);
       return res.status(500).json({
         success: false,
         error: result.error,
-        message: '편지 저장 중 오류가 발생했습니다'
+        message: '편지 MongoDB 저장 중 오류가 발생했습니다'
       });
     }
   } catch (error) {
-    console.error('submitLetter 처리 중 오류:', error);
+    console.error('submitLetter MongoDB 처리 중 오류:', error);
     
     return res.status(500).json({
       success: false,
