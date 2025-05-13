@@ -1,7 +1,8 @@
 .unicon-page {
   min-height: 100vh;
   padding: 3rem 0;
-  background-color: #f8f9fa;
+  background-color: #fff8e1; /* 아주 연한 노란색/크림색 배경으로 변경 */
+  background-image: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); /* 따뜻한 그라데이션 배경 추가 */
 }
 
 .unicon-header {
@@ -13,7 +14,7 @@
   font-size: 3.5rem;
   font-weight: 700;
   margin: 0 0 0.5rem;
-  color: #0d47a1;
+  color: #e65100; /* 따뜻한 오렌지색으로 변경 */
   letter-spacing: 2px;
 }
 
@@ -47,17 +48,19 @@
   background-color: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 25px rgba(230,81,0,0.08); /* 오렌지색 그림자로 변경 */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
   color: inherit;
+  border: 1px solid rgba(255,138,80,0.1); /* 매우 옅은 오렌지색 테두리 추가 */
 }
 
 .project-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 35px rgba(230,81,0,0.15); /* 더 진한 오렌지색 그림자로 변경 */
   text-decoration: none;
   color: inherit;
+  border-color: rgba(255,138,80,0.2); /* 호버 시 테두리 더 진하게 */
 }
 
 .project-card.disabled {
@@ -74,16 +77,19 @@
 }
 
 .uniweek-bg {
-  background-image: url('https://www.unikorea.go.kr/data/photos/20230/f4cf39bd-51de-46c8-a962-f6ba8da89d5a.jpg');
+  background-image: url('https://img.freepik.com/free-photo/two-hands-holding-doves-sunset-background-release-freedom-concept-hope-spirit_90220-1346.jpg');
   background-position: center;
+  background-size: cover;
 }
 
 .thanks-project-bg {
-  background-image: url('https://img.freepik.com/premium-photo/peaceful-scene-with-sunrise-dove-symbol-peace-hope_889227-9208.jpg');
+  background-image: url('https://img.freepik.com/free-photo/sunset-beach-with-wooden-path_1232-3163.jpg');
+  background-size: cover;
 }
 
 .coming-soon-bg {
-  background-image: url('https://static.vecteezy.com/system/resources/thumbnails/007/559/150/small/coming-soon-text-on-the-wooden-block-free-photo.jpg');
+  background-image: url('https://img.freepik.com/free-photo/close-up-hand-holding-sunset-sunrise_53876-42806.jpg');
+  background-size: cover;
 }
 
 .card-overlay {
@@ -92,12 +98,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7));
+  background: linear-gradient(to bottom, rgba(255,111,0,0.1), rgba(230,81,0,0.7)); /* 따뜻한 그라데이션으로 변경 */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 1.5rem;
   color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* 텍스트 가독성 향상 */
 }
 
 .card-overlay h3 {
@@ -123,13 +130,13 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0 0 1rem;
-  color: #333;
+  color: #e65100; /* 따뜻한 오렌지색으로 변경 */
 }
 
 .card-description {
   font-size: 1rem;
   line-height: 1.6;
-  color: #6c757d;
+  color: #7d4b00; /* 따뜻한 갈색으로 변경 */
   margin-bottom: 1.5rem;
   flex-grow: 1;
 }
@@ -139,14 +146,14 @@
   justify-content: space-between;
   align-items: center;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
-  color: #0d47a1;
+  border-top: 1px solid #ffe0b2; /* 따뜻한 경계선 색상 */
+  color: #e65100; /* 오렌지 색상으로 변경 */
   font-weight: 600;
   transition: color 0.2s ease;
 }
 
 .project-card:hover .card-cta {
-  color: #1976d2;
+  color: #ff6f00; /* 밝은 오렌지색으로 변경 */
 }
 
 .card-cta.disabled {
