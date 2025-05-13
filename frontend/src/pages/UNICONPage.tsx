@@ -24,12 +24,12 @@ const UNICONPage: React.FC = () => {
               <div className="card-image uniweek-bg">
                 <div className="card-overlay">
                   <h3>통일교육주간</h3>
-                  <p>제11회 통일교육주간 (2025) 행사 안내</p>
+                  <p>제13회 통일교육주간 (5월 19일~23일) 행사 안내</p>
                 </div>
               </div>
               <div className="card-content">
                 <h3 className="card-title">통일교육주간</h3>
-                <p className="card-description">남북 평화와 통일에 대한 국민적 공감대를 형성하고, 미래세대의 통일인식을 제고하기 위한 통일교육주간 프로그램</p>
+                <p className="card-description">남북 평화와 통일에 대한 국민적 공감대를 형성하고, 미래세대의 통일인식을 제고하기 위한 제13회 통일교육주간(5월 19일~23일) 프로그램</p>
                 <div className="card-cta">
                   <span className="cta-text">웹사이트 방문하기</span>
                   <span className="cta-icon">→</span>
