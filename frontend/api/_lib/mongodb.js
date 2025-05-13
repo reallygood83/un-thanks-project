@@ -1,6 +1,28 @@
 // MongoDB API 모듈 - 더미 데이터 지원
 // 실제 MongoDB 연결에 실패할 경우 더미 데이터를 반환
 
+// 메모리 내 편지 저장소 (실제 MongoDB 대신 임시 저장소로 사용)
+const lettersStore = [
+  {
+    _id: '1',
+    name: '홍길동',
+    school: '서울초등학교',
+    grade: '5학년',
+    letterContent: '감사합니다',
+    countryId: 'usa',
+    createdAt: new Date()
+  },
+  {
+    _id: '2',
+    name: '김철수',
+    school: '부산초등학교',
+    grade: '6학년',
+    letterContent: '고맙습니다',
+    countryId: 'uk',
+    createdAt: new Date(Date.now() - 86400000)
+  }
+];
+
 /**
  * 입력 데이터 검증
  * @param {Object} data - 검증할 데이터 객체
@@ -26,35 +48,24 @@ async function getLetters(countryId, page = 1, limit = 20) {
   console.log('[mongodb] getLetters 호출:', { countryId, page, limit });
   
   try {
-    // 더미 데이터 (실제 구현에서는 MongoDB에서 데이터 가져오기)
-    const dummyLetters = [
-      {
-        _id: '1',
-        name: '홍길동',
-        school: '서울초등학교',
-        grade: '5학년',
-        letterContent: '감사합니다',
-        countryId: 'usa',
-        createdAt: new Date()
-      },
-      {
-        _id: '2',
-        name: '김철수',
-        school: '부산초등학교',
-        grade: '6학년',
-        letterContent: '고맙습니다',
-        countryId: 'uk',
-        createdAt: new Date(Date.now() - 86400000)
-      }
-    ];
+    // 메모리 내 저장소에서 편지 데이터 가져오기
+    const letters = [...lettersStore];
     
     // 국가별 필터링
     const filtered = countryId 
-      ? dummyLetters.filter(letter => letter.countryId === countryId)
-      : dummyLetters;
+      ? letters.filter(letter => letter.countryId === countryId)
+      : letters;
+    
+    // 정렬: 최신순
+    filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    
+    // 페이지네이션
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const paginatedData = filtered.slice(startIndex, endIndex);
     
     // 포맷팅된 응답
-    const formattedLetters = filtered.map(letter => ({
+    const formattedLetters = paginatedData.map(letter => ({
       id: letter._id,
       name: letter.name,
       school: letter.school,
@@ -67,9 +78,9 @@ async function getLetters(countryId, page = 1, limit = 20) {
     return {
       success: true,
       data: formattedLetters,
-      total: dummyLetters.length,
+      total: filtered.length,
       page: page,
-      pages: Math.ceil(dummyLetters.length / limit)
+      pages: Math.ceil(filtered.length / limit)
     };
   } catch (error) {
     console.error('[mongodb] getLetters 오류:', error);
@@ -86,16 +97,26 @@ async function getLetter(id) {
   console.log(`[mongodb] getLetter 호출 (ID: ${id})`);
   
   try {
+    // 메모리 내 저장소에서 해당 ID의 편지 찾기
+    const letter = lettersStore.find(letter => letter._id === id);
+    
+    if (!letter) {
+      return {
+        success: false,
+        error: 'Letter not found'
+      };
+    }
+    
     return {
       success: true,
       data: {
-        id: id,
-        name: '홍길동',
-        school: '서울초등학교',
-        grade: '5학년',
-        letterContent: '참전해주셔서 감사합니다',
-        countryId: 'usa',
-        createdAt: new Date().toISOString()
+        id: letter._id,
+        name: letter.name,
+        school: letter.school,
+        grade: letter.grade,
+        letterContent: letter.letterContent,
+        countryId: letter.countryId,
+        createdAt: letter.createdAt instanceof Date ? letter.createdAt.toISOString() : letter.createdAt
       }
     };
   } catch (error) {
@@ -130,6 +151,22 @@ async function addLetter(letterData) {
     
     // 새 편지 ID 생성
     const newId = 'letter-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+    
+    // 새 편지 객체 생성
+    const newLetter = {
+      _id: newId,
+      name: letterData.name,
+      school: letterData.school || '',
+      grade: letterData.grade || '',
+      letterContent: letterData.letterContent,
+      countryId: letterData.countryId,
+      createdAt: new Date()
+    };
+    
+    // 메모리 내 저장소에 새 편지 추가
+    lettersStore.push(newLetter);
+    
+    console.log('[mongodb] 새 편지가 추가되었습니다. 현재 총 편지 수:', lettersStore.length);
     
     return {
       success: true,
