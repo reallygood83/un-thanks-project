@@ -33,11 +33,6 @@
       "methods": ["POST", "OPTIONS"]
     },
     {
-      "src": "/api/translatePreview",
-      "dest": "/api/index.js?action=translatePreview",
-      "methods": ["POST", "OPTIONS"]
-    },
-    {
       "src": "/api/health",
       "dest": "/api/health.js"
     },

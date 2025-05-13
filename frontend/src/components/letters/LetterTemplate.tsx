@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { format } from 'date-fns';
 import './LetterTemplate.css';
 
@@ -7,7 +7,6 @@ interface LetterTemplateProps {
   countryName: string;
   flagCode: string;
   letterContent: string;
-  translatedContent: string;
   writerName: string;
   writerSchool?: string;
   writerGrade?: string;
@@ -19,14 +18,11 @@ const LetterTemplate: React.FC<LetterTemplateProps> = ({
   countryName,
   flagCode,
   letterContent,
-  translatedContent,
   writerName,
   writerSchool,
   writerGrade,
   createdAt,
 }) => {
-  const [showTranslation, setShowTranslation] = useState<boolean>(false);
-  
   // 국기 URL 생성
   const flagUrl = `https://flagcdn.com/w160/${flagCode.toLowerCase()}.png`;
   const formattedDate = format(new Date(createdAt), 'yyyy년 MM월 dd일');
@@ -46,7 +42,7 @@ const LetterTemplate: React.FC<LetterTemplateProps> = ({
           </div>
           
           <div className="letter-body">
-            {showTranslation ? translatedContent : letterContent}
+            {letterContent}
           </div>
           
           <div className="letter-signature">
@@ -63,25 +59,6 @@ const LetterTemplate: React.FC<LetterTemplateProps> = ({
         
         <div className="letter-footer">
           <span>6.25 UN 참전국 감사 편지 프로젝트</span>
-          <button 
-            className="letter-translation-toggle"
-            onClick={() => setShowTranslation(!showTranslation)}
-          >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="M5 8l6 6 6-6"/>
-            </svg>
-            {showTranslation ? '원문 보기' : '번역문 보기'}
-          </button>
         </div>
       </div>
     </div>

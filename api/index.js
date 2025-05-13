@@ -1,6 +1,5 @@
 // UN 감사 편지 API - 서버리스 함수 MongoDB 연동 버전
 const { connectToDatabase, sampleCountries, sampleLetters, validateLetterData } = require('./_lib/mongodb');
-const translationService = require('./services/translationService');
 const letterService = require('./services/letterService');
 const countryService = require('./services/countryService');
 

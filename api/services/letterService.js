@@ -1,7 +1,6 @@
 // 편지 서비스 - 편지 관련 기능 처리
 const { v4: uuidv4 } = require('uuid');
 const { connectToDatabase, sampleLetters, validateLetterData } = require('../_lib/mongodb');
-const translationService = require('./translationService');
 
 /**
  * 편지 목록 조회
@@ -130,20 +129,13 @@ async function addLetter(letterData) {
       };
     }
     
-    // 번역 수행
-    const translatedContent = await translationService.translateText(
-      letterData.letterContent,
-      letterData.countryId
-    );
-    
-    // 새 편지 객체 생성
+    // 새 편지 객체 생성 (번역 필드 제거)
     const newLetter = {
       _id: uuidv4(), // UUID 생성
       name: letterData.name,
       school: letterData.school || '',
       grade: letterData.grade || '',
       letterContent: letterData.letterContent,
-      translatedContent,
       countryId: letterData.countryId,
       createdAt: new Date()
     };
@@ -168,7 +160,6 @@ async function addLetter(letterData) {
       success: true,
       data: {
         id: newLetter._id,
-        translatedContent: newLetter.translatedContent,
         originalContent: letterData.letterContent
       },
       message: '편지가 성공적으로 저장되었습니다.'
@@ -179,14 +170,10 @@ async function addLetter(letterData) {
     // 오류 발생 시 임시 ID 생성
     const fallbackId = 'fallback-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
     
-    // 임시 번역 (진짜 번역이 실패했을 경우)
-    const mockTranslation = `[번역된 내용]: ${letterData.letterContent?.substring(0, 30) || ''}...`;
-    
     return {
       success: true, // 프론트엔드 호환성을 위해 success: true 유지
       data: {
         id: fallbackId,
-        translatedContent: mockTranslation,
         originalContent: letterData.letterContent
       },
       fallback: true,
