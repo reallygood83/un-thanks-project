@@ -14,7 +14,7 @@ function setCorsHeaders(res) {
 }
 
 // 편지 제출 API 핸들러
-module.exports = async function handler(req, res) {
+module.exports = async (req, res) => {
   try {
     // CORS 헤더 설정
     setCorsHeaders(res);
