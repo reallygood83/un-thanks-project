@@ -1,15 +1,8 @@
 // /api/submitLetter 엔드포인트 - 편지 추가
-const { addLetter } = require('../_lib/google-sheets');
+const mongodb = require('../_lib/mongodb');
 
 export default async function handler(req, res) {
   console.log('API 요청 받음:', req.method, req.url);
-  
-  // 환경 변수 확인 로그 (보안을 위해 키 자체는 출력하지 않음)
-  console.log('환경 변수 확인:',
-    process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ? 'Service Account Email 있음' : '없음',
-    process.env.GOOGLE_PRIVATE_KEY ? 'Private Key 있음' : '없음',
-    process.env.GOOGLE_SPREADSHEET_ID ? 'Spreadsheet ID 있음' : '없음'
-  );
   
   // CORS 헤더 설정
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -57,7 +50,7 @@ export default async function handler(req, res) {
       }
       
       console.log('addLetter 함수 호출 시작');
-      const result = await addLetter(letterData);
+      const result = await mongodb.addLetter(letterData);
       console.log('addLetter 함수 결과:', result.success ? '성공' : '실패');
       
       if (result.success) {

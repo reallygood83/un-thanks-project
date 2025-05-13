@@ -1,5 +1,5 @@
 // /api/letters/[id] 엔드포인트 - 특정 ID의 편지 조회
-const { getLetter } = require('../_lib/google-sheets');
+const mongodb = require('../_lib/mongodb');
 
 export default async function handler(req, res) {
   // CORS 헤더 설정
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       });
     }
     
-    const result = await getLetter(id);
+    const result = await mongodb.getLetter(id);
     
     if (result.success) {
       return res.status(200).json(result);
