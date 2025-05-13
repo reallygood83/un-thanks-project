@@ -7,29 +7,36 @@
 
 .unicon-header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 4.5rem;
+  padding: 0 1rem; /* 모바일에서도 여백 확보 */
 }
 
 .unicon-title {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem;
-  color: #e65100; /* 따뜻한 오렌지색으로 변경 */
+  font-size: 4rem;
+  font-weight: 800;
+  margin: 0 0 0.8rem;
+  color: #e65100; /* 따뜻한 오렌지색 */
   letter-spacing: 2px;
+  text-shadow: 2px 2px 0px rgba(255, 160, 0, 0.2); /* 부드러운 그림자 효과 */
+  line-height: 1.1;
 }
 
 .unicon-subtitle {
-  font-size: 1.5rem;
-  color: #4a4a4a;
-  margin: 0 0 1rem;
-  font-weight: 300;
+  font-size: 1.7rem;
+  color: #884400; /* 더 어두운 갈색으로 대비 향상 */
+  margin: 0 0 1.2rem;
+  font-weight: 500; /* 더 굵게 변경하여 가독성 향상 */
+  letter-spacing: 0.8px;
 }
 
 .unicon-description {
-  font-size: 1.2rem;
-  color: #6c757d;
+  font-size: 1.25rem;
+  color: #663c00; /* 더 어두운 갈색으로 대비 향상 */
   max-width: 700px;
   margin: 0 auto;
+  line-height: 1.5;
+  letter-spacing: 0.3px;
+  word-break: keep-all; /* 단어 단위로 줄바꿈 */
 }
 
 .unicon-content {
@@ -98,70 +105,97 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(255,111,0,0.1), rgba(230,81,0,0.7)); /* 따뜻한 그라데이션으로 변경 */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.75)); /* 더 어두운 그라데이션으로 변경하여 텍스트 가독성 향상 */
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 1.5rem;
+  padding: 1.75rem;
   color: white;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3); /* 텍스트 가독성 향상 */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* 더 강한 텍스트 그림자로 가독성 향상 */
 }
 
 .card-overlay h3 {
-  font-size: 1.8rem;
-  margin: 0 0 0.5rem;
-  font-weight: 600;
+  font-size: 1.9rem;
+  margin: 0 0 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px; /* 자간 조정으로 가독성 향상 */
+  line-height: 1.3; /* 줄 간격 조정 */
+  max-width: 90%; /* 한 줄에 너무 많은 글자가 들어가지 않도록 제한 */
+  hyphens: auto; /* 자동 하이픈 처리 */
+  word-break: keep-all; /* 단어 단위로 줄바꿈 (한글에 적합) */
 }
 
 .card-overlay p {
-  font-size: 1rem;
+  font-size: 1.05rem;
   margin: 0;
-  opacity: 0.9;
+  opacity: 1; /* 투명도 제거로 가독성 향상 */
+  line-height: 1.5; /* 적절한 줄 간격 */
+  max-width: 95%; /* 텍스트 너비 제한으로 가독성 향상 */
+  word-break: keep-all; /* 단어 단위로 줄바꿈 */
+  word-wrap: break-word; /* 단어가 너무 길 경우 줄바꿈 허용 */
 }
 
 .card-content {
-  padding: 1.5rem;
+  padding: 1.75rem;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
 }
 
 .card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 1rem;
-  color: #e65100; /* 따뜻한 오렌지색으로 변경 */
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 1.25rem;
+  color: #e65100; /* 따뜻한 오렌지색 */
+  line-height: 1.3;
+  letter-spacing: 0.3px;
+  word-break: keep-all; /* 단어 단위로 줄바꿈 (한글에 적합) */
 }
 
 .card-description {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #7d4b00; /* 따뜻한 갈색으로 변경 */
-  margin-bottom: 1.5rem;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: #663c00; /* 명암비를 높여 가독성 향상 */
+  margin-bottom: 1.75rem;
   flex-grow: 1;
+  word-break: keep-all; /* 단어 단위로 줄바꿈 */
+  text-align: justify; /* 양쪽 정렬로 깔끔한 레이아웃 */
+  text-justify: inter-word; /* 단어 간격을 조절하여 정렬 */
+  letter-spacing: 0.2px; /* 약간의 자간 */
 }
 
 .card-cta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid #ffe0b2; /* 따뜻한 경계선 색상 */
-  color: #e65100; /* 오렌지 색상으로 변경 */
-  font-weight: 600;
-  transition: color 0.2s ease;
+  padding-top: 1.2rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid #ffcc80; /* 더 선명한 경계선 */
+  color: #e65100; /* 오렌지 색상 */
+  font-weight: 700; /* 더 굵게 */
+  transition: all 0.3s ease;
+  font-size: 1.1rem; /* 크기 증가 */
+  letter-spacing: 0.4px; /* 자간 추가 */
 }
 
 .project-card:hover .card-cta {
-  color: #ff6f00; /* 밝은 오렌지색으로 변경 */
+  color: #ff6f00; /* 밝은 오렌지색 */
+  transform: translateX(5px); /* 살짝 이동하는 효과 */
 }
 
 .card-cta.disabled {
-  color: #aaa;
+  color: #bbb; /* 약간 더 어둡게 하여 가독성 향상 */
+  font-weight: 600;
 }
 
 .cta-icon {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.project-card:hover .cta-icon {
+  transform: translateX(5px); /* 호버 시 화살표가 더 움직이도록 */
 }
 
 .unicon-footer {
@@ -180,41 +214,104 @@
 
 @media (max-width: 992px) {
   .project-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2.5rem; /* 간격 늘려서 카드 구분 명확하게 */
+  }
+  
+  .unicon-title {
+    font-size: 3.5rem;
   }
 }
 
 @media (max-width: 768px) {
   .unicon-title {
-    font-size: 2.8rem;
+    font-size: 3rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.7rem;
   }
   
   .unicon-subtitle {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
   }
   
   .unicon-description {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
+    max-width: 90%;
+    padding: 0 1rem;
   }
   
   .project-grid {
     grid-template-columns: 1fr;
-    max-width: 500px;
+    max-width: 540px; /* 약간 더 넓게 */
     margin: 0 auto;
+    gap: 2.5rem;
+  }
+  
+  .card-content {
+    padding: 1.6rem;
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 576px) {
+  .unicon-page {
+    padding: 2rem 0.5rem; /* 모바일에서 좌우 여백 추가 */
+  }
+  
   .unicon-header {
     margin-bottom: 2.5rem;
   }
   
   .unicon-title {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
   }
   
   .card-image {
-    height: 180px;
+    height: 200px; /* 모바일에서 오히려 높이 증가로 가시성 확보 */
+  }
+  
+  .card-overlay {
+    padding: 1.5rem;
+  }
+  
+  .card-overlay h3 {
+    font-size: 1.6rem;
+    max-width: 100%;
+  }
+  
+  .card-overlay p {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+  
+  .card-content {
+    padding: 1.5rem;
+  }
+  
+  .card-title {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  
+  .card-description {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+}
+
+/* 매우 작은 화면에 대한 추가 대응 */
+@media (max-width: 400px) {
+  .unicon-title {
+    font-size: 2.2rem;
+  }
+  
+  .unicon-subtitle {
+    font-size: 1.2rem;
   }
   
   .card-overlay h3 {
