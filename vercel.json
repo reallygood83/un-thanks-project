@@ -15,6 +15,21 @@
   ],
   "routes": [
     {
+      "src": "/api/submitLetter",
+      "dest": "api/submitLetter.js",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/getLetters",
+      "dest": "api/getLetters.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
+      "src": "/api/getLetter/(?<id>[^/]+)",
+      "dest": "api/getLetter.js?id=$id",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/direct-submit",
       "dest": "api/direct-submit.js",
       "methods": ["GET", "POST", "OPTIONS"]
@@ -25,16 +40,9 @@
       "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"]
     },
     {
-      "src": "/api/submitLetter",
-      "dest": "api/submitLetter/index.js"
-    },
-    {
-      "src": "/api/getLetters",
-      "dest": "api/getLetters/index.js"
-    },
-    {
       "src": "/api/health",
-      "dest": "api/health/index.js"
+      "dest": "api/health.js",
+      "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/(.*)",

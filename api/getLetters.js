@@ -1,66 +1,96 @@
-// getLetters API 핸들러 - 편지 목록 조회 처리
-const letterService = require('./services/letterService');
+// /api/getLetters 엔드포인트 - 편지 목록 조회
+const { getLetters } = require('./letters');
 
 // CORS 헤더 설정
 function setCorsHeaders(res) {
+  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,OPTIONS,PATCH,DELETE,POST,PUT'
+  );
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, X-Requested-With'
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 }
 
 // 편지 목록 조회 API 핸들러
 module.exports = async (req, res) => {
+  console.log('getLetters API 호출:', req.method, req.url);
+  
+  // CORS 헤더 설정
+  setCorsHeaders(res);
+  
+  // OPTIONS 요청 처리 (CORS preflight)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  // GET 요청만 허용
+  if (req.method !== 'GET') {
+    return res.status(405).json({
+      success: false,
+      error: '허용되지 않은 메서드',
+      message: 'GET 요청만 허용됩니다'
+    });
+  }
+  
   try {
-    // CORS 헤더 설정
-    setCorsHeaders(res);
-
-    // OPTIONS 요청 처리
-    if (req.method === 'OPTIONS') {
-      return res.status(200).end();
+    // 쿼리 파라미터 추출
+    let countryId, page, limit;
+    
+    // URL 파싱 방식
+    if (req.url) {
+      try {
+        const urlObj = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
+        countryId = urlObj.searchParams.get('countryId');
+        page = parseInt(urlObj.searchParams.get('page')) || 1;
+        limit = parseInt(urlObj.searchParams.get('limit')) || 20;
+      } catch (urlError) {
+        console.warn('URL 파싱 오류, req.query 사용 시도:', urlError.message);
+      }
     }
-
-    console.log('[getLetters] API 호출됨');
-    console.log('[getLetters] 메서드:', req.method);
-    console.log('[getLetters] 호스트:', req.headers.host);
-    console.log('[getLetters] URL:', req.url);
-
-    // GET 요청이 아니면 405 오류 반환
-    if (req.method !== 'GET') {
-      console.error('[getLetters] 허용되지 않은 메서드:', req.method);
-      return res.status(405).json({
+    
+    // req.query 방식 (URL 파싱 실패시)
+    if (typeof countryId === 'undefined' && req.query) {
+      countryId = req.query.countryId;
+      page = parseInt(req.query.page) || 1;
+      limit = parseInt(req.query.limit) || 20;
+    }
+    
+    // 기본값 설정
+    page = page || 1;
+    limit = limit || 20;
+    
+    console.log('편지 목록 조회 파라미터:', { countryId, page, limit });
+    
+    // 편지 목록 조회
+    const result = await getLetters({ countryId, page, limit });
+    
+    // 결과 처리
+    if (result.success) {
+      console.log('편지 목록 조회 성공:', result.data.length);
+      
+      return res.status(200).json({
+        success: true,
+        data: result.data,
+        total: result.pagination.total,
+        page: result.pagination.page,
+        pages: result.pagination.pages
+      });
+    } else {
+      console.error('편지 목록 조회 실패:', result.error);
+      return res.status(500).json({
         success: false,
-        message: '허용되지 않은 HTTP 메서드입니다. GET 요청만 허용됩니다.'
+        error: result.error,
+        message: '편지 목록 조회 중 오류가 발생했습니다'
       });
     }
-
-    // URL에서 쿼리 파라미터 추출
-    let url;
-    try {
-      url = new URL(req.url, `https://${req.headers.host || 'vercel.app'}`);
-      console.log('[getLetters] 파싱된 URL:', url.toString());
-    } catch (urlError) {
-      console.error('[getLetters] URL 파싱 오류:', urlError);
-      url = { searchParams: { get: () => null } };
-    }
-
-    // 쿼리 파라미터 추출
-    const countryId = url.searchParams?.get('countryId') || req.query?.countryId;
-    const page = parseInt(url.searchParams?.get('page') || req.query?.page || 1);
-    const limit = parseInt(url.searchParams?.get('limit') || req.query?.limit || 50);
-    
-    console.log('[getLetters] 쿼리 파라미터:', { countryId, page, limit });
-
-    // 서비스 직접 호출
-    const result = await letterService.getLetters(countryId, page, limit);
-    
-    return res.status(200).json(result);
   } catch (error) {
-    console.error('[getLetters] 처리 중 오류:', error);
-
-    // 임시 더미 데이터
+    console.error('getLetters 처리 중 오류:', error);
+    
+    // 오류시 더미 데이터로 응답 (프론트엔드 호환성 유지)
     const dummyLetters = [
       {
         id: 'error-1',
@@ -81,12 +111,13 @@ module.exports = async (req, res) => {
         createdAt: new Date(Date.now() - 86400000).toISOString()
       }
     ];
-
-    // 프론트엔드에서 처리 가능하도록 항상 성공 응답 반환
+    
     return res.status(200).json({
-      success: true, // 프론트엔드 호환성을 위해 success: true 유지
-      message: '서버 내부 오류로 임시 데이터를 반환합니다',
+      success: true,
       data: dummyLetters,
+      total: dummyLetters.length,
+      page: 1,
+      pages: 1,
       error: error.message,
       fallback: true
     });
