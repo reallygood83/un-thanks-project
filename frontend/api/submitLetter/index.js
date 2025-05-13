@@ -1,7 +1,7 @@
 // /api/submitLetter 엔드포인트 - 편지 추가
 const mongodb = require('../_lib/mongodb');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   console.log('API 요청 받음:', req.method, req.url);
   
   // CORS 헤더 설정
@@ -49,14 +49,32 @@ export default async function handler(req, res) {
         });
       }
       
-      console.log('addLetter 함수 호출 시작');
-      const result = await mongodb.addLetter(letterData);
-      console.log('addLetter 함수 결과:', result.success ? '성공' : '실패');
+      // 확인: letterData 객체가 유효한지
+      if (typeof letterData !== 'object') {
+        console.error('letterData가 유효한 객체가 아닙니다:', letterData);
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid request data'
+        });
+      }
       
-      if (result.success) {
-        return res.status(201).json(result);
-      } else {
-        return res.status(500).json(result);
+      try {
+        console.log('addLetter 함수 호출 시작');
+        const result = await mongodb.addLetter(letterData);
+        console.log('addLetter 함수 결과:', result.success ? '성공' : '실패');
+        
+        if (result.success) {
+          return res.status(201).json(result);
+        } else {
+          return res.status(500).json(result);
+        }
+      } catch (addLetterError) {
+        console.error('편지 추가 처리 중 예외 발생:', addLetterError);
+        return res.status(500).json({
+          success: false,
+          error: 'Server error processing request',
+          message: addLetterError.message,
+        });
       }
     } catch (error) {
       console.error('편지 추가 중 오류 발생:', error);
@@ -65,7 +83,6 @@ export default async function handler(req, res) {
         success: false,
         error: 'Server error processing request',
         message: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     }
   }
@@ -75,4 +92,4 @@ export default async function handler(req, res) {
     success: false,
     error: `Method ${req.method} Not Allowed`
   });
-}
+};

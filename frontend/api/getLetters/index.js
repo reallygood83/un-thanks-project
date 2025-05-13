@@ -37,26 +37,55 @@ module.exports = async (req, res) => {
     }
 
     // URL에서 쿼리 파라미터 추출
-    let url;
+    let countryId, page, limit;
+
     try {
-      url = new URL(req.url, `https://${req.headers.host || 'vercel.app'}`);
-      console.log('[getLetters] 파싱된 URL:', url.toString());
-    } catch (urlError) {
-      console.error('[getLetters] URL 파싱 오류:', urlError);
-      url = { searchParams: { get: () => null } };
+      // 요청 객체에서 직접 쿼리 파라미터 추출 시도
+      if (req.query) {
+        countryId = req.query.countryId;
+        page = parseInt(req.query.page) || 1;
+        limit = parseInt(req.query.limit) || 50;
+      } 
+      // URL 파싱 시도
+      else if (req.url) {
+        try {
+          const url = new URL(req.url, `https://${req.headers.host || 'vercel.app'}`);
+          countryId = url.searchParams.get('countryId');
+          page = parseInt(url.searchParams.get('page')) || 1;
+          limit = parseInt(url.searchParams.get('limit')) || 50;
+        } catch (urlError) {
+          console.warn('[getLetters] URL 파싱 실패:', urlError.message);
+          // 기본값 설정
+          countryId = null;
+          page = 1;
+          limit = 50;
+        }
+      } else {
+        // 기본값 설정
+        countryId = null;
+        page = 1;
+        limit = 50;
+      }
+      
+      console.log('[getLetters] 쿼리 파라미터:', { countryId, page, limit });
+    } catch (paramError) {
+      console.error('[getLetters] 쿼리 파라미터 추출 오류:', paramError);
+      // 오류 발생 시 기본값 설정
+      countryId = null;
+      page = 1;
+      limit = 50;
     }
 
-    // 쿼리 파라미터 추출
-    const countryId = url.searchParams?.get('countryId') || req.query?.countryId;
-    const page = parseInt(url.searchParams?.get('page') || req.query?.page || 1);
-    const limit = parseInt(url.searchParams?.get('limit') || req.query?.limit || 50);
-    
-    console.log('[getLetters] 쿼리 파라미터:', { countryId, page, limit });
-
-    // MongoDB에서 편지 목록 조회
-    const result = await mongodb.getLetters(countryId);
-    
-    return res.status(200).json(result);
+    try {
+      // MongoDB에서 편지 목록 조회
+      const result = await mongodb.getLetters(countryId, page, limit);
+      console.log('[getLetters] 조회 성공:', { count: result.data?.length || 0 });
+      
+      return res.status(200).json(result);
+    } catch (dbError) {
+      console.error('[getLetters] 데이터 조회 오류:', dbError);
+      throw dbError; // 오류 처리 흐름으로 전달
+    }
   } catch (error) {
     console.error('[getLetters] 처리 중 오류:', error);
 
