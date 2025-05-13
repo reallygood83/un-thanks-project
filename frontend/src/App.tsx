@@ -10,6 +10,7 @@ import LetterFormPage from './pages/LetterFormPage';
 import LetterBoardPage from './pages/LetterBoardPage';
 import AboutPage from './pages/AboutPage';
 import SurveyListPage from './pages/SurveyListPage';
+import SurveyDetailPage from './pages/SurveyDetailPage';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -32,6 +33,7 @@ const App: React.FC = () => {
           <Route path="/letters" element={<LetterBoardPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/survey" element={<SurveyListPage />} />
+          <Route path="/survey/:id" element={<SurveyDetailPage />} />
         </Routes>
       </main>
       {!isMainHub && <Footer />}

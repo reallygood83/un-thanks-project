@@ -6,9 +6,18 @@ import {
   ApiResponse,
   GenerateSurveyRequest
 } from '../types/survey';
+import { 
+  mockGetAllSurveys,
+  mockGetSurveyById,
+  mockSubmitResponse,
+  mockGetSurveyResults
+} from './mockSurveyData';
 
 // API 기본 URL
 const BASE_URL = '/api/surveys';
+
+// 개발 환경에서는 목업 API 사용
+const USE_MOCK_API = true; // process.env.NODE_ENV === 'development';
 
 /**
  * 미래로 AI 설문 서비스를 위한 API 클라이언트
@@ -20,6 +29,10 @@ export const surveyApi = {
    * @returns 설문 목록
    */
   getAllSurveys: async (): Promise<Survey[]> => {
+    if (USE_MOCK_API) {
+      return mockGetAllSurveys();
+    }
+    
     try {
       const response = await axios.get<ApiResponse<Survey[]>>(BASE_URL);
       
@@ -41,6 +54,10 @@ export const surveyApi = {
    * @returns 설문 정보
    */
   getSurveyById: async (id: string): Promise<Survey> => {
+    if (USE_MOCK_API) {
+      return mockGetSurveyById(id);
+    }
+    
     try {
       const response = await axios.get<ApiResponse<Survey>>(`${BASE_URL}/${id}`);
       
@@ -117,6 +134,10 @@ export const surveyApi = {
     surveyId: string, 
     response: Omit<SurveyResponse, '_id' | 'surveyId' | 'createdAt'>
   ): Promise<{ responseId: string }> => {
+    if (USE_MOCK_API) {
+      return mockSubmitResponse(surveyId, response);
+    }
+    
     try {
       const result = await axios.post<ApiResponse<{ responseId: string }>>(
         `${BASE_URL}/${surveyId}/responses`, 
@@ -143,6 +164,10 @@ export const surveyApi = {
    * @returns 설문 결과 정보
    */
   getSurveyResults: async (surveyId: string, password?: string): Promise<SurveyResults> => {
+    if (USE_MOCK_API) {
+      return mockGetSurveyResults(surveyId);
+    }
+    
     try {
       const params: any = {};
       if (password) {
