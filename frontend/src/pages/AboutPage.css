@@ -2,6 +2,28 @@
   padding-bottom: 3rem;
 }
 
+.project-image-container {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.project-image {
+  max-width: 450px;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 10px 30px rgba(0, 158, 219, 0.2);
+  background-color: white;
+  padding: 25px;
+  transition: all 0.4s ease;
+  filter: drop-shadow(0 0 10px rgba(0, 158, 219, 0.25));
+}
+
+.project-image:hover {
+  transform: scale(1.05) rotate(3deg);
+  box-shadow: 0 15px 40px rgba(0, 158, 219, 0.3);
+  filter: drop-shadow(0 0 15px rgba(0, 158, 219, 0.35));
+}
+
 .about-container {
   background-color: white;
   border-radius: 8px;

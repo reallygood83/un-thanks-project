@@ -284,6 +284,23 @@
   box-shadow: var(--card-shadow);
 }
 
+.un-korea-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 158, 219, 0.15);
+  background-color: white;
+  padding: 25px;
+  transition: all 0.4s ease;
+  filter: drop-shadow(0 0 8px rgba(0, 158, 219, 0.2));
+}
+
+.un-korea-image:hover {
+  transform: scale(1.03);
+  box-shadow: 0 15px 40px rgba(0, 158, 219, 0.25);
+  filter: drop-shadow(0 0 12px rgba(0, 158, 219, 0.3));
+}
+
 .placeholder-image {
   width: 100%;
   height: 300px;
