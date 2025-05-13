@@ -55,22 +55,23 @@ const UNICONPage: React.FC = () => {
               </div>
             </Link>
             
-            {/* 준비중인 프로젝트 카드 */}
-            <div className="project-card disabled">
-              <div className="card-image coming-soon-bg">
+            {/* 미래로 AI 설문 프로젝트 카드 */}
+            <Link to="/survey" className="project-card">
+              <div className="card-image ai-survey-bg">
                 <div className="card-overlay">
-                  <h3>준비중</h3>
-                  <p>새로운 프로젝트가 준비중입니다</p>
+                  <h3>미래로 AI 설문</h3>
+                  <p>AI가 분석하는 미래 통일 한국에 대한 설문조사</p>
                 </div>
               </div>
               <div className="card-content">
-                <h3 className="card-title">Coming Soon</h3>
-                <p className="card-description">새로운 통일 교육 프로젝트가 준비중입니다. 조금만 기다려주세요!</p>
-                <div className="card-cta disabled">
-                  <span className="cta-text">준비중</span>
+                <h3 className="card-title">미래로 AI 설문</h3>
+                <p className="card-description">미래 통일 한국의 모습에 대한 여러분의 생각을 설문으로 남겨주세요. AI가 분석한 결과를 확인할 수 있습니다.</p>
+                <div className="card-cta">
+                  <span className="cta-text">설문 참여하기</span>
+                  <span className="cta-icon">→</span>
                 </div>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
         
