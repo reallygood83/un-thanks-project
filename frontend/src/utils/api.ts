@@ -34,9 +34,11 @@ export const submitLetter = async (letterData: {
   countryId: string;
 }) => {
   try {
-    // 쿼리 파라미터 대신 직접 경로 사용
-    const apiUrl = `${API_BASE_URL}/submitLetter`;
+    // 새로운 직접 MongoDB 연결 API 엔드포인트 사용
+    const apiUrl = `${API_BASE_URL}/direct-submitLetter`;
     console.log('API URL:', apiUrl);
+    // 기존 API 엔드포인트를 대체 URL로 백업
+    const fallbackApiUrl = `${API_BASE_URL}/submitLetter`;
 
     // 데이터 전처리
     const processedData = {
@@ -91,7 +93,7 @@ export const submitLetter = async (letterData: {
       console.error('API 응답 형식 오류:', response.data);
       throw new Error('API 응답이 성공이 아님');
     } catch (axiosError: any) {
-      console.log('API 요청 실패, 로컬 더미 데이터 반환');
+      console.log('API 요청 실패, 대체 API 시도 또는 로컬 데이터 반환');
       console.error('API 오류 상세:', axiosError.message);
       
       if (axiosError.response) {
@@ -99,7 +101,37 @@ export const submitLetter = async (letterData: {
         console.error('API 응답 데이터:', axiosError.response.data);
       }
 
-      // API 요청이 실패하더라도 사용자 경험을 위해 성공 응답 반환
+      // 기존 API로 한 번 더 시도
+      try {
+        console.log('대체 API URL로 재시도:', fallbackApiUrl);
+        
+        const fallbackResponse = await axios({
+          method: 'post',
+          url: fallbackApiUrl,
+          data: processedData,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          timeout: 8000 // 8초 타임아웃 (더 짧게)
+        });
+        
+        if (fallbackResponse.data && fallbackResponse.data.success) {
+          console.log('대체 API 호출 성공:', fallbackResponse.data);
+          return {
+            success: true,
+            data: fallbackResponse.data.data || {
+              id: 'fallback-api-' + new Date().getTime(),
+              originalContent: letterData.letterContent
+            },
+            fromFallbackApi: true
+          };
+        }
+      } catch (fallbackError) {
+        console.error('대체 API도 실패:', fallbackError.message);
+      }
+
+      // 모든 API 요청이 실패하더라도 사용자 경험을 위해 성공 응답 반환
       return {
         success: true,
         data: {
@@ -127,13 +159,19 @@ export const submitLetter = async (letterData: {
 // 편지 목록 가져오기
 export const getLetters = async (countryId?: string) => {
   try {
-    // 쿼리 파라미터 대신 직접 경로 사용
-    let url = `${API_BASE_URL}/getLetters`;
+    // 새로운 직접 MongoDB 연결 API 엔드포인트 사용
+    let url = `${API_BASE_URL}/direct-getLetters`;
     if (countryId) {
       url += `?countryId=${countryId}`;
     }
 
     console.log('편지 목록 가져오기 URL:', url);
+    
+    // 기존 API 엔드포인트를 대체 URL로 백업
+    let fallbackUrl = `${API_BASE_URL}/getLetters`;
+    if (countryId) {
+      fallbackUrl += `?countryId=${countryId}`;
+    }
 
     try {
       console.log('편지 목록 요청 보내는 중...', url);
@@ -196,7 +234,34 @@ export const getLetters = async (countryId?: string) => {
       console.log('원본 응답:', JSON.stringify(response.data).substring(0, 200) + '...');
       throw new Error('API 응답 형식 불일치');
     } catch (error) {
-      console.log('API 요청 실패, 로컬 더미 데이터 반환');
+      console.log('API 요청 실패, 대체 API 시도 또는 로컬 데이터 반환');
+      console.error('API 오류 상세:', error);
+      
+      // 기존 API로 한 번 더 시도
+      try {
+        console.log('대체 API URL로 재시도:', fallbackUrl);
+        
+        const fallbackResponse = await axios.get(fallbackUrl, {
+          timeout: 8000 // 8초 타임아웃 (더 짧게)
+        });
+        
+        if (fallbackResponse.data && 
+            (fallbackResponse.data.success || Array.isArray(fallbackResponse.data.data))) {
+          console.log('대체 API 호출 성공:', fallbackResponse.data);
+          
+          const dataArray = Array.isArray(fallbackResponse.data.data)
+            ? fallbackResponse.data.data
+            : fallbackResponse.data.data ? [fallbackResponse.data.data] : [];
+            
+          return {
+            success: true,
+            data: dataArray,
+            fromFallbackApi: true
+          };
+        }
+      } catch (fallbackError) {
+        console.error('대체 API도 실패:', fallbackError);
+      }
 
       // 더미 데이터 - 항상 동일하게 유지
       const dummyLetters = [
