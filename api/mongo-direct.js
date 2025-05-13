@@ -49,13 +49,15 @@ async function addLetterToMongo(letterData) {
     // 컬렉션 참조
     const collection = db.collection(LETTERS_COLLECTION);
     
-    // 저장할 문서 생성
+    // 저장할 문서 생성 (클라이언트 요청 필드 매핑)
     const letter = {
       name: letterData.name,
       school: letterData.school || '',
       grade: letterData.grade || '',
-      letterContent: letterData.letterContent,
-      countryId: letterData.countryId,
+      letterContent: letterData.letterContent || letterData.message || '',  // 필드명 호환성 추가
+      countryId: letterData.countryId || letterData.country || '',  // 필드명 호환성 추가
+      sender: letterData.sender || letterData.name || '',  // 필드명 호환성 추가
+      affiliation: letterData.affiliation || letterData.school || '',  // 필드명 호환성 추가
       createdAt: new Date()
     };
     

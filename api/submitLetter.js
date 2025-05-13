@@ -45,33 +45,51 @@ module.exports = async (req, res) => {
       });
     }
     
-    // 편지 데이터 추출
-    const { name, school, grade, letterContent, countryId } = req.body;
+    // 편지 데이터 추출 (여러 형태의 필드명 지원)
+    const { 
+      name, sender, 
+      school, affiliation, 
+      grade, 
+      letterContent, message, 
+      countryId, country 
+    } = req.body;
+    
+    // 필드명 호환성 처리
+    const writerName = name || sender || '';
+    const writerSchool = school || affiliation || '';
+    const content = letterContent || message || '';
+    const targetCountry = countryId || country || '';
     
     console.log('편지 데이터 수신 (MongoDB 직접 저장):', { 
-      name, 
-      school: school || '(없음)', 
+      name: writerName, 
+      school: writerSchool || '(없음)', 
       grade: grade || '(없음)', 
-      contentLength: letterContent?.length || 0,
-      countryId 
+      contentLength: content?.length || 0,
+      countryId: targetCountry,
+      originalRequest: JSON.stringify(req.body).substring(0, 200) // 디버깅용 원본 요청 일부
     });
     
-    // 필수 필드 검증
-    if (!name || !letterContent || !countryId) {
+    // 필수 필드 검증 (여러 형태의 필드명 지원)
+    if ((!writerName && !sender) || (!content && !message) || (!targetCountry && !country)) {
       return res.status(400).json({
         success: false,
         error: '필수 항목 누락',
-        message: '이름, 편지 내용, 국가ID는 필수 항목입니다'
+        message: '이름(name/sender), 편지 내용(letterContent/message), 국가ID(countryId/country)는 필수 항목입니다',
+        receivedFields: Object.keys(req.body)
       });
     }
     
-    // 편지 데이터 구성
+    // 편지 데이터 구성 (호환성 확보)
     const letterData = {
-      name,
-      school: school || '',
+      name: writerName,
+      sender: writerName,
+      school: writerSchool,
+      affiliation: writerSchool,
       grade: grade || '',
-      letterContent,
-      countryId,
+      letterContent: content,
+      message: content,
+      countryId: targetCountry,
+      country: targetCountry,
       createdAt: new Date()
     };
     
