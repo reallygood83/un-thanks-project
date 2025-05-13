@@ -26,41 +26,39 @@
       "src": "/api/(.*)",
       "headers": {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
       }
     },
     {
-      "src": "/api/getLetters",
-      "dest": "/api/getLetters.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
       "src": "/api/submitLetter",
-      "dest": "/api/submitLetter.js",
+      "dest": "api/submitLetter.js",
       "methods": ["POST", "OPTIONS"]
     },
     {
+      "src": "/api/getLetters",
+      "dest": "api/getLetters.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/health",
-      "dest": "/api/health.js",
+      "dest": "api/health.js",
       "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/letters/(.*)",
-      "dest": "/api/letters/$1.js",
-      "methods": ["GET", "POST", "OPTIONS"]
+      "dest": "api/letters/$1.js"
+    },
+    {
+      "src": "/api",
+      "dest": "api/index.js"
     },
     {
       "handle": "filesystem"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
       "src": "/(.*)",
-      "dest": "/frontend/dist/$1"
+      "dest": "frontend/dist/$1"
     }
   ]
 }

@@ -45,9 +45,7 @@ const LetterFormPage: React.FC = () => {
       // 데이터베이스에 편지 제출
       const response = await submitLetter({
         ...formData,
-        email: '', // 빈 이메일 전송 (백엔드 호환성)
-        countryId: country.id,
-        originalContent: true
+        countryId: country.id
       });
 
       if (!response.success) {

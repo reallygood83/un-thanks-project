@@ -1,5 +1,7 @@
-// 레거시 submitLetter API 핸들러 - 메인 핸들러로 리디렉션
+// submitLetter API 핸들러 - 편지 제출 처리
 const { parseBody } = require('./_lib/parser');
+const { validateLetterData } = require('./_lib/mongodb');
+const letterService = require('./services/letterService');
 
 // CORS 헤더 설정
 function setCorsHeaders(res) {
@@ -22,8 +24,9 @@ module.exports = async function handler(req, res) {
       return res.status(200).end();
     }
 
-    console.log('[submitLetter] 레거시 API 호출됨');
+    console.log('[submitLetter] API 호출됨');
     console.log('[submitLetter] 메서드:', req.method);
+    console.log('[submitLetter] 호스트:', req.headers.host);
 
     // POST 요청이 아니면 405 오류 반환
     if (req.method !== 'POST') {
@@ -34,31 +37,72 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // 액션 파라미터를 첨부하여 메인 핸들러로 리디렉션
-    req.url = req.url || '/';
-    if (!req.url.includes('action=')) {
-      req.url += (req.url.includes('?') ? '&' : '?') + 'action=submitLetter';
+    // 요청 본문 파싱
+    let body = {};
+    
+    if (req.body) {
+      // 객체인 경우 그대로 사용
+      if (typeof req.body === 'object' && !Buffer.isBuffer(req.body)) {
+        body = req.body;
+      }
+      // 문자열인 경우 JSON 파싱
+      else if (typeof req.body === 'string') {
+        try {
+          body = JSON.parse(req.body);
+        } catch (e) {
+          console.error('[submitLetter] 문자열 파싱 오류:', e);
+        }
+      }
+      // Buffer인 경우 문자열로 변환 후 JSON 파싱
+      else if (Buffer.isBuffer(req.body)) {
+        try {
+          const bodyString = req.body.toString();
+          body = JSON.parse(bodyString);
+        } catch (e) {
+          console.error('[submitLetter] Buffer 파싱 오류:', e);
+        }
+      }
     }
-
-    // 요청 본문이 아직 파싱되지 않았다면 파싱해둠
-    if (!req.body || Object.keys(req.body).length === 0) {
+    
+    // 본문이 파싱되지 않았으면 직접 읽기
+    if (Object.keys(body).length === 0) {
       try {
-        const body = await parseBody(req);
-        req.body = body;
-        console.log('[submitLetter] 본문 파싱 완료:', {
-          hasName: !!body.name,
-          hasEmail: !!body.email,
-          hasContent: !!body.letterContent,
-          countryId: body.countryId
-        });
+        body = await parseBody(req);
       } catch (parseError) {
         console.error('[submitLetter] 본문 파싱 오류:', parseError);
+        return res.status(400).json({
+          success: false,
+          message: '요청 본문을 파싱할 수 없습니다',
+          error: parseError.message
+        });
       }
     }
 
-    // 메인 핸들러로 요청 위임
-    const mainHandler = require('./index.js');
-    return await mainHandler(req, res);
+    console.log('[submitLetter] 파싱된 요청 본문:', {
+      name: body.name,
+      school: body.school,
+      grade: body.grade,
+      contentLength: body.letterContent?.length,
+      countryId: body.countryId
+    });
+    
+    // 필수 필드 검증
+    if (!validateLetterData(body)) {
+      console.log('[submitLetter] 필수 필드 누락');
+      
+      return res.status(400).json({
+        success: false,
+        message: '필수 항목이 누락되었습니다',
+        requiredFields: ['name', 'letterContent', 'countryId'],
+        receivedFields: Object.keys(body)
+      });
+    }
+    
+    // 서비스 직접 호출 (MongoDB 저장)
+    const result = await letterService.addLetter(body);
+    
+    // 결과 상태에 따라 응답
+    return res.status(result.success ? 201 : 400).json(result);
   } catch (error) {
     console.error('[submitLetter] 처리 중 오류:', error);
     return res.status(500).json({
@@ -66,7 +110,6 @@ module.exports = async function handler(req, res) {
       message: '서버 내부 오류로 임시 데이터를 반환합니다',
       data: {
         id: 'error-' + Date.now(),
-        translatedContent: '[번역 오류 발생]',
         originalContent: req.body?.letterContent || ''
       },
       error: error.message,

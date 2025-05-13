@@ -173,17 +173,32 @@ const sampleLetters = [
   }
 ];
 
-// 편지 데이터 검증
-function validateLetterData(data = {}) {
-  const requiredFields = ['name', 'letterContent', 'countryId'];
-
-  // 모든 필수 필드가 있는지 확인
-  const isValid = requiredFields.every(field =>
-    data[field] !== undefined &&
-    data[field] !== null &&
-    data[field] !== ''
-  );
-
+/**
+ * 편지 데이터 유효성 검사 - 필수 필드 확인
+ * @param {Object} letterData - 편지 데이터
+ * @returns {boolean} - 유효성 검사 결과
+ */
+function validateLetterData(letterData) {
+  if (!letterData) return false;
+  
+  // 필수 필드: 이름, 편지 내용, 국가 ID
+  const hasName = letterData.name && typeof letterData.name === 'string' && letterData.name.trim().length > 0;
+  const hasContent = letterData.letterContent && typeof letterData.letterContent === 'string' && letterData.letterContent.trim().length > 0;
+  const hasCountryId = letterData.countryId && typeof letterData.countryId === 'string' && letterData.countryId.trim().length > 0;
+  
+  // 이메일 필드 검사 제거 (이메일은 더 이상 필수 필드가 아님)
+  
+  const isValid = hasName && hasContent && hasCountryId;
+  
+  if (!isValid) {
+    console.log('[MongoDB] 편지 데이터 유효성 검사 실패:', {
+      hasName,
+      hasContent,
+      hasCountryId,
+      fields: Object.keys(letterData)
+    });
+  }
+  
   return isValid;
 }
 
