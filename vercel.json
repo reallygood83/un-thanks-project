@@ -23,6 +23,14 @@
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      }
+    },
+    {
       "src": "/api/getLetters",
       "dest": "/api/getLetters.js",
       "methods": ["GET", "OPTIONS"]
@@ -34,10 +42,19 @@
     },
     {
       "src": "/api/health",
-      "dest": "/api/health.js"
+      "dest": "/api/health.js",
+      "methods": ["GET", "OPTIONS"]
     },
     {
-      "src": "/api",
+      "src": "/api/letters/(.*)",
+      "dest": "/api/letters/$1.js",
+      "methods": ["GET", "POST", "OPTIONS"]
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/api/(.*)",
       "dest": "/api/index.js",
       "methods": ["GET", "POST", "OPTIONS"]
     },

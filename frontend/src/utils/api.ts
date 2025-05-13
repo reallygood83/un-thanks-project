@@ -88,9 +88,16 @@ export const submitLetter = async (letterData: {
       }
 
       // 응답이 있지만 성공이 아닌 경우 로컬 데이터로 대체
+      console.error('API 응답 형식 오류:', response.data);
       throw new Error('API 응답이 성공이 아님');
-    } catch (axiosError) {
+    } catch (axiosError: any) {
       console.log('API 요청 실패, 로컬 더미 데이터 반환');
+      console.error('API 오류 상세:', axiosError.message);
+      
+      if (axiosError.response) {
+        console.error('API 응답 상태:', axiosError.response.status);
+        console.error('API 응답 데이터:', axiosError.response.data);
+      }
 
       // API 요청이 실패하더라도 사용자 경험을 위해 성공 응답 반환
       return {
@@ -102,8 +109,8 @@ export const submitLetter = async (letterData: {
         fromLocal: true // 로컬에서 생성된 응답임을 표시
       };
     }
-  } catch (error) {
-    console.error('편지 제출 최종 오류:', error);
+  } catch (error: any) {
+    console.error('편지 제출 최종 오류:', error.message);
 
     // 최후의 방어선 - 항상 성공 응답 반환
     return {

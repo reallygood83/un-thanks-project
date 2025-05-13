@@ -7,7 +7,9 @@ const countryService = require('./services/countryService');
 module.exports = async (req, res) => {
   // 디버깅: 요청 전체 로깅
   console.log(`[API] ${req.method} ${req.url}`);
-  console.log('[API] Headers:', req.headers);
+  console.log('[API] Headers:', JSON.stringify(req.headers, null, 2));
+  console.log('[API] Host:', req.headers.host);
+  console.log('[API] Origin:', req.headers.origin);
   
   // CORS 헤더 설정 - 모든 출처 허용
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -19,21 +21,27 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
   
+  // Vercel 서버리스 함수 처리 확인
+  console.log('[API] Vercel 서버리스 함수 진입');
+
   // URL 파라미터 추출
   let url;
   try {
     url = new URL(req.url, `https://${req.headers.host || 'vercel.app'}`);
+    console.log('[API] 파싱된 URL:', url.toString());
+    console.log('[API] 경로명:', url.pathname);
+    console.log('[API] 쿼리문자열:', url.search);
   } catch (error) {
     console.error('[API] URL 파싱 오류:', error);
-    url = { searchParams: { get: () => null } };
+    url = { searchParams: { get: () => null }, pathname: req.url || '/' };
   }
   
   // 액션 파라미터 추출 (URL에서 또는 경로에서)
-  let action = url.searchParams.get('action');
+  let action = url.searchParams?.get('action');
   
   // URL 경로에서도 액션 추출 시도 (예: /api/submitLetter)
-  if (!action && req.url) {
-    const pathMatch = req.url.match(/\/api\/([^/?]+)/);
+  if (!action && url.pathname) {
+    const pathMatch = url.pathname.match(/\/api\/([^/?]+)/);
     if (pathMatch && pathMatch[1]) {
       action = pathMatch[1];
       console.log('[API] 경로에서 액션 추출:', action);
@@ -57,9 +65,9 @@ module.exports = async (req, res) => {
   try {
     // 편지 목록 조회 (getLetters)
     if (action === 'getLetters') {
-      const countryId = url.searchParams.get('countryId');
-      const page = parseInt(url.searchParams.get('page')) || 1;
-      const limit = parseInt(url.searchParams.get('limit')) || 50;
+      const countryId = url.searchParams?.get('countryId');
+      const page = parseInt(url.searchParams?.get('page')) || 1;
+      const limit = parseInt(url.searchParams?.get('limit')) || 50;
       
       console.log('[API] 편지 목록 조회:', { countryId, page, limit });
       
@@ -154,7 +162,7 @@ module.exports = async (req, res) => {
         });
       }
       
-      // 서비스 호출 (MongoDB 저장 및 번역)
+      // 서비스 호출 (MongoDB 저장)
       const result = await letterService.addLetter(body);
       
       // 결과 상태에 따라 응답
@@ -163,8 +171,8 @@ module.exports = async (req, res) => {
     
     // 국가 목록 조회 (getCountries)
     if (action === 'getCountries') {
-      const region = url.searchParams.get('region');
-      const type = url.searchParams.get('type');
+      const region = url.searchParams?.get('region');
+      const type = url.searchParams?.get('type');
       
       console.log('[API] 국가 목록 조회:', { region, type });
       
@@ -176,7 +184,7 @@ module.exports = async (req, res) => {
     
     // 국가 상세 정보 조회 (getCountry)
     if (action === 'getCountry') {
-      const id = url.searchParams.get('id');
+      const id = url.searchParams?.get('id');
       
       if (!id) {
         return res.status(400).json({
