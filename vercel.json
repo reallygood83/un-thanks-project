@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/*.js",
+      "src": "api/*/index.js",
       "use": "@vercel/node"
     },
     {
@@ -24,18 +24,15 @@
   "routes": [
     {
       "src": "/api/submitLetter",
-      "dest": "api/submitLetter.js",
-      "methods": ["POST", "OPTIONS"]
+      "dest": "api/submitLetter"
     },
     {
       "src": "/api/getLetters",
-      "dest": "api/getLetters.js",
-      "methods": ["GET", "OPTIONS"]
+      "dest": "api/getLetters"
     },
     {
       "src": "/api/health",
-      "dest": "api/health.js",
-      "methods": ["GET", "OPTIONS"]
+      "dest": "api/health"
     },
     {
       "src": "/api/(.*)",
