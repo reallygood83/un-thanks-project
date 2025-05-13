@@ -35,6 +35,16 @@
       "methods": ["GET", "POST", "OPTIONS"]
     },
     {
+      "src": "/api/direct-submitLetter",
+      "dest": "frontend/api/direct-submitLetter.js",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/direct-getLetters",
+      "dest": "frontend/api/direct-getLetters.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/test-api",
       "dest": "api/test-api.js",
       "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"]
@@ -47,6 +57,11 @@
     {
       "src": "/api/debug-mongo",
       "dest": "api/debug-mongo.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
+      "src": "/api/frontend-debug-mongo",
+      "dest": "frontend/api/debug-mongo.js",
       "methods": ["GET", "OPTIONS"]
     },
     {
