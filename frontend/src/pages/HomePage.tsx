@@ -148,6 +148,18 @@ const HomePage: React.FC = () => {
             <p>6.25 전쟁 당시 5개 대륙 22개국이 전투병 파병과 의료 지원으로 대한민국의 자유와 평화를 수호했습니다. 우리는 세계시민으로서 이들의 헌신과 희생을 기억하고 감사해야 합니다.</p>
           </div>
           
+          <div className="youtube-video-container">
+            <iframe 
+              width="100%" 
+              height="100%" 
+              src="https://www.youtube.com/embed/HNCojFbVL2Q" 
+              title="6.25 전쟁 UN 참전국 감사 영상" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen>
+            </iframe>
+          </div>
+          
           {continents.map(continent => (
             <div key={continent.id} className="continent-section">
               <div className="continent-header">
