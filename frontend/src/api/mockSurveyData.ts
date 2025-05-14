@@ -132,6 +132,7 @@ let mockResponses: SurveyResponse[] = [];
 
 // 임시로 surveyApi의 일부 함수를 모의 구현하는 함수들
 export const mockGetAllSurveys = async (): Promise<Survey[]> => {
+  console.log('Mock API 사용: mockGetAllSurveys()');
   return new Promise(resolve => {
     setTimeout(() => {
       resolve(mockSurveys);
