@@ -60,8 +60,13 @@
       "methods": ["GET", "OPTIONS"]
     },
     {
+      "src": "/api/test123",
+      "dest": "api/test123.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/debug",
-      "dest": "/api/debug.js",
+      "dest": "api/debug.js",
       "methods": ["GET", "POST", "OPTIONS"]
     },
     {
