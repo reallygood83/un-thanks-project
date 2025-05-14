@@ -1,8 +1,5 @@
-// /api/submitLetter 엔드포인트 - 편지/설문 제출 처리 (MongoDB 직접 연결 버전)
+// /api/submitLetter 엔드포인트 - 편지 제출 처리 (MongoDB 직접 연결 버전)
 const { addLetterToMongo } = require('./mongo-direct');
-const { MongoClient } = require('mongodb');
-const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
 
 // CORS 헤더 설정
 function setCorsHeaders(res) {
@@ -18,9 +15,9 @@ function setCorsHeaders(res) {
   );
 }
 
-// 편지/설문 제출 API 핸들러
+// 편지 제출 API 핸들러
 module.exports = async (req, res) => {
-  console.log('submitLetter API 호출 (편지/설문):', req.method);
+  console.log('submitLetter API 호출 (MongoDB 직접 연결):', req.method);
   
   // CORS 헤더 설정
   setCorsHeaders(res);
@@ -46,76 +43,6 @@ module.exports = async (req, res) => {
         success: false,
         error: '요청 본문이 비어있습니다'
       });
-    }
-    
-    // type 파라미터 확인
-    const type = req.body.type || req.query?.type;
-    
-    // 설문 생성 요청인 경우
-    if (type === 'survey') {
-      const { title, description, questions, isActive, creationPassword } = req.body;
-      
-      if (!title || !questions || !Array.isArray(questions) || questions.length === 0 || !creationPassword) {
-        return res.status(400).json({
-          success: false,
-          error: '필수 필드가 누락되었습니다'
-        });
-      }
-      
-      const MONGODB_URI = process.env.MONGODB_URI;
-      const DB_NAME = process.env.MONGODB_DB_NAME || 'unthanks-db';
-      
-      let client = null;
-      
-      try {
-        client = await MongoClient.connect(MONGODB_URI, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true
-        });
-        
-        const db = client.db(DB_NAME);
-        const collection = db.collection('surveys');
-        
-        // 비밀번호 해싱
-        const hashedPassword = await bcrypt.hash(creationPassword, 10);
-        
-        // 질문 ID 할당
-        const questionsWithIds = questions.map(q => ({
-          ...q,
-          id: q.id || uuidv4()
-        }));
-        
-        // 저장할 문서 생성
-        const survey = {
-          title,
-          description,
-          questions: questionsWithIds,
-          isActive: isActive !== false,
-          creationPassword: hashedPassword,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-        
-        // MongoDB에 저장
-        const result = await collection.insertOne(survey);
-        
-        console.log('설문 생성 성공:', result.insertedId);
-        
-        // 비밀번호 필드 제거한 응답 데이터
-        const { creationPassword: _, ...responseData } = survey;
-        
-        return res.status(200).json({
-          success: true,
-          data: {
-            _id: result.insertedId,
-            ...responseData
-          }
-        });
-      } finally {
-        if (client) {
-          await client.close();
-        }
-      }
     }
     
     // 편지 데이터 추출 (여러 형태의 필드명 지원)

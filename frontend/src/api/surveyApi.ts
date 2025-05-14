@@ -31,7 +31,7 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.get<ApiResponse<Survey[]>>('/api/letters-and-surveys?type=surveys');
+      const response = await axios.get<ApiResponse<Survey[]>>('/api/getLetters?type=surveys');
       
       if (!response.data.success) {
         throw new Error(response.data.error || '설문 목록을 불러오는데 실패했습니다.');
@@ -77,7 +77,10 @@ export const surveyApi = {
    */
   createSurvey: async (survey: Omit<Survey, '_id' | 'createdAt' | 'updatedAt'>): Promise<Survey> => {
     try {
-      const response = await axios.post<ApiResponse<Survey>>('/api/createSurvey', survey);
+      const response = await axios.post<ApiResponse<Survey>>('/api/submitLetter', {
+        ...survey,
+        type: 'survey'
+      });
       
       if (!response.data.success) {
         throw new Error(response.data.error || '설문 생성에 실패했습니다.');

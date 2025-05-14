@@ -1,6 +1,5 @@
-// /api/getLetters 엔드포인트 - 편지/설문 목록 조회 (MongoDB 직접 연결 버전)
+// /api/getLetters 엔드포인트 - 편지 목록 조회 (MongoDB 직접 연결 버전)
 const { getLettersFromMongo } = require('./mongo-direct');
-const { MongoClient } = require('mongodb');
 
 // CORS 헤더 설정
 function setCorsHeaders(res) {
@@ -39,7 +38,7 @@ module.exports = async (req, res) => {
   
   try {
     // 쿼리 파라미터 추출
-    let countryId, page, limit, type;
+    let countryId, page, limit;
     
     // URL 파싱 방식
     if (req.url) {
@@ -48,7 +47,6 @@ module.exports = async (req, res) => {
         countryId = urlObj.searchParams.get('countryId');
         page = parseInt(urlObj.searchParams.get('page')) || 1;
         limit = parseInt(urlObj.searchParams.get('limit')) || 20;
-        type = urlObj.searchParams.get('type');
       } catch (urlError) {
         console.warn('URL 파싱 오류, req.query 사용 시도:', urlError.message);
       }
@@ -59,54 +57,15 @@ module.exports = async (req, res) => {
       countryId = req.query.countryId;
       page = parseInt(req.query.page) || 1;
       limit = parseInt(req.query.limit) || 20;
-      type = req.query.type;
     }
     
     // 기본값 설정
     page = page || 1;
     limit = limit || 20;
     
-    console.log('목록 조회 파라미터 (MongoDB 직접 조회):', { countryId, page, limit, type });
+    console.log('편지 목록 조회 파라미터 (MongoDB 직접 조회):', { countryId, page, limit });
     
-    // type이 surveys인 경우 설문 조회
-    if (type === 'surveys') {
-      const MONGODB_URI = process.env.MONGODB_URI;
-      const DB_NAME = process.env.MONGODB_DB_NAME || 'unthanks-db';
-      
-      let client = null;
-      
-      try {
-        client = await MongoClient.connect(MONGODB_URI, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true
-        });
-        
-        const db = client.db(DB_NAME);
-        const collection = db.collection('surveys');
-        
-        const surveys = await collection
-          .find({ isActive: true })
-          .sort({ createdAt: -1 })
-          .toArray();
-        
-        console.log(`${surveys.length}개의 설문 조회됨`);
-        
-        return res.status(200).json({
-          success: true,
-          data: surveys.map(survey => {
-            const { creationPassword, ...safeData } = survey;
-            return safeData;
-          }),
-          total: surveys.length
-        });
-      } finally {
-        if (client) {
-          await client.close();
-        }
-      }
-    }
-    
-    // 기본값: MongoDB에서 직접 편지 목록 조회
+    // MongoDB에서 직접 편지 목록 조회
     const result = await getLettersFromMongo({ countryId, page, limit });
     
     // 결과 처리
