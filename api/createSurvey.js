@@ -1,16 +1,23 @@
 // /api/createSurvey 엔드포인트 - 설문 생성
-import { MongoClient } from 'mongodb';
-import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
+const { createSurveyInMongo } = require('./mongo-direct-survey');
 
-const MONGODB_URI = process.env.MONGODB_URI;
-const DB_NAME = process.env.MONGODB_DB_NAME || 'unthanks-db';
-
-export default async function handler(req, res) {
+// CORS 헤더 설정
+function setCorsHeaders(res) {
+  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET,OPTIONS,PATCH,DELETE,POST,PUT'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+}
+
+module.exports = async (req, res) => {
+  setCorsHeaders(res);
 
   console.log("[createSurvey API] 호출됨", { 
     method: req.method,
@@ -38,54 +45,20 @@ export default async function handler(req, res) {
     });
   }
 
-  let client = null;
-
   try {
     console.log("[createSurvey API] 설문 생성 시작");
     
-    client = await MongoClient.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
-    
-    const db = client.db(DB_NAME);
-    const collection = db.collection('surveys');
-    
-    // 비밀번호 해싱
-    const hashedPassword = await bcrypt.hash(creationPassword, 10);
-    
-    // 질문 ID 할당
-    const questionsWithIds = questions.map(q => ({
-      ...q,
-      id: q.id || uuidv4()
-    }));
-    
-    // 저장할 문서 생성
-    const survey = {
+    const result = await createSurveyInMongo({
       title,
       description,
-      questions: questionsWithIds,
-      isActive: isActive !== false,
-      creationPassword: hashedPassword,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    // MongoDB에 저장
-    const result = await collection.insertOne(survey);
-    
-    console.log("[createSurvey API] 설문 생성 완료:", result.insertedId);
-    
-    // 비밀번호 필드 제거한 응답 데이터
-    const { creationPassword: _, ...responseData } = survey;
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        _id: result.insertedId,
-        ...responseData
-      }
+      questions,
+      isActive,
+      creationPassword
     });
+    
+    console.log("[createSurvey API] 설문 생성 완료:", result);
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error('[createSurvey API] 에러:', error);
     
@@ -93,9 +66,5 @@ export default async function handler(req, res) {
       success: false,
       error: error.message
     });
-  } finally {
-    if (client) {
-      await client.close();
-    }
   }
-}
+};
