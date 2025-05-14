@@ -1,6 +1,8 @@
 // /api/getLetters 엔드포인트 - 편지/설문 목록 조회 (MongoDB 직접 연결 버전)
 const { getLettersFromMongo } = require('./mongo-direct');
 const { MongoClient } = require('mongodb');
+const bcrypt = require('bcryptjs');
+const { v4: uuidv4 } = require('uuid');
 
 // CORS 헤더 설정
 function setCorsHeaders(res) {
@@ -16,6 +18,87 @@ function setCorsHeaders(res) {
   );
 }
 
+// 설문 생성 처리 함수
+async function handleSurveyCreation(req, res) {
+  const { title, description, questions, isActive, creationPassword } = req.body;
+  
+  // 필수 필드 검증
+  if (!title || !questions || !Array.isArray(questions) || questions.length === 0 || !creationPassword) {
+    return res.status(400).json({
+      success: false,
+      error: '필수 필드가 누락되었습니다',
+      details: {
+        hasTitle: !!title,
+        hasQuestions: !!questions,
+        isQuestionsArray: Array.isArray(questions),
+        questionsLength: questions?.length || 0,
+        hasPassword: !!creationPassword
+      }
+    });
+  }
+  
+  const MONGODB_URI = process.env.MONGODB_URI;
+  const DB_NAME = process.env.MONGODB_DB_NAME || 'unthanks-db';
+  
+  let client = null;
+  
+  try {
+    client = await MongoClient.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    
+    const db = client.db(DB_NAME);
+    const collection = db.collection('surveys');
+    
+    // 비밀번호 해싱
+    const hashedPassword = await bcrypt.hash(creationPassword, 10);
+    
+    // 질문 ID 할당
+    const questionsWithIds = questions.map(q => ({
+      ...q,
+      id: q.id || uuidv4()
+    }));
+    
+    // 저장할 문서 생성
+    const survey = {
+      title,
+      description,
+      questions: questionsWithIds,
+      isActive: isActive !== false,
+      creationPassword: hashedPassword,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    const result = await collection.insertOne(survey);
+    
+    console.log('설문 생성 성공:', result.insertedId);
+    
+    // 비밀번호 필드 제거한 응답
+    const { creationPassword: _, ...responseData } = survey;
+    
+    return res.status(200).json({
+      success: true,
+      data: {
+        _id: result.insertedId,
+        ...responseData
+      }
+    });
+  } catch (error) {
+    console.error('설문 생성 중 오류:', error);
+    return res.status(500).json({
+      success: false,
+      error: '설문 생성 중 오류가 발생했습니다',
+      message: error.message
+    });
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+}
+
 // 편지 목록 조회 API 핸들러
 module.exports = async (req, res) => {
   console.log('getLetters API 호출 (MongoDB 직접 연결):', req.method, req.url);
@@ -26,6 +109,12 @@ module.exports = async (req, res) => {
   // OPTIONS 요청 처리 (CORS preflight)
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+  
+  // POST 요청 처리 - 설문 생성
+  if (req.method === 'POST') {
+    console.log('설문 생성 POST 요청');
+    return handleSurveyCreation(req, res);
   }
   
   // GET 요청만 허용

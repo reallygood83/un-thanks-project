@@ -45,7 +45,7 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.get('/api/survey-handler');
+      const response = await axios.get('/api/getLetters?type=surveys');
       
       // HTML이 반환된 경우를 체크
       if (typeof response.data === 'string' && response.data.includes('<!DOCTYPE html>')) {
@@ -123,7 +123,7 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.post<ApiResponse<Survey>>('/api/survey-handler', survey);
+      const response = await axios.post<ApiResponse<Survey>>('/api/getLetters', survey);
       
       if (!response.data.success) {
         throw new Error(response.data.error || '설문 생성에 실패했습니다.');

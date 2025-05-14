@@ -92,7 +92,7 @@
     {
       "src": "/api/getLetters",
       "dest": "api/getLetters.js",
-      "methods": ["GET", "OPTIONS"]
+      "methods": ["GET", "POST", "OPTIONS"]
     },
     {
       "src": "/api/survey-handler",
