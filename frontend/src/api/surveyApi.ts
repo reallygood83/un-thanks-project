@@ -28,7 +28,7 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.common['Accept'] = 'application/json';
 
 // 백엔드 연결 설정
-const USE_MOCK_API = true; // 현재는 목 데이터 사용
+const USE_MOCK_API = false; // 실제 MongoDB 사용
 
 /**
  * 미래로 AI 설문 서비스를 위한 API 클라이언트
@@ -45,7 +45,7 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.get('/api/getLetters?type=surveys');
+      const response = await axios.get('/api/surveys-mongo');
       
       // HTML이 반환된 경우를 체크
       if (typeof response.data === 'string' && response.data.includes('<!DOCTYPE html>')) {
@@ -55,18 +55,7 @@ export const surveyApi = {
       
       // API 응답이 성공적인 경우
       if (response.data && response.data.success) {
-        const surveys = response.data.data || [];
-        
-        // 현재는 편지 형식으로 저장된 설문이므로 변환
-        return surveys.map(item => ({
-          _id: item._id || item.id,
-          title: item.title || `설문 ${item.id?.slice(-6) || ''}`,
-          description: item.description || '설문조사입니다',
-          questions: item.questions || [],
-          isActive: item.isActive !== false,
-          createdAt: item.createdAt,
-          updatedAt: item.updatedAt
-        }));
+        return response.data.data || [];
       }
       
       // 응답은 있지만 success가 false인 경우
@@ -134,14 +123,7 @@ export const surveyApi = {
     }
     
     try {
-      // submitLetter API를 사용하여 설문을 생성
-      // type: 'survey'를 추가하여 설문 생성 요청임을 명시
-      const surveyData = {
-        type: 'survey',
-        ...survey
-      };
-      
-      const response = await axios.post<ApiResponse<Survey>>('/api/submitLetter', surveyData);
+      const response = await axios.post<ApiResponse<Survey>>('/api/surveys-mongo', survey);
       
       if (!response.data.success) {
         throw new Error(response.data.error || '설문 생성에 실패했습니다.');
