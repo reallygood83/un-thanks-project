@@ -15,6 +15,36 @@
   ],
   "routes": [
     {
+      "src": "/api/surveys",
+      "dest": "api/surveys/index.js",
+      "methods": ["GET", "POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/surveys/generate",
+      "dest": "api/surveys/generate.js",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/surveys/(?<id>[^/]+)/responses",
+      "dest": "api/surveys/[id]/responses.js?id=$id",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/surveys/(?<id>[^/]+)/results",
+      "dest": "api/surveys/[id]/results.js?id=$id",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
+      "src": "/api/surveys/(?<id>[^/]+)/verify",
+      "dest": "api/surveys/[id]/verify.js?id=$id",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/surveys/(?<id>[^/]+)",
+      "dest": "api/surveys/[id].js?id=$id",
+      "methods": ["GET", "PUT", "DELETE", "OPTIONS"]
+    },
+    {
       "src": "/api/submitLetter",
       "dest": "api/submitLetter.js",
       "methods": ["POST", "OPTIONS"]
