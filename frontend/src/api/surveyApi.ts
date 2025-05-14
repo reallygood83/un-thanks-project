@@ -117,6 +117,22 @@ export const surveyApi = {
    * @returns 생성된 설문 정보
    */
   createSurvey: async (survey: Omit<Survey, '_id' | 'createdAt' | 'updatedAt'>): Promise<Survey> => {
+    if (USE_MOCK_API) {
+      // 목 데이터로 설문 생성 시뮬레이션
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const newSurvey: Survey = {
+            _id: `mock_${Date.now()}`,
+            ...survey,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          console.log('Mock 설문 생성:', newSurvey);
+          resolve(newSurvey);
+        }, 1000);
+      });
+    }
+    
     try {
       // submitLetter API를 사용하여 설문을 생성
       // type: 'survey'를 추가하여 설문 생성 요청임을 명시
