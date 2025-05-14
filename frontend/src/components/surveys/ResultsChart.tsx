@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line
-} from 'recharts';
 import './ResultsChart.css';
-
-// 색상 팔레트
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1', '#a4de6c', '#d0ed57'];
 
 type ChartDataItem = {
   name: string;
@@ -19,22 +12,26 @@ interface BarChartProps {
 }
 
 export const SimpleBarChart: React.FC<BarChartProps> = ({ data, title }) => {
+  // 최대값 찾기 (막대 너비 계산용)
+  const maxValue = Math.max(...data.map(item => item.value), 1);
+  
   return (
     <div className="chart-container">
       <h3 className="chart-title">{title}</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={data}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#0078FF" />
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="simple-bar-chart">
+        {data.map((item, index) => (
+          <div className="chart-row" key={index}>
+            <div className="chart-label">{item.name}</div>
+            <div className="chart-value-container">
+              <div 
+                className="chart-value-bar" 
+                style={{ width: `${(item.value / maxValue) * 100}%` }}
+              />
+              <span className="chart-value-label">{item.value}</span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -45,29 +42,37 @@ interface PieChartProps {
 }
 
 export const SimplePieChart: React.FC<PieChartProps> = ({ data, title }) => {
+  // 총합 계산
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  
   return (
     <div className="chart-container">
       <h3 className="chart-title">{title}</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            labelLine={true}
-            outerRadius={100}
-            fill="#8884d8"
-            dataKey="value"
-            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
+      <div className="simple-pie-chart">
+        <div className="pie-chart-legend">
+          {data.map((item, index) => {
+            const percentage = total > 0 ? (item.value / total) * 100 : 0;
+            return (
+              <div className="legend-item" key={index}>
+                <div 
+                  className="legend-color" 
+                  style={{ backgroundColor: getColorByIndex(index) }}
+                />
+                <div className="legend-text">
+                  {item.name}: {percentage.toFixed(1)}% ({item.value}명)
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="pie-chart-visualization">
+          {/* 원형 차트 대신 간단한 텍스트 표현 */}
+          <div className="pie-chart-simple">
+            <div className="total-value">{total}</div>
+            <div className="total-label">총 응답</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -82,11 +87,8 @@ interface ScaleChartProps {
 }
 
 export const ScaleDistributionChart: React.FC<ScaleChartProps> = ({ data, average, title }) => {
-  // 데이터 변환 - Bar차트 형식으로
-  const formattedData = data.map(item => ({
-    name: `${item.value}점`,
-    value: item.count
-  }));
+  // 최대값 찾기 (막대 너비 계산용)
+  const maxCount = Math.max(...data.map(item => item.count), 1);
   
   return (
     <div className="chart-container">
@@ -96,19 +98,20 @@ export const ScaleDistributionChart: React.FC<ScaleChartProps> = ({ data, averag
         <span className="average-value">{average.toFixed(1)}</span>
         <span> / 10</span>
       </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart
-          data={formattedData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="value" fill="#0078FF" />
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="simple-bar-chart scale-chart">
+        {data.map((item, index) => (
+          <div className="chart-row" key={index}>
+            <div className="chart-label">{item.value}점</div>
+            <div className="chart-value-container">
+              <div 
+                className="chart-value-bar" 
+                style={{ width: `${(item.count / maxCount) * 100}%` }}
+              />
+              <span className="chart-value-label">{item.count}</span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -161,3 +164,14 @@ export const AiAnalysisView: React.FC<AiAnalysisProps> = ({ analysis }) => {
     </div>
   );
 };
+
+// 색상 생성 함수
+function getColorByIndex(index: number): string {
+  const colors = [
+    '#0088FE', '#00C49F', '#FFBB28', '#FF8042', 
+    '#8884d8', '#82ca9d', '#ffc658', '#8dd1e1', 
+    '#a4de6c', '#d0ed57'
+  ];
+  
+  return colors[index % colors.length];
+}
