@@ -1,0 +1,140 @@
+.chart-container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chart-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eee;
+}
+
+.average-display {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.average-value {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #0078FF;
+  margin: 0 0.35rem;
+}
+
+.text-responses-container {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.no-responses {
+  text-align: center;
+  color: #888;
+  padding: 2rem 0;
+  font-style: italic;
+}
+
+.responses-list {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.response-item {
+  display: flex;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.response-item:last-child {
+  border-bottom: none;
+}
+
+.response-item:hover {
+  background-color: #f9f9f9;
+}
+
+.response-number {
+  min-width: 40px;
+  font-weight: 600;
+  color: #0078FF;
+  margin-right: 1rem;
+}
+
+.response-text {
+  flex: 1;
+  line-height: 1.6;
+  color: #444;
+  white-space: pre-line;
+}
+
+.ai-analysis-container {
+  background-color: #f0f7ff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 120, 255, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid #d0e8ff;
+}
+
+.analysis-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #0060cc;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #d0e8ff;
+}
+
+.ai-icon {
+  margin-right: 0.75rem;
+  font-size: 1.5rem;
+}
+
+.analysis-content {
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: #333;
+  white-space: pre-line;
+}
+
+@media (max-width: 768px) {
+  .chart-container, 
+  .text-responses-container,
+  .ai-analysis-container {
+    padding: 1.25rem;
+  }
+  
+  .chart-title, 
+  .analysis-title {
+    font-size: 1.1rem;
+  }
+  
+  .responses-list {
+    max-height: 400px;
+  }
+  
+  .response-number {
+    min-width: 30px;
+  }
+  
+  .analysis-content {
+    font-size: 1rem;
+  }
+}

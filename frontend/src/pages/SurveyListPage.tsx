@@ -34,9 +34,8 @@ const SurveyListPage: React.FC = () => {
     fetchSurveys();
   }, []);
   
-  // 관리자 권한 확인 (비밀번호 기반 권한 관리)
-  // 실제 구현에서는 로그인 상태나 권한에 따라 다르게 처리할 수 있음
-  const isAdmin = true; // 현재는 모든 사용자에게 설문 생성 권한 부여
+  // 설문 생성은 모든 사용자에게 허용
+  // 실제 비밀번호는 설문 생성 시 설정하도록 함
   
   return (
     <div className="survey-list-page">
@@ -48,13 +47,11 @@ const SurveyListPage: React.FC = () => {
         </p>
       </div>
       
-      {isAdmin && (
-        <div className="admin-actions">
-          <Link to="/survey/create" className="create-button">
-            <span className="button-icon">+</span> 새 설문 만들기
-          </Link>
-        </div>
-      )}
+      <div className="admin-actions">
+        <Link to="/survey/create" className="create-button">
+          <span className="button-icon">+</span> 새 설문 만들기
+        </Link>
+      </div>
       
       {loading ? (
         <div className="loading-container">
@@ -86,13 +83,11 @@ const SurveyListPage: React.FC = () => {
               <h2>아직 활성화된 설문이 없습니다</h2>
               <p>
                 새로운 설문이 곧 등록될 예정입니다.
-                {isAdmin && ' 또는 지금 새 설문을 직접 만들어보세요!'}
+                또는 지금 새 설문을 직접 만들어보세요!
               </p>
-              {isAdmin && (
-                <Link to="/survey/create" className="create-empty-button">
-                  새 설문 만들기
-                </Link>
-              )}
+              <Link to="/survey/create" className="create-empty-button">
+                새 설문 만들기
+              </Link>
             </div>
           )}
         </div>
