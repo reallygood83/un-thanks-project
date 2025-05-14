@@ -95,6 +95,11 @@
       "methods": ["GET", "OPTIONS"]
     },
     {
+      "src": "/api/survey-handler",
+      "dest": "api/survey-handler.js",
+      "methods": ["GET", "POST", "OPTIONS"]
+    },
+    {
       "src": "/api/createInitialSurvey",
       "dest": "api/createInitialSurvey.js",
       "methods": ["GET", "OPTIONS"]
