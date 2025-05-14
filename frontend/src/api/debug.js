@@ -16,7 +16,7 @@ export const debugApi = {
       console.log('API URL 기본 경로:', BASE_URL);
       
       // 디버그 API 호출
-      const response = await axios.get(`${BASE_URL}/debug-surveys`);
+      const response = await axios.get(`${BASE_URL}/debug`);
       return response.data;
     } catch (error) {
       console.error('디버그 요청 오류:', error);
@@ -25,16 +25,16 @@ export const debugApi = {
   },
   
   /**
-   * 새로운 단일 API 엔드포인트 테스트
+   * 설문 API 테스트
    * @returns 설문 목록
    */
   testSurveysApi: async () => {
     try {
-      console.log('API 테스트 URL:', `${BASE_URL}/surveys-api`);
-      const response = await axios.get(`${BASE_URL}/surveys-api`);
+      console.log('API 테스트 URL:', `${BASE_URL}/survey`);
+      const response = await axios.get(`${BASE_URL}/survey`);
       return response.data;
     } catch (error) {
-      console.error('surveys-api 테스트 오류:', error);
+      console.error('survey API 테스트 오류:', error);
       throw error;
     }
   }

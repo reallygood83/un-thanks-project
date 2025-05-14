@@ -15,33 +15,18 @@
   ],
   "routes": [
     {
-      "src": "/api/survey/(?<id>[^/]+)/responses",
-      "dest": "/api/survey/[id]/responses.js?id=$id",
-      "methods": ["POST", "OPTIONS"]
+      "src": "/api/survey(.*)",
+      "dest": "/api/survey.js",
+      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     },
     {
-      "src": "/api/survey/(?<id>[^/]+)/results",
-      "dest": "/api/survey/[id]/results.js?id=$id",
-      "methods": ["GET", "OPTIONS"]
+      "src": "/api/surveys(.*)",
+      "dest": "/api/survey.js",
+      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     },
     {
-      "src": "/api/survey/(?<id>[^/]+)/verify",
-      "dest": "/api/survey/[id]/verify.js?id=$id",
-      "methods": ["POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/survey/(?<id>[^/]+)",
-      "dest": "/api/survey/[id].js?id=$id",
-      "methods": ["GET", "PUT", "DELETE", "OPTIONS"]
-    },
-    {
-      "src": "/api/survey",
-      "dest": "/api/survey/index.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/surveys",
-      "dest": "/api/survey/index.js",
+      "src": "/api/debug",
+      "dest": "/api/debug.js",
       "methods": ["GET", "POST", "OPTIONS"]
     },
     {
