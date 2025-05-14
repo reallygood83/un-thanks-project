@@ -31,7 +31,7 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.get<ApiResponse<Survey[]>>('/api/getSurveys');
+      const response = await axios.get<ApiResponse<Survey[]>>('/api/surveys');
       
       if (!response.data.success) {
         throw new Error(response.data.error || '설문 목록을 불러오는데 실패했습니다.');
