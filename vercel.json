@@ -110,6 +110,11 @@
       "methods": ["GET", "OPTIONS"]
     },
     {
+      "src": "/api/populate-surveys",
+      "dest": "api/populate-surveys.js",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
       "src": "/api/checkSurveys",
       "dest": "api/checkSurveys.js",
       "methods": ["GET", "OPTIONS"]
