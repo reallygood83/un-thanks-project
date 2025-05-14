@@ -120,6 +120,16 @@
       "methods": ["GET", "OPTIONS"]
     },
     {
+      "src": "/api/surveys",
+      "dest": "api/surveys.js", 
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
+      "src": "/api/hello",
+      "dest": "api/hello.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/(.*)",
       "headers": {
         "Access-Control-Allow-Origin": "*",
