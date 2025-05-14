@@ -135,7 +135,100 @@ export const mockGetAllSurveys = async (): Promise<Survey[]> => {
   console.log('Mock API 사용: mockGetAllSurveys()');
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve(mockSurveys);
+      const unProjectSurveys: Survey[] = [
+        {
+          _id: '1',
+          title: 'UN 감사 프로젝트 공식 설문조사',
+          description: '한국전쟁 UN 참전국에 대한 감사와 인식 조사입니다',
+          questions: [
+            {
+              id: 'q1',
+              type: 'single',
+              question: '한국전쟁에 참전한 UN군에 대해 얼마나 알고 계신가요?',
+              required: true,
+              options: ['매우 잘 안다', '어느 정도 안다', '조금 안다', '거의 모른다']
+            },
+            {
+              id: 'q2',
+              type: 'multiple',
+              question: '가장 감사하게 생각하는 참전국은? (복수 선택)',
+              required: true,
+              options: ['미국', '영국', '터키', '캐나다', '호주', '필리핀', '태국', '콜롬비아', '기타']
+            },
+            {
+              id: 'q3',
+              type: 'rating',
+              question: 'UN 참전국들에 대한 감사의 마음을 평가해주세요',
+              required: true,
+              options: '1-10'
+            },
+            {
+              id: 'q4',
+              type: 'text',
+              question: '참전국들에게 전하고 싶은 감사의 메시지가 있다면?',
+              required: false
+            }
+          ],
+          isActive: true,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
+        },
+        {
+          _id: '2',
+          title: '한반도 통일에 대한 의견 조사',
+          description: '미래 통일 한국에 대한 시민들의 의견을 수렴합니다',
+          questions: [
+            {
+              id: 'q5',
+              type: 'single',
+              question: '한반도 통일이 필요하다고 생각하시나요?',
+              required: true,
+              options: ['매우 필요하다', '필요하다', '보통이다', '필요하지 않다', '전혀 필요하지 않다']
+            },
+            {
+              id: 'q6',
+              type: 'single',
+              question: '통일이 된다면 언제쯤 가능할 것이라고 생각하시나요?',
+              required: true,
+              options: ['10년 이내', '10-20년', '20-30년', '30년 이후', '불가능하다']
+            },
+            {
+              id: 'q7',
+              type: 'text',
+              question: '통일 한국의 미래는 어떤 모습이어야 한다고 생각하시나요?',
+              required: false
+            }
+          ],
+          isActive: true,
+          createdAt: new Date('2024-02-01'),
+          updatedAt: new Date('2024-02-01')
+        },
+        {
+          _id: '3',
+          title: '한국전쟁 역사 교육에 대한 설문',
+          description: '청소년들의 한국전쟁 역사 인식과 교육 실태를 파악합니다',
+          questions: [
+            {
+              id: 'q8',
+              type: 'single',
+              question: '학교에서 한국전쟁에 대해 배운 적이 있나요?',
+              required: true,
+              options: ['자세히 배웠다', '간단히 배웠다', '거의 배우지 않았다', '전혀 배우지 않았다']
+            },
+            {
+              id: 'q9',
+              type: 'rating',
+              question: '한국전쟁 역사 교육의 중요성을 평가해주세요',
+              required: true,
+              options: '1-5'
+            }
+          ],
+          isActive: true,
+          createdAt: new Date('2024-03-01'),
+          updatedAt: new Date('2024-03-01')
+        }
+      ];
+      resolve(unProjectSurveys);
     }, 500);
   });
 };

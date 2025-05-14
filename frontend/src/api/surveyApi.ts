@@ -28,7 +28,7 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.common['Accept'] = 'application/json';
 
 // 백엔드 연결 설정
-const USE_MOCK_API = import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_API === 'true';
+const USE_MOCK_API = true; // 현재는 목 데이터 사용
 
 /**
  * 미래로 AI 설문 서비스를 위한 API 클라이언트
