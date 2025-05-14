@@ -80,6 +80,11 @@
       "methods": ["POST", "OPTIONS"]
     },
     {
+      "src": "/api/survey-direct",
+      "dest": "api/survey-direct.js",
+      "methods": ["GET", "POST", "OPTIONS"]
+    },
+    {
       "src": "/api/createSurveyDirect",
       "dest": "api/createSurveyDirect.js",
       "methods": ["POST", "OPTIONS"]
