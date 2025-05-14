@@ -85,6 +85,11 @@
       "methods": ["GET", "OPTIONS"]
     },
     {
+      "src": "/api/surveysData",
+      "dest": "api/surveysData/index.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/getLetter/(?<id>[^/]+)",
       "dest": "api/getLetter.js?id=$id",
       "methods": ["GET", "OPTIONS"]
