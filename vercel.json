@@ -30,6 +30,11 @@
       "methods": ["GET", "POST", "OPTIONS"]
     },
     {
+      "src": "/api/surveys-list",
+      "dest": "api/surveys-list.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/getSurveys",
       "dest": "api/getSurveys.js",
       "methods": ["GET", "OPTIONS"]
