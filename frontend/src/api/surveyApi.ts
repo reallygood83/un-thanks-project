@@ -14,14 +14,10 @@ import {
 } from './mockSurveyData';
 
 // API 기본 URL
-const BASE_URL = '/api/surveys';
+const BASE_URL = '/api/survey';
 
-// 디버그용 - 새로운 통합 API 엔드포인트
-const USE_NEW_API = import.meta.env.DEV && import.meta.env.VITE_USE_NEW_API === 'true';
-const SURVEYS_API_URL = '/api/surveys-api';
-
-// 백엔드 연결 설정 (임시로 항상 목업 API 사용)
-const USE_MOCK_API = true; // 서버 연결 시: import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_API === 'true'
+// 백엔드 연결 설정
+const USE_MOCK_API = import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_API === 'true';
 
 /**
  * 미래로 AI 설문 서비스를 위한 API 클라이언트
@@ -39,19 +35,9 @@ export const surveyApi = {
     
     try {
       // 디버그 로그 추가
-      console.log('API URL 설정:', { BASE_URL, SURVEYS_API_URL, USE_NEW_API });
+      console.log('설문 조회 API URL:', BASE_URL);
       
-      // 새로운 API와 기존 API 둘 다 시도
-      let response;
-      try {
-        const url = USE_NEW_API ? SURVEYS_API_URL : BASE_URL;
-        console.log('설문 조회 API URL:', url);
-        response = await axios.get<ApiResponse<Survey[]>>(url);
-      } catch (err) {
-        console.log('기본 API 실패, 대체 API 시도');
-        // 첫 번째 시도가 실패하면 다른 엔드포인트 시도
-        response = await axios.get<ApiResponse<Survey[]>>(USE_NEW_API ? BASE_URL : SURVEYS_API_URL);
-      }
+      const response = await axios.get<ApiResponse<Survey[]>>(BASE_URL);
       
       if (!response.data.success) {
         throw new Error(response.data.message || '설문 목록을 불러오는데 실패했습니다.');
