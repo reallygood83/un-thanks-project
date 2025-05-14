@@ -77,10 +77,7 @@ export const surveyApi = {
    */
   createSurvey: async (survey: Omit<Survey, '_id' | 'createdAt' | 'updatedAt'>): Promise<Survey> => {
     try {
-      const response = await axios.post<ApiResponse<Survey>>('/api/submitLetter', {
-        ...survey,
-        type: 'survey'
-      });
+      const response = await axios.post<ApiResponse<Survey>>('/api/createSurveyDirect', survey);
       
       if (!response.data.success) {
         throw new Error(response.data.error || '설문 생성에 실패했습니다.');
