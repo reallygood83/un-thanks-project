@@ -1,81 +1,101 @@
 // /api/createSurvey 엔드포인트 - 설문 생성
-const { createSurveyInMongo } = require('./mongo-direct-survey');
+import { MongoClient } from 'mongodb';
+import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
-// CORS 헤더 설정
-function setCorsHeaders(res) {
-  res.setHeader('Access-Control-Allow-Credentials', true);
+const MONGODB_URI = process.env.MONGODB_URI;
+const DB_NAME = process.env.MONGODB_DB_NAME || 'unthanks-db';
+
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET,OPTIONS,PATCH,DELETE,POST,PUT'
-  );
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
-}
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
-// 설문 생성 API 핸들러
-module.exports = async (req, res) => {
-  console.log('createSurvey API 호출:', req.method, req.url);
-  
-  // CORS 헤더 설정
-  setCorsHeaders(res);
-  
-  // OPTIONS 요청 처리 (CORS preflight)
+  console.log("[createSurvey API] 호출됨", { 
+    method: req.method,
+    body: req.body,
+    headers: req.headers
+  });
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-  
-  // POST 요청만 허용
+
   if (req.method !== 'POST') {
     return res.status(405).json({
       success: false,
-      error: '허용되지 않은 메서드',
-      message: 'POST 요청만 허용됩니다'
+      error: '허용되지 않은 메서드'
     });
   }
+
+  const { title, description, questions, isActive, creationPassword } = req.body;
   
+  if (!title || !questions || !Array.isArray(questions) || questions.length === 0 || !creationPassword) {
+    return res.status(400).json({
+      success: false,
+      error: '필수 필드가 누락되었습니다'
+    });
+  }
+
+  let client = null;
+
   try {
-    // 요청 데이터 추출
-    const surveyData = req.body;
+    console.log("[createSurvey API] 설문 생성 시작");
     
-    // 필수 필드 검증
-    if (!surveyData.title || !surveyData.description || !surveyData.questions || !surveyData.creationPassword) {
-      return res.status(400).json({
-        success: false,
-        error: '필수 필드 누락',
-        message: '제목, 설명, 질문, 비밀번호가 필요합니다'
-      });
-    }
+    client = await MongoClient.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
     
-    // MongoDB에 설문 저장
-    const result = await createSurveyInMongo(surveyData);
+    const db = client.db(DB_NAME);
+    const collection = db.collection('surveys');
     
-    // 결과 처리
-    if (result.success) {
-      console.log('설문 생성 성공:', result.data._id);
-      
-      return res.status(201).json({
-        success: true,
-        data: result.data
-      });
-    } else {
-      console.error('설문 생성 실패:', result.error);
-      return res.status(500).json({
-        success: false,
-        error: result.error,
-        message: '설문 생성 중 오류가 발생했습니다'
-      });
-    }
+    // 비밀번호 해싱
+    const hashedPassword = await bcrypt.hash(creationPassword, 10);
+    
+    // 질문 ID 할당
+    const questionsWithIds = questions.map(q => ({
+      ...q,
+      id: q.id || uuidv4()
+    }));
+    
+    // 저장할 문서 생성
+    const survey = {
+      title,
+      description,
+      questions: questionsWithIds,
+      isActive: isActive !== false,
+      creationPassword: hashedPassword,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    // MongoDB에 저장
+    const result = await collection.insertOne(survey);
+    
+    console.log("[createSurvey API] 설문 생성 완료:", result.insertedId);
+    
+    // 비밀번호 필드 제거한 응답 데이터
+    const { creationPassword: _, ...responseData } = survey;
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        _id: result.insertedId,
+        ...responseData
+      }
+    });
   } catch (error) {
-    console.error('createSurvey 처리 중 오류:', error);
+    console.error('[createSurvey API] 에러:', error);
     
-    // 오류 응답
     return res.status(500).json({
       success: false,
-      error: error.message,
-      message: '설문 생성 중 오류가 발생했습니다'
+      error: error.message
     });
+  } finally {
+    if (client) {
+      await client.close();
+    }
   }
-};
+}

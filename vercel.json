@@ -15,6 +15,11 @@
   ],
   "routes": [
     {
+      "src": "/api/test-survey",
+      "dest": "api/test-survey.js",
+      "methods": ["GET", "POST", "OPTIONS"]
+    },
+    {
       "src": "/api/getSurveys",
       "dest": "api/getSurveys.js",
       "methods": ["GET", "OPTIONS"]
