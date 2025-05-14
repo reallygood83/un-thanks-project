@@ -100,6 +100,11 @@
       "methods": ["GET", "OPTIONS"]
     },
     {
+      "src": "/api/create-initial-surveys",
+      "dest": "api/create-initial-surveys.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/checkSurveys",
       "dest": "api/checkSurveys.js",
       "methods": ["GET", "OPTIONS"]
