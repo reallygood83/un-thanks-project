@@ -105,6 +105,11 @@
       "methods": ["GET", "OPTIONS"]
     },
     {
+      "src": "/api/manual-survey-create",
+      "dest": "api/manual-survey-create.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/checkSurveys",
       "dest": "api/checkSurveys.js",
       "methods": ["GET", "OPTIONS"]
