@@ -55,7 +55,18 @@ export const surveyApi = {
       
       // API 응답이 성공적인 경우
       if (response.data && response.data.success) {
-        return response.data.data || [];
+        const surveys = response.data.data || [];
+        
+        // 현재는 편지 형식으로 저장된 설문이므로 변환
+        return surveys.map(item => ({
+          _id: item._id || item.id,
+          title: item.title || `설문 ${item.id?.slice(-6) || ''}`,
+          description: item.description || '설문조사입니다',
+          questions: item.questions || [],
+          isActive: item.isActive !== false,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt
+        }));
       }
       
       // 응답은 있지만 success가 false인 경우
