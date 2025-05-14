@@ -13,9 +13,6 @@ import {
   mockGetSurveyResults
 } from './mockSurveyData';
 
-// API 기본 URL
-const BASE_URL = '/api/survey';
-
 // 백엔드 연결 설정
 const USE_MOCK_API = import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_API === 'true';
 
@@ -34,13 +31,10 @@ export const surveyApi = {
     }
     
     try {
-      // 디버그 로그 추가
-      console.log('설문 조회 API URL:', BASE_URL);
-      
-      const response = await axios.get<ApiResponse<Survey[]>>(BASE_URL);
+      const response = await axios.get<ApiResponse<Survey[]>>('/api/getSurveys');
       
       if (!response.data.success) {
-        throw new Error(response.data.message || '설문 목록을 불러오는데 실패했습니다.');
+        throw new Error(response.data.error || '설문 목록을 불러오는데 실패했습니다.');
       }
       
       return response.data.data || [];
@@ -62,10 +56,10 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.get<ApiResponse<Survey>>(`${BASE_URL}/${id}`);
+      const response = await axios.get<ApiResponse<Survey>>(`/api/getSurvey/${id}`);
       
       if (!response.data.success) {
-        throw new Error(response.data.message || '설문을 불러오는데 실패했습니다.');
+        throw new Error(response.data.error || '설문을 불러오는데 실패했습니다.');
       }
       
       return response.data.data as Survey;
@@ -83,10 +77,10 @@ export const surveyApi = {
    */
   createSurvey: async (survey: Omit<Survey, '_id' | 'createdAt' | 'updatedAt'>): Promise<Survey> => {
     try {
-      const response = await axios.post<ApiResponse<Survey>>(BASE_URL, survey);
+      const response = await axios.post<ApiResponse<Survey>>('/api/createSurvey', survey);
       
       if (!response.data.success) {
-        throw new Error(response.data.message || '설문 생성에 실패했습니다.');
+        throw new Error(response.data.error || '설문 생성에 실패했습니다.');
       }
       
       return response.data.data as Survey;
@@ -111,12 +105,12 @@ export const surveyApi = {
   ): Promise<Survey> => {
     try {
       const response = await axios.put<ApiResponse<Survey>>(
-        `${BASE_URL}/${id}`, 
+        `/api/updateSurvey/${id}`, 
         { ...updates, password }
       );
       
       if (!response.data.success) {
-        throw new Error(response.data.message || '설문 수정에 실패했습니다.');
+        throw new Error(response.data.error || '설문 수정에 실패했습니다.');
       }
       
       return response.data.data as Survey;
@@ -135,20 +129,23 @@ export const surveyApi = {
    */
   submitResponse: async (
     surveyId: string, 
-    response: Omit<SurveyResponse, '_id' | 'surveyId' | 'createdAt'>
+    response: Object
   ): Promise<{ responseId: string }> => {
     if (USE_MOCK_API) {
-      return mockSubmitResponse(surveyId, response);
+      return mockSubmitResponse(surveyId, response as any);
     }
     
     try {
       const result = await axios.post<ApiResponse<{ responseId: string }>>(
-        `${BASE_URL}/${surveyId}/responses`, 
-        response
+        '/api/submitSurveyResponse', 
+        {
+          surveyId,
+          responses: response
+        }
       );
       
       if (!result.data.success) {
-        throw new Error(result.data.message || '응답 제출에 실패했습니다.');
+        throw new Error(result.data.error || '응답 제출에 실패했습니다.');
       }
       
       return result.data.data as { responseId: string };
@@ -172,18 +169,12 @@ export const surveyApi = {
     }
     
     try {
-      const params: any = {};
-      if (password) {
-        params.password = password;
-      }
-      
       const response = await axios.get<ApiResponse<SurveyResults>>(
-        `${BASE_URL}/${surveyId}/results`,
-        { params }
+        `/api/getSurveyStats/${surveyId}`
       );
       
       if (!response.data.success) {
-        throw new Error(response.data.message || '결과를 불러오는데 실패했습니다.');
+        throw new Error(response.data.error || '결과를 불러오는데 실패했습니다.');
       }
       
       return response.data.data as SurveyResults;
@@ -203,12 +194,12 @@ export const surveyApi = {
     try {
       const request: GenerateSurveyRequest = { prompt };
       const response = await axios.post<ApiResponse<Survey>>(
-        `${BASE_URL}/generate`, 
+        '/api/generateSurvey', 
         request
       );
       
       if (!response.data.success) {
-        throw new Error(response.data.message || 'AI 설문 생성에 실패했습니다.');
+        throw new Error(response.data.error || 'AI 설문 생성에 실패했습니다.');
       }
       
       return response.data.data as Survey;
@@ -228,7 +219,7 @@ export const surveyApi = {
   verifyPassword: async (surveyId: string, password: string): Promise<boolean> => {
     try {
       const response = await axios.post<ApiResponse<boolean>>(
-        `${BASE_URL}/${surveyId}/verify`,
+        `/api/verifySurveyPassword/${surveyId}`,
         { password }
       );
       
@@ -249,7 +240,7 @@ export const surveyApi = {
   deleteSurvey: async (id: string, password: string): Promise<boolean> => {
     try {
       const response = await axios.delete<ApiResponse<void>>(
-        `${BASE_URL}/${id}`,
+        `/api/deleteSurvey/${id}`,
         { data: { password } }
       );
       

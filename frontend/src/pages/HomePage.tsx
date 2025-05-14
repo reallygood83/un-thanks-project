@@ -225,10 +225,11 @@ const HomePage: React.FC = () => {
               </Link>
             </div>
             <div className="about-image">
-              {/* 이미지가 없으므로 제거하고 나중에 추가 */}
-              <div className="placeholder-image">
-                6.25 참전국 감사 프로젝트 이미지
-              </div>
+              <img 
+                src="/images/un_korea_project.svg" 
+                alt="UN 한반도 평화 이미지" 
+                className="un-korea-image" 
+              />
             </div>
           </div>
         </div>

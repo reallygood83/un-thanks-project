@@ -15,14 +15,29 @@
   ],
   "routes": [
     {
-      "src": "/api/survey(.*)",
-      "dest": "/api/survey.js",
-      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+      "src": "/api/getSurveys",
+      "dest": "api/getSurveys.js",
+      "methods": ["GET", "OPTIONS"]
     },
     {
-      "src": "/api/surveys(.*)",
-      "dest": "/api/survey.js",
-      "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+      "src": "/api/createSurvey",
+      "dest": "api/createSurvey.js",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/getSurvey/(?<id>[^/]+)",
+      "dest": "api/getSurvey.js?id=$id",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
+      "src": "/api/submitSurveyResponse",
+      "dest": "api/submitSurveyResponse.js",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/getSurveyStats/(?<id>[^/]+)",
+      "dest": "api/getSurveyStats.js?id=$id",
+      "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/debug",

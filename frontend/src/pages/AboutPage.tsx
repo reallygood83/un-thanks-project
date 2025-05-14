@@ -7,6 +7,13 @@ const AboutPage: React.FC = () => {
     <div className="about-page">
       <div className="container">
         <h1 className="page-title">6.25 UN 참전국 감사 프로젝트 소개</h1>
+        <div className="project-image-container">
+          <img 
+            src="/images/un_korea_peace.svg" 
+            alt="UN 한반도 평화 이미지" 
+            className="project-image" 
+          />
+        </div>
         
         <div className="about-container">
           <section className="about-section">
