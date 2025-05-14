@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { surveyApi } from '../api/surveyApi';
+import { debugApi } from '../api/debug';
 import { Survey } from '../types/survey';
 import SurveyCard from '../components/surveys/SurveyCard';
 import './SurveyListPage.css';
@@ -13,6 +14,7 @@ const SurveyListPage: React.FC = () => {
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
   
   // 설문 목록 불러오기
   useEffect(() => {
@@ -21,6 +23,24 @@ const SurveyListPage: React.FC = () => {
         setLoading(true);
         setError(null);
         
+        // 먼저 디버그 API 호출 시도
+        try {
+          const debugData = await debugApi.debugRequest();
+          console.log('디버그 API 응답:', debugData);
+          setDebugInfo(debugData);
+          
+          // 새로운 API 엔드포인트 테스트
+          try {
+            const testData = await debugApi.testSurveysApi();
+            console.log('surveys-api 테스트 응답:', testData);
+          } catch (testErr) {
+            console.log('surveys-api 테스트 실패:', testErr);
+          }
+        } catch (debugErr) {
+          console.log('디버그 API 호출 실패:', debugErr);
+        }
+        
+        // 실제 설문 데이터 로드 시도
         const data = await surveyApi.getAllSurveys();
         setSurveys(data);
       } catch (err) {
