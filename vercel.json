@@ -75,6 +75,11 @@
       "methods": ["POST", "OPTIONS"]
     },
     {
+      "src": "/api/submitLetter-debug",
+      "dest": "api/submitLetter-debug.js",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
       "src": "/api/createSurveyDirect",
       "dest": "api/createSurveyDirect.js",
       "methods": ["POST", "OPTIONS"]
