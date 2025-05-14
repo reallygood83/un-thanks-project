@@ -42,10 +42,19 @@ const SurveyListPage: React.FC = () => {
         
         // 실제 설문 데이터 로드 시도
         const data = await surveyApi.getAllSurveys();
-        setSurveys(data);
+        console.log('받은 설문 데이터:', data);
+        
+        // data가 배열인지 확인
+        if (Array.isArray(data)) {
+          setSurveys(data);
+        } else {
+          console.error('설문 데이터가 배열이 아님:', data);
+          setSurveys([]);
+        }
       } catch (err) {
         console.error('Failed to fetch surveys:', err);
         setError('설문 목록을 불러오는데 실패했습니다.');
+        setSurveys([]); // 빈 배열로 초기화
       } finally {
         setLoading(false);
       }

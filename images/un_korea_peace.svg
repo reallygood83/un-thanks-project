@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <!-- UN emblem background - light blue -->
+  <circle cx="400" cy="400" r="300" fill="#4B92DB" opacity="0.1"/>
+  
+  <!-- UN olive branches - stylized -->
+  <path d="M400,150 C250,250 150,400 150,600" stroke="#4B92DB" stroke-width="8" fill="none"/>
+  <path d="M400,150 C550,250 650,400 650,600" stroke="#4B92DB" stroke-width="8" fill="none"/>
+  
+  <!-- Olive leaves -->
+  <g fill="#4B92DB" opacity="0.8">
+    <!-- Left side leaves -->
+    <ellipse cx="220" cy="280" rx="15" ry="8" transform="rotate(-30 220 280)"/>
+    <ellipse cx="200" cy="330" rx="15" ry="8" transform="rotate(-20 200 330)"/>
+    <ellipse cx="185" cy="380" rx="15" ry="8" transform="rotate(-15 185 380)"/>
+    <ellipse cx="175" cy="430" rx="15" ry="8" transform="rotate(-10 175 430)"/>
+    <ellipse cx="170" cy="480" rx="15" ry="8" transform="rotate(-5 170 480)"/>
+    <ellipse cx="165" cy="530" rx="15" ry="8" transform="rotate(0 165 530)"/>
+    
+    <!-- Right side leaves -->
+    <ellipse cx="580" cy="280" rx="15" ry="8" transform="rotate(30 580 280)"/>
+    <ellipse cx="600" cy="330" rx="15" ry="8" transform="rotate(20 600 330)"/>
+    <ellipse cx="615" cy="380" rx="15" ry="8" transform="rotate(15 615 380)"/>
+    <ellipse cx="625" cy="430" rx="15" ry="8" transform="rotate(10 625 430)"/>
+    <ellipse cx="630" cy="480" rx="15" ry="8" transform="rotate(5 630 480)"/>
+    <ellipse cx="635" cy="530" rx="15" ry="8" transform="rotate(0 635 530)"/>
+  </g>
+  
+  <!-- Korean Peninsula - simplifiied outline -->
+  <path d="M350,300 C340,320 335,340 340,370 C345,400 350,430 345,450 C340,470 330,490 320,510 C310,530 305,550 315,565 C325,580 340,585 360,585 C380,585 400,580 420,580 C440,580 460,585 480,575 C500,565 495,545 490,525 C485,505 475,485 475,465 C475,445 485,425 490,405 C495,385 490,365 480,345 C470,325 460,305 445,295 C430,285 410,280 390,275 C370,270 360,280 350,300 Z" 
+        fill="#ffffff" stroke="#001489" stroke-width="3"/>
+  
+  <!-- DMZ line -->
+  <path d="M340,370 C355,375 370,380 385,380 C400,380 415,375 430,370 C445,365 460,360 475,365" 
+        stroke="#E31937" stroke-width="2" stroke-dasharray="5,5" opacity="0.7"/>
+  
+  <!-- Peace dove -->
+  <path d="M440,280 C450,275 455,270 460,260 C465,250 470,240 475,235 C480,230 485,225 490,230 C495,235 490,245 485,250 C480,255 475,260 470,265 C465,270 460,275 455,280 C450,285 445,290 440,280 Z" 
+        fill="white" stroke="#4B92DB" stroke-width="1.5"/>
+  
+  <!-- Dove wing -->
+  <path d="M455,280 C465,270 475,265 485,265 C495,265 505,270 515,280 C525,290 515,300 505,305 C495,310 485,310 475,305 C465,300 455,290 455,280 Z" 
+        fill="white" stroke="#4B92DB" stroke-width="1.5"/>
+  
+  <!-- Olive branch in dove's beak -->
+  <path d="M430,280 C420,280 410,275 400,275" stroke="#4B92DB" stroke-width="1.5" fill="none"/>
+  <ellipse cx="405" cy="275" rx="5" ry="3" fill="#4B92DB"/>
+  
+  <!-- Text "UN Peace Project" -->
+  <text x="400" y="650" font-family="Arial, sans-serif" font-size="45" font-weight="bold" text-anchor="middle" fill="#001489">6.25 UN 참전국 감사 프로젝트</text>
+</svg>

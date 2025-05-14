@@ -13,6 +13,20 @@ import {
   mockGetSurveyResults
 } from './mockSurveyData';
 
+// 개발 환경에서는 프론트엔드 :3000에서 백엔드 :3001로 요청
+// 프로덕션 환경에서는 같은 도메인으로 요청
+const getApiUrl = () => {
+  const isDev = import.meta.env.DEV;
+  const devApiUrl = 'http://localhost:3001';
+  const prodApiUrl = '';
+  return isDev ? devApiUrl : prodApiUrl;
+};
+
+// 전역 axios 설정
+axios.defaults.baseURL = getApiUrl();
+axios.defaults.headers.common['Content-Type'] = 'application/json';
+axios.defaults.headers.common['Accept'] = 'application/json';
+
 // 백엔드 연결 설정
 const USE_MOCK_API = import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_API === 'true';
 
@@ -31,16 +45,32 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.get<ApiResponse<Survey[]>>('/api/getLetters?type=surveys');
+      const response = await axios.get('/api/getLetters?type=surveys');
       
-      if (!response.data.success) {
-        throw new Error(response.data.error || '설문 목록을 불러오는데 실패했습니다.');
+      // HTML이 반환된 경우를 체크
+      if (typeof response.data === 'string' && response.data.includes('<!DOCTYPE html>')) {
+        console.log('API가 HTML 응답 반환 - 빈 배열 반환');
+        return [];
       }
       
-      return response.data.data || [];
+      // API 응답이 성공적인 경우
+      if (response.data && response.data.success) {
+        return response.data.data || [];
+      }
+      
+      // 응답은 있지만 success가 false인 경우
+      if (response.data && response.data.success === false) {
+        console.log('API 응답 실패:', response.data.error);
+        return [];
+      }
+      
+      // 기타 예상치 못한 형식
+      console.log('예상치 못한 API 응답 형식:', response.data);
+      return [];
     } catch (error) {
       console.error('Error fetching surveys:', error);
-      throw error;
+      // 에러 발생시 빈 배열 반환 (앱이 크래시되지 않도록)
+      return [];
     }
   },
   
@@ -77,7 +107,14 @@ export const surveyApi = {
    */
   createSurvey: async (survey: Omit<Survey, '_id' | 'createdAt' | 'updatedAt'>): Promise<Survey> => {
     try {
-      const response = await axios.post<ApiResponse<Survey>>('/api/createSurveyDirect', survey);
+      // submitLetter API를 사용하여 설문을 생성
+      // type: 'survey'를 추가하여 설문 생성 요청임을 명시
+      const surveyData = {
+        type: 'survey',
+        ...survey
+      };
+      
+      const response = await axios.post<ApiResponse<Survey>>('/api/submitLetter', surveyData);
       
       if (!response.data.success) {
         throw new Error(response.data.error || '설문 생성에 실패했습니다.');

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <!-- UN emblem background - UN blue -->
+  <circle cx="400" cy="400" r="380" fill="#009EDB" opacity="0.1"/>
+  
+  <!-- UN globe lines -->
+  <g stroke="#009EDB" stroke-width="2" fill="none" opacity="0.7">
+    <!-- Latitude lines -->
+    <circle cx="400" cy="400" r="250"/>
+    <ellipse cx="400" cy="400" rx="250" ry="60"/>
+    <ellipse cx="400" cy="400" rx="250" ry="120"/>
+    <ellipse cx="400" cy="400" rx="250" ry="180"/>
+    
+    <!-- Longitude lines -->
+    <ellipse cx="400" cy="400" rx="60" ry="250" transform="rotate(0 400 400)"/>
+    <ellipse cx="400" cy="400" rx="60" ry="250" transform="rotate(30 400 400)"/>
+    <ellipse cx="400" cy="400" rx="60" ry="250" transform="rotate(60 400 400)"/>
+    <ellipse cx="400" cy="400" rx="60" ry="250" transform="rotate(90 400 400)"/>
+    <ellipse cx="400" cy="400" rx="60" ry="250" transform="rotate(120 400 400)"/>
+    <ellipse cx="400" cy="400" rx="60" ry="250" transform="rotate(150 400 400)"/>
+  </g>
+  
+  <!-- UN laurel wreath -->
+  <g stroke="#009EDB" stroke-width="4" fill="none">
+    <path d="M400,120 C250,200 200,350 200,550" />
+    <path d="M400,120 C550,200 600,350 600,550" />
+  </g>
+  
+  <!-- Laurel leaves -->
+  <g fill="#009EDB" opacity="0.8">
+    <!-- Left side -->
+    <ellipse cx="230" cy="220" rx="18" ry="8" transform="rotate(-50 230 220)"/>
+    <ellipse cx="215" cy="260" rx="18" ry="8" transform="rotate(-40 215 260)"/>
+    <ellipse cx="205" cy="300" rx="18" ry="8" transform="rotate(-30 205 300)"/>
+    <ellipse cx="200" cy="340" rx="18" ry="8" transform="rotate(-20 200 340)"/>
+    <ellipse cx="195" cy="380" rx="18" ry="8" transform="rotate(-15 195 380)"/>
+    <ellipse cx="195" cy="420" rx="18" ry="8" transform="rotate(-10 195 420)"/>
+    <ellipse cx="195" cy="460" rx="18" ry="8" transform="rotate(-5 195 460)"/>
+    <ellipse cx="200" cy="500" rx="18" ry="8" transform="rotate(0 200 500)"/>
+    
+    <!-- Right side -->
+    <ellipse cx="570" cy="220" rx="18" ry="8" transform="rotate(50 570 220)"/>
+    <ellipse cx="585" cy="260" rx="18" ry="8" transform="rotate(40 585 260)"/>
+    <ellipse cx="595" cy="300" rx="18" ry="8" transform="rotate(30 595 300)"/>
+    <ellipse cx="600" cy="340" rx="18" ry="8" transform="rotate(20 600 340)"/>
+    <ellipse cx="605" cy="380" rx="18" ry="8" transform="rotate(15 605 380)"/>
+    <ellipse cx="605" cy="420" rx="18" ry="8" transform="rotate(10 605 420)"/>
+    <ellipse cx="605" cy="460" rx="18" ry="8" transform="rotate(5 605 460)"/>
+    <ellipse cx="600" cy="500" rx="18" ry="8" transform="rotate(0 600 500)"/>
+  </g>
+  
+  <!-- Korean Peninsula -->
+  <path d="M355,290 
+           C340,310 335,340 340,370 
+           C345,400 350,425 345,450 
+           C340,470 335,490 325,510 
+           C315,530 310,550 320,570 
+           C330,590 350,595 370,595 
+           C390,595 410,590 430,590 
+           C450,590 470,595 490,585 
+           C510,575 505,550 500,530 
+           C495,510 485,490 485,470 
+           C485,450 495,430 500,410 
+           C505,390 500,370 490,350 
+           C480,330 465,310 450,300 
+           C435,290 415,283 395,280 
+           C375,277 365,280 355,290 Z" 
+        fill="#ffffff" stroke="#002060" stroke-width="3"/>
+  
+  <!-- DMZ line -->
+  <path d="M335,375 C360,380 385,380 410,380 C435,380 460,375 485,370" 
+        stroke="#CF142B" stroke-width="2" stroke-dasharray="5,5"/>
+  
+  <!-- Text - Title -->
+  <text x="400" y="670" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#002060">6.25 UN 참전국 감사 프로젝트</text>
+  
+  <!-- Dove silhouette -->
+  <g transform="translate(440, 270) scale(0.8)">
+    <path d="M0,0 C10,-5 20,-10 25,-20 C30,-30 35,-35 45,-30 C55,-25 50,-15 45,-10 C40,-5 35,0 25,5 C15,10 5,5 0,0 Z" 
+          fill="white" stroke="#009EDB" stroke-width="2"/>
+    <path d="M20,5 C30,-5 40,-10 50,-5 C60,0 70,10 60,20 C50,30 40,25 30,20 C20,15 10,15 20,5 Z" 
+          fill="white" stroke="#009EDB" stroke-width="2"/>
+    <path d="M-5,0 C-15,0 -25,-5 -35,-5" stroke="#009EDB" stroke-width="2" fill="none"/>
+    <ellipse cx="-30" cy="-5" rx="5" ry="3" fill="#009EDB"/>
+  </g>
+</svg>

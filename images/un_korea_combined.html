@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UN and Korean Peninsula Combined</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+        }
+        .un-emblem {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+            z-index: 1;
+        }
+        .korean-peninsula {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: auto;
+            z-index: 2;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="un_emblem.png" alt="UN Emblem" class="un-emblem">
+        <img src="korean_peninsula.png" alt="Korean Peninsula" class="korean-peninsula">
+    </div>
+</body>
+</html>
