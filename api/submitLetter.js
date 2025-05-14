@@ -142,13 +142,18 @@ module.exports = async (req, res) => {
       originalRequest: JSON.stringify(req.body).substring(0, 200) // 디버깅용 원본 요청 일부
     });
     
-    // 필수 필드 검증 (여러 형태의 필드명 지원)
-    if ((!writerName && !sender) || (!content && !message) || (!targetCountry && !country)) {
+    // 편지 필수 필드 검증 (설문이 아닌 경우에만)
+    if (type !== 'survey' && (!writerName || !content || !targetCountry)) {
       return res.status(400).json({
         success: false,
-        error: '필수 항목 누락',
-        message: '이름(name/sender), 편지 내용(letterContent/message), 국가ID(countryId/country)는 필수 항목입니다',
-        receivedFields: Object.keys(req.body)
+        error: 'Missing required fields',
+        message: '이름, 편지 내용, 국가ID는 필수 항목입니다',
+        receivedData: {
+          hasName: !!writerName,
+          hasContent: !!content,
+          hasCountry: !!targetCountry,
+          type: req.body.type
+        }
       });
     }
     
