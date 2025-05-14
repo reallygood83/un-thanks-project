@@ -30,11 +30,11 @@ export const debugApi = {
    */
   testSurveysApi: async () => {
     try {
-      console.log('API 테스트 URL:', `${BASE_URL}/survey`);
-      const response = await axios.get(`${BASE_URL}/survey`);
+      console.log('API 테스트 URL:', `${BASE_URL}/getSurveys`);
+      const response = await axios.get(`${BASE_URL}/getSurveys`);
       return response.data;
     } catch (error) {
-      console.error('survey API 테스트 오류:', error);
+      console.error('getSurveys API 테스트 오류:', error);
       throw error;
     }
   }

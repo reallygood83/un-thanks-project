@@ -15,6 +15,11 @@
   ],
   "routes": [
     {
+      "src": "/api/health-check",
+      "dest": "api/health-check.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/test-survey",
       "dest": "api/test-survey.js",
       "methods": ["GET", "POST", "OPTIONS"]
