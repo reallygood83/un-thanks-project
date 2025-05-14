@@ -38,7 +38,7 @@ const SurveyCard: React.FC<SurveyCardProps> = ({ survey }) => {
         
         <div className="survey-meta">
           <span className="question-count">
-            <i className="meta-icon">&#x2753;</i> {questions.length}개 질문
+            <i className="meta-icon">&#x2753;</i> {questions?.length || 0}개 질문
           </span>
           <span className="created-date">
             <i className="meta-icon">&#x1F4C5;</i> {formattedDate}

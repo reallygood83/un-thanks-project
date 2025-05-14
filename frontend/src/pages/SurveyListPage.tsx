@@ -46,7 +46,23 @@ const SurveyListPage: React.FC = () => {
         
         // data가 배열인지 확인
         if (Array.isArray(data)) {
-          setSurveys(data);
+          // 각 설문 데이터의 구조 확인
+          data.forEach((item, index) => {
+            console.log(`설문 ${index + 1} 구조:`, {
+              title: item.title,
+              hasQuestions: !!item.questions,
+              questionsLength: item.questions?.length,
+              keys: Object.keys(item)
+            });
+          });
+          
+          // questions 필드가 없는 경우 빈 배열로 설정
+          const validSurveys = data.map(item => ({
+            ...item,
+            questions: item.questions || []
+          }));
+          
+          setSurveys(validSurveys);
         } else {
           console.error('설문 데이터가 배열이 아님:', data);
           setSurveys([]);
