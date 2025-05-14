@@ -80,6 +80,11 @@
       "methods": ["GET", "OPTIONS"]
     },
     {
+      "src": "/api/getSurveyList",
+      "dest": "api/getSurveyList.js",
+      "methods": ["GET", "OPTIONS"]
+    },
+    {
       "src": "/api/surveysList",
       "dest": "api/surveysList.js",
       "methods": ["GET", "OPTIONS"]
