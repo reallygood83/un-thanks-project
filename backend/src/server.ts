@@ -11,6 +11,7 @@ import { connectToDatabase } from './services/dbConnection';
 import countryRoutes from './routes/countries';
 import letterRoutes from './routes/letters';
 import apiRoutes from './routes/api';
+import surveyRoutes from './routes/surveys';
 
 // Load environment variables
 dotenv.config();
@@ -42,6 +43,7 @@ app.use(express.json());
 // Routes
 app.use('/api/countries', countryRoutes);
 app.use('/api/letters', letterRoutes);
+app.use('/api/surveys', surveyRoutes);
 app.use('/api', apiRoutes);
 
 // Health check endpoint

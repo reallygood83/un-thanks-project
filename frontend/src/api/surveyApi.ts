@@ -16,8 +16,8 @@ import {
 // API 기본 URL
 const BASE_URL = '/api/surveys';
 
-// 개발 환경에서는 목업 API 사용
-const USE_MOCK_API = true; // process.env.NODE_ENV === 'development';
+// 백엔드 연결 설정
+const USE_MOCK_API = import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_API === 'true';
 
 /**
  * 미래로 AI 설문 서비스를 위한 API 클라이언트
