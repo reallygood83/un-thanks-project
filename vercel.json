@@ -4,35 +4,20 @@
   "outputDirectory": "frontend/dist",
   "installCommand": "npm run install:all",
   "functions": {
-    "api/submit-letter.js": {
+    "api/*.js": {
       "memory": 512,
       "maxDuration": 10
-    },
-    "api/get-letters.js": {
-      "memory": 512,
-      "maxDuration": 10
-    },
-    "api/health.js": {
-      "memory": 128,
-      "maxDuration": 5
-    },
-    "api/generate-survey.js": {
-      "memory": 1024,
-      "maxDuration": 15
     }
   },
   "rewrites": [
     { "source": "/api/getSurvey/:id", "destination": "/api/get-letters" },
     { "source": "/api/getSurveys", "destination": "/api/get-letters?type=surveys" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/frontend/dist/$1" }
+    { "source": "/(.*)", "destination": "/$1" }
   ],
-  "build": {
-    "env": {
-      "NPM_FLAGS": "--legacy-peer-deps",
-      "MONGODB_URI": "@mongodb_uri",
-      "MONGODB_DB_NAME": "@mongodb_db_name",
-      "GEMINI_API_KEY": "@gemini_api_key"
-    }
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "MONGODB_DB_NAME": "@mongodb_db_name",
+    "GEMINI_API_KEY": "@gemini_api_key"
   }
 }
