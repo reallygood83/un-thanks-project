@@ -86,9 +86,22 @@ module.exports = async (req, res) => {
       
       if (!survey) {
         console.log('[getSurveyStats] 설문을 찾을 수 없음:', surveyId);
-        return res.status(404).json({
-          success: false,
-          error: '해당 설문을 찾을 수 없습니다.'
+        
+        // 설문이 없을 때 더미 데이터 반환 (프론트엔드 호환성을 위해)
+        const dummyStats = {
+          totalResponses: 0,
+          completionRate: 0,
+          averageTime: "0분",
+          questionStats: [],
+          surveyId: surveyId,
+          surveyTitle: "찾을 수 없는 설문",
+          noData: true
+        };
+        
+        return res.status(200).json({
+          success: true,
+          data: dummyStats,
+          note: "설문을 찾을 수 없습니다."
         });
       }
       
@@ -99,6 +112,7 @@ module.exports = async (req, res) => {
         const objectId = new ObjectId(surveyId);
         responses = await responsesCollection.find({ surveyId: objectId }).toArray();
       } catch (e) {
+        console.log('[getSurveyStats] ObjectId 변환 실패, 문자열 ID로 응답 조회 시도:', e.message);
         // 문자열 ID로 시도
         responses = await responsesCollection.find({ surveyId: surveyId }).toArray();
       }
@@ -114,7 +128,9 @@ module.exports = async (req, res) => {
           totalResponses: 15,
           completionRate: 92,
           averageTime: "3분 45초",
-          questionStats: []
+          questionStats: [],
+          surveyId: survey._id.toString(),
+          surveyTitle: survey.title || "설문 조사"
         };
         
         // 설문의 각 질문에 대한 샘플 통계 생성
@@ -161,11 +177,14 @@ module.exports = async (req, res) => {
           });
         }
         
-        return res.status(200).json({
+        const responseData = {
           success: true,
           data: sampleStats,
           note: "실제 응답이 없어 샘플 데이터를 반환합니다."
-        });
+        };
+        
+        console.log('[getSurveyStats] 반환하는 샘플 데이터:', JSON.stringify(responseData).slice(0, 200) + '...');
+        return res.status(200).json(responseData);
       }
       
       // 실제 통계 데이터 계산
@@ -173,7 +192,9 @@ module.exports = async (req, res) => {
         totalResponses: responses.length,
         completionRate: 100, // 기본값
         averageTime: "계산 불가", // 시작/종료 시간이 없는 경우
-        questionStats: []
+        questionStats: [],
+        surveyId: survey._id.toString(),
+        surveyTitle: survey.title || "설문 조사"
       };
       
       // 설문의 각 질문에 대한 통계 생성
@@ -237,10 +258,13 @@ module.exports = async (req, res) => {
         });
       }
       
-      return res.status(200).json({
+      const responseData = {
         success: true,
         data: stats
-      });
+      };
+      
+      console.log('[getSurveyStats] 반환하는 실제 데이터:', JSON.stringify(responseData).slice(0, 200) + '...');
+      return res.status(200).json(responseData);
       
     } finally {
       if (client) {
@@ -251,11 +275,24 @@ module.exports = async (req, res) => {
     
   } catch (error) {
     console.error('[getSurveyStats] 오류:', error);
-    return res.status(500).json({
+    
+    // 오류 발생 시에도 프론트엔드에서 처리할 수 있는 최소한의 데이터 구조 제공
+    const errorResponseData = {
       success: false,
       error: '서버 내부 오류',
       message: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      data: {
+        totalResponses: 0,
+        completionRate: 0,
+        averageTime: "오류",
+        questionStats: [],
+        surveyId: req.url.split('/').pop(),
+        surveyTitle: "오류 발생",
+        errorOccurred: true
+      }
+    };
+    
+    return res.status(500).json(errorResponseData);
   }
 }; 
