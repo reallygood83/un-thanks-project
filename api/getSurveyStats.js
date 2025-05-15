@@ -116,15 +116,35 @@ module.exports = async (req, res) => {
       let responses = [];
       try {
         // ObjectId로 시도
-        const objectId = new ObjectId(surveyId);
-        responses = await responsesCollection.find({ surveyId: objectId }).toArray();
+        try {
+          const objectId = new ObjectId(surveyId);
+          responses = await responsesCollection.find({ surveyId: objectId }).toArray();
+        } catch (e) {
+          // 무시하고 계속 진행
+        }
+        
+        // 문자열 ID로도 시도
+        if (responses.length === 0) {
+          const stringResponses = await responsesCollection.find({ surveyId: surveyId }).toArray();
+          responses = [...responses, ...stringResponses];
+        }
+        
+        // _id 문자열 변환 시도
+        if (responses.length === 0) {
+          const idStr = surveyId.toString();
+          const byStringId = await responsesCollection.find({ surveyId: idStr }).toArray();
+          responses = [...responses, ...byStringId];
+        }
       } catch (e) {
-        console.log('[getSurveyStats] ObjectId 변환 실패, 문자열 ID로 응답 조회 시도:', e.message);
-        // 문자열 ID로 시도
-        responses = await responsesCollection.find({ surveyId: surveyId }).toArray();
+        console.log('[getSurveyStats] 응답 조회 오류:', e.message);
       }
       
       console.log(`[getSurveyStats] 조회된 응답 수: ${responses.length}`);
+      
+      // 디버깅: 첫 번째 응답 구조 출력
+      if (responses.length > 0) {
+        console.log('[getSurveyStats] 첫 번째 응답 구조:', JSON.stringify(responses[0]).slice(0, 200) + '...');
+      }
       
       // Frontend용 응답 형식 맞추기
       let questionStats = [];
@@ -132,61 +152,84 @@ module.exports = async (req, res) => {
       // 설문의 각 질문에 대한 통계 생성
       if (survey.questions && Array.isArray(survey.questions)) {
         survey.questions.forEach((question, index) => {
-          const questionStat = {
-            questionId: question.id || `q${index + 1}`,
-            answerDistribution: {}
-          };
+          const questionId = question.id || `q${index + 1}`;
           
-          // 질문 유형에 따른 통계 처리
-          if (question.type === 'singleChoice' || question.type === 'multipleChoice') {
-            // 선택형 질문 응답 분포
-            const optionCounts = {};
-            
-            // 각 선택지에 대한 초기 카운트 설정
-            if (question.options && Array.isArray(question.options)) {
-              question.options.forEach(option => {
-                optionCounts[option] = 0;
-              });
-            }
-            
-            // 응답 집계
-            responses.forEach(response => {
-              if (response.responses && response.responses[question.id]) {
-                const answer = response.responses[question.id];
-                if (Array.isArray(answer)) {
-                  // 다중 선택인 경우
-                  answer.forEach(option => {
-                    if (optionCounts[option] !== undefined) {
-                      optionCounts[option]++;
-                    }
-                  });
-                } else if (typeof answer === 'string') {
-                  // 단일 선택인 경우
-                  if (optionCounts[answer] !== undefined) {
-                    optionCounts[answer]++;
-                  }
-                }
-              }
+          // 응답 데이터 분석
+          const countsByOption = {};
+          let textResponses = [];
+          
+          // 옵션별 초기 카운트 설정 (선택형 질문)
+          if ((question.type === 'singleChoice' || question.type === 'multipleChoice') && 
+              question.options && Array.isArray(question.options)) {
+            question.options.forEach(option => {
+              countsByOption[option] = 0;
             });
-            
-            questionStat.answerDistribution = optionCounts;
-          } else if (question.type === 'text') {
-            // 텍스트 응답 수집
-            const textResponses = [];
-            
-            responses.forEach(response => {
-              if (response.responses && response.responses[question.id]) {
-                const textAnswer = response.responses[question.id];
-                if (textAnswer && textAnswer.trim()) {
-                  textResponses.push(textAnswer);
-                }
-              }
-            });
-            
-            questionStat.answerDistribution = textResponses;
           }
           
-          questionStats.push(questionStat);
+          // 모든 응답을 순회하며 통계 수집
+          responses.forEach(response => {
+            if (!response.responses) {
+              console.log('[getSurveyStats] 응답 구조 오류 - responses 필드 없음:', response._id);
+              return;
+            }
+            
+            // 응답 구조가 다양할 수 있으므로 가능한 모든 경로 확인
+            let answerValue = null;
+            
+            // 직접 접근
+            if (response.responses[questionId] !== undefined) {
+              answerValue = response.responses[questionId];
+            }
+            // answers 배열에서 검색
+            else if (response.answers && Array.isArray(response.answers)) {
+              const answer = response.answers.find(a => a.questionId === questionId);
+              if (answer) {
+                answerValue = answer.value;
+              }
+            }
+            
+            if (answerValue === null) {
+              return; // 이 질문에 대한 응답 없음
+            }
+            
+            // 응답 유형에 따른 처리
+            if (question.type === 'text') {
+              if (typeof answerValue === 'string' && answerValue.trim()) {
+                textResponses.push(answerValue);
+              }
+            } else if (question.type === 'singleChoice') {
+              if (typeof answerValue === 'string') {
+                countsByOption[answerValue] = (countsByOption[answerValue] || 0) + 1;
+              }
+            } else if (question.type === 'multipleChoice') {
+              if (Array.isArray(answerValue)) {
+                answerValue.forEach(option => {
+                  countsByOption[option] = (countsByOption[option] || 0) + 1;
+                });
+              } else if (typeof answerValue === 'string') {
+                // 단일 선택으로 잘못 저장된 경우
+                countsByOption[answerValue] = (countsByOption[answerValue] || 0) + 1;
+              }
+            }
+          });
+          
+          // 차트용 데이터 변환
+          let answerDistribution;
+          
+          if (question.type === 'text') {
+            answerDistribution = textResponses;
+          } else {
+            // 선택형 질문은 SimpleBarChart, SimplePieChart 컴포넌트 형식에 맞춤
+            answerDistribution = {};
+            Object.keys(countsByOption).forEach(option => {
+              answerDistribution[option] = countsByOption[option];
+            });
+          }
+          
+          questionStats.push({
+            questionId,
+            answerDistribution
+          });
         });
       }
       
@@ -252,6 +295,11 @@ module.exports = async (req, res) => {
       };
       
       console.log('[getSurveyStats] 응답 반환: 총 응답수:', results.analytics.totalResponses, '질문 통계 수:', results.analytics.questionStats.length);
+      
+      // 디버깅: 첫 번째 질문 통계 데이터 구조 출력
+      if (questionStats.length > 0) {
+        console.log('[getSurveyStats] 첫 번째 질문 통계:', JSON.stringify(questionStats[0]).slice(0, 200) + '...');
+      }
       
       return res.status(200).json({
         success: true,
