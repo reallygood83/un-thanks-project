@@ -45,3 +45,4 @@ project.pid
 
 # Temp files
 temp_project/
+.vercel
