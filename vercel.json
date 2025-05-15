@@ -13,6 +13,8 @@
     { "source": "/api/getSurvey/:id", "destination": "/api/getSurvey" },
     { "source": "/api/getSurvey", "destination": "/api/getSurvey" },
     { "source": "/api/getSurveys", "destination": "/api/get-letters?type=surveys" },
+    { "source": "/api/submitSurveyResponse", "destination": "/api/submitSurveyResponse" },
+    { "source": "/api/debug", "destination": "/api/debug" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/$1" }
   ],
