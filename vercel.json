@@ -1,43 +1,33 @@
 {
   "version": 2,
-  "framework": null,
-  "outputDirectory": ".",
   "buildCommand": "cd frontend && npm install && npm run build && cp -r dist/* ..",
-  "installCommand": "npm install",
-  "devCommand": "npm run dev",
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "routes": [
+  "outputDirectory": ".",
+  "functions": {
+    "api/submit-letter.js": {
+      "memory": 512,
+      "maxDuration": 10
+    },
+    "api/get-letters.js": {
+      "memory": 512,
+      "maxDuration": 10
+    },
+    "api/health.js": {
+      "memory": 128,
+      "maxDuration": 5
+    }
+  },
+  "rewrites": [
     {
-      "src": "/api/submit-letter",
-      "dest": "api/submit-letter.js",
-      "methods": ["POST", "OPTIONS"]
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     },
     {
-      "src": "/api/get-letters", 
-      "dest": "api/get-letters.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/health",
-      "dest": "api/health.js", 
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/(.*)",
-      "status": 404
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "env": {
-    "MONGODB_URI": "mongodb+srv://unthanks:unthanks2025@cluster0.rlrvo4o.mongodb.net/unthanks-db?retryWrites=true&w=majority",
+    "MONGODB_URI": "@mongodb-uri",
     "MONGODB_DB_NAME": "unthanks-db"
   }
 }
