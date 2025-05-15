@@ -14,7 +14,7 @@
     "start:frontend": "cd frontend && npm run preview",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run dev",
-    "dev": "./node_modules/.bin/concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev": "npx concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:alt": "npx concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "init-db": "node api/init-db.js",
     "test-api": "node api/test.js",
