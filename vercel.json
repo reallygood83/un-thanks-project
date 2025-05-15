@@ -80,6 +80,11 @@
       "methods": ["POST", "OPTIONS", "GET"]
     },
     {
+      "src": "/api/survey-create",
+      "dest": "api/survey-create.js",
+      "methods": ["GET", "POST", "OPTIONS"]
+    },
+    {
       "src": "/api/submitLetter-v2",
       "dest": "api/submitLetter-v2.js",
       "methods": ["POST", "OPTIONS"]
