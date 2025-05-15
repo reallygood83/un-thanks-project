@@ -35,10 +35,10 @@ export const submitLetter = async (letterData: {
 }) => {
   try {
     // 새로운 직접 MongoDB 연결 API 엔드포인트 사용
-    const apiUrl = `${API_BASE_URL}/direct-submitLetter`;
+    const apiUrl = `${API_BASE_URL}/submit-letter`;
     console.log('API URL:', apiUrl);
     // 기존 API 엔드포인트를 대체 URL로 백업
-    const fallbackApiUrl = `${API_BASE_URL}/submitLetter`;
+    const fallbackApiUrl = `${API_BASE_URL}/submit-letter`;
 
     // 데이터 전처리
     const processedData = {
@@ -160,7 +160,7 @@ export const submitLetter = async (letterData: {
 export const getLetters = async (countryId?: string) => {
   try {
     // 새로운 직접 MongoDB 연결 API 엔드포인트 사용
-    let url = `${API_BASE_URL}/direct-getLetters`;
+    let url = `${API_BASE_URL}/get-letters`;
     if (countryId) {
       url += `?countryId=${countryId}`;
     }
@@ -168,7 +168,7 @@ export const getLetters = async (countryId?: string) => {
     console.log('편지 목록 가져오기 URL:', url);
     
     // 기존 API 엔드포인트를 대체 URL로 백업
-    let fallbackUrl = `${API_BASE_URL}/getLetters`;
+    let fallbackUrl = `${API_BASE_URL}/get-letters`;
     if (countryId) {
       fallbackUrl += `?countryId=${countryId}`;
     }

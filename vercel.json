@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/**/*.js",
+      "src": "api/*.js",
       "use": "@vercel/node"
     },
     {
@@ -15,208 +15,18 @@
   ],
   "routes": [
     {
-      "src": "/api/simple-test",
-      "dest": "api/simple-test.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/health-check",
-      "dest": "api/health-check.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/test-survey",
-      "dest": "api/test-survey.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/surveys-list",
-      "dest": "api/surveys-list.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/getSurveys",
-      "dest": "api/getSurveys.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/createSurvey",
-      "dest": "api/createSurvey.js",
+      "src": "/api/submit-letter",
+      "dest": "api/submit-letter.js",
       "methods": ["POST", "OPTIONS"]
     },
     {
-      "src": "/api/getSurvey/(?<id>[^/]+)",
-      "dest": "api/getSurvey.js?id=$id",
+      "src": "/api/get-letters",
+      "dest": "api/get-letters.js",
       "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/submitSurveyResponse",
-      "dest": "api/submitSurveyResponse.js",
-      "methods": ["POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/getSurveyStats/(?<id>[^/]+)",
-      "dest": "api/getSurveyStats.js?id=$id",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/test123",
-      "dest": "api/test123.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/debug",
-      "dest": "api/debug.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/submitLetter",
-      "dest": "api/submitLetter.js",
-      "methods": ["POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/submit-survey",
-      "dest": "api/submit-survey.js",
-      "methods": ["POST", "OPTIONS", "GET"]
-    },
-    {
-      "src": "/api/survey-create",
-      "dest": "api/survey-create.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/submitLetter-v2",
-      "dest": "api/submitLetter-v2.js",
-      "methods": ["POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/submitLetter-test",
-      "dest": "api/submitLetter-test.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/submitLetter-debug",
-      "dest": "api/submitLetter-debug.js",
-      "methods": ["POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/survey-direct",
-      "dest": "api/survey-direct.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/createSurveyDirect",
-      "dest": "api/createSurveyDirect.js",
-      "methods": ["POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/getLetters",
-      "dest": "api/getLetters.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/survey-handler",
-      "dest": "api/survey-handler.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/createInitialSurvey",
-      "dest": "api/createInitialSurvey.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/create-initial-surveys",
-      "dest": "api/create-initial-surveys.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/manual-survey-create",
-      "dest": "api/manual-survey-create.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/populate-surveys",
-      "dest": "api/populate-surveys.js",
-      "methods": ["POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/surveys-mongo",
-      "dest": "api/surveys-mongo.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/checkSurveys",
-      "dest": "api/checkSurveys.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/letters-and-surveys",
-      "dest": "api/letters-and-surveys.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/getSurveyList",
-      "dest": "api/getSurveyList.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/surveysList",
-      "dest": "api/surveysList.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/surveysData",
-      "dest": "api/surveysData/index.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/getLetter/(?<id>[^/]+)",
-      "dest": "api/getLetter.js?id=$id",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/direct-submit",
-      "dest": "api/direct-submit.js",
-      "methods": ["GET", "POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/direct-submitLetter",
-      "dest": "frontend/api/direct-submitLetter.js",
-      "methods": ["POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/direct-getLetters",
-      "dest": "frontend/api/direct-getLetters.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/test-api",
-      "dest": "api/test-api.js",
-      "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"]
     },
     {
       "src": "/api/health",
       "dest": "api/health.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/debug-mongo",
-      "dest": "api/debug-mongo.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/frontend-debug-mongo",
-      "dest": "frontend/api/debug-mongo.js",
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/surveys",
-      "dest": "api/surveys.js", 
-      "methods": ["GET", "OPTIONS"]
-    },
-    {
-      "src": "/api/hello",
-      "dest": "api/hello.js",
       "methods": ["GET", "OPTIONS"]
     },
     {

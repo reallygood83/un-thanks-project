@@ -45,7 +45,7 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.get('/api/getSurveys');
+      const response = await axios.get('/api/get-letters?type=surveys');
       
       // HTML이 반환된 경우를 체크
       if (typeof response.data === 'string' && response.data.includes('<!DOCTYPE html>')) {
@@ -132,8 +132,8 @@ export const surveyApi = {
       console.log('설문 생성 요청 데이터:', surveyData);
       console.log('JSON 변환:', JSON.stringify(surveyData));
       
-      // 다른 이름의 API 시도
-      const response = await axios.post<ApiResponse<Survey>>('/api/survey-create', surveyData);
+      // 기본 API 사용
+      const response = await axios.post<ApiResponse<Survey>>('/api/submit-letter', surveyData);
       
       console.log('설문 생성 응답:', response);
       
