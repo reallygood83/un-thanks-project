@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
       // 편지 목록 요청
       const collection = db.collection('letters');
       const query = countryId ? { countryId } : {};
-      const letters = await collection.find(query).toArray();
+      const letters = await collection.find(query).sort({ createdAt: -1 }).toArray();
       
       return res.status(200).json({
         success: true,
