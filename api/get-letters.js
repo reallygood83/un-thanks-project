@@ -9,7 +9,7 @@ function setCorsHeaders(res) {
 }
 
 module.exports = async (req, res) => {
-  console.log('[get-letters] API 호출:', req.method);
+  console.log('[get-letters] API 호출:', req.method, req.url);
   
   setCorsHeaders(res);
   
@@ -26,6 +26,7 @@ module.exports = async (req, res) => {
   
   try {
     const { type, countryId } = req.query;
+    const path = req.url.split('?')[0];
     
     const MONGODB_URI = process.env.MONGODB_URI;
     const DB_NAME = process.env.MONGODB_DB_NAME || 'unthanks-db';
@@ -35,6 +36,27 @@ module.exports = async (req, res) => {
     try {
       client = await MongoClient.connect(MONGODB_URI);
       const db = client.db(DB_NAME);
+      
+      // 특정 ID로 설문 조회 - /api/getSurvey/[id] 경로 처리
+      if (path.startsWith('/api/getSurvey/')) {
+        const surveyId = path.split('/api/getSurvey/')[1];
+        console.log(`[get-letters] 특정 설문 조회: ID ${surveyId}`);
+        
+        const collection = db.collection('surveys');
+        const survey = await collection.findOne({ _id: surveyId });
+        
+        if (!survey) {
+          return res.status(404).json({
+            success: false,
+            error: '설문을 찾을 수 없습니다.'
+          });
+        }
+        
+        return res.status(200).json({
+          success: true,
+          data: survey
+        });
+      }
       
       // 설문 목록 요청
       if (type === 'surveys') {

@@ -22,22 +22,17 @@
     }
   },
   "rewrites": [
-    {
-      "source": "/api/generate-survey",
-      "destination": "/api/generate-survey"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/api/getSurvey/:id", "destination": "/api/get-letters" },
+    { "source": "/api/getSurveys", "destination": "/api/get-letters?type=surveys" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/frontend/dist/$1" }
   ],
   "build": {
     "env": {
-      "NPM_FLAGS": "--legacy-peer-deps"
+      "NPM_FLAGS": "--legacy-peer-deps",
+      "MONGODB_URI": "@mongodb_uri",
+      "MONGODB_DB_NAME": "@mongodb_db_name",
+      "GEMINI_API_KEY": "@gemini_api_key"
     }
   }
 }
