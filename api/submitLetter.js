@@ -40,10 +40,33 @@ module.exports = async (req, res) => {
   }
   
   try {
+    // Vercel은 자동으로 req.body를 파싱함
+    // 디버깅을 위해 상세 로그 추가
+    console.log('[submitLetter] 초기 요청 정보:', {
+      method: req.method,
+      hasBody: !!req.body,
+      bodyType: typeof req.body,
+      headers: {
+        contentType: req.headers['content-type'],
+        contentLength: req.headers['content-length']
+      }
+    });
+    
+    // req.body가 문자열인 경우 파싱 시도
+    if (typeof req.body === 'string') {
+      try {
+        req.body = JSON.parse(req.body);
+        console.log('[submitLetter] 문자열을 JSON으로 파싱함');
+      } catch (e) {
+        console.error('[submitLetter] JSON 파싱 실패:', e);
+      }
+    }
+    
     console.log('[submitLetter] 요청 받음:', {
       method: req.method,
       bodyKeys: Object.keys(req.body || {}),
       bodyType: req.body?.type,
+      bodyFull: JSON.stringify(req.body).substring(0, 500),
       query: req.query,
       headers: req.headers['content-type']
     });
@@ -188,6 +211,14 @@ module.exports = async (req, res) => {
     
     // 편지 필수 필드 검증
     if (!writerName || !content || !targetCountry) {
+      console.log('[submitLetter] 편지 필수 필드 누락:', {
+        hasName: !!writerName,
+        hasContent: !!content,
+        hasCountry: !!targetCountry,
+        requestType: type,
+        bodyType: req.body?.type
+      });
+      
       return res.status(400).json({
         success: false,
         error: 'Missing required fields',
@@ -196,7 +227,8 @@ module.exports = async (req, res) => {
           hasName: !!writerName,
           hasContent: !!content,
           hasCountry: !!targetCountry,
-          type: req.body.type
+          type: req.body.type,
+          allBodyKeys: Object.keys(req.body || {})
         }
       });
     }
