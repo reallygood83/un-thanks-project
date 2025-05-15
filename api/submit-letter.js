@@ -95,6 +95,8 @@ module.exports = async (req, res) => {
     const MONGODB_URI = process.env.MONGODB_URI;
     const DB_NAME = process.env.MONGODB_DB_NAME || 'unthanks-db';
     
+    console.log('[submit-letter] 편지 처리 시작, DB:', DB_NAME);
+    
     let client = null;
     
     try {
