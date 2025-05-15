@@ -1,14 +1,11 @@
 {
-  "name": "un-thanks-project-api",
+  "name": "un-thanks-api",
   "version": "1.0.0",
-  "private": true,
+  "description": "API endpoints for UN Thanks Project",
+  "main": "index.js",
   "dependencies": {
-    "mongodb": "^6.5.0",
-    "uuid": "^11.1.0",
+    "mongodb": "^6.3.0",
     "bcryptjs": "^2.4.3",
-    "@google/generative-ai": "^0.2.0"
-  },
-  "engines": {
-    "node": ">=14.0.0"
+    "uuid": "^9.0.1"
   }
 }
