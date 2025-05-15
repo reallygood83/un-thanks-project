@@ -15,9 +15,17 @@
     "api/health.js": {
       "memory": 128,
       "maxDuration": 5
+    },
+    "api/generate-survey.js": {
+      "memory": 1024,
+      "maxDuration": 15
     }
   },
   "rewrites": [
+    {
+      "source": "/api/generate-survey",
+      "destination": "/api/generate-survey"
+    },
     {
       "source": "/api/(.*)",
       "destination": "/api/$1"
