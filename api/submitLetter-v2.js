@@ -4,7 +4,7 @@ const { MongoClient } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   console.log('[submitLetter-v2] 요청 시작:', {
     method: req.method,
     hasBody: !!req.body,

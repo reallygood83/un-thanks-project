@@ -132,9 +132,7 @@ export const surveyApi = {
       console.log('설문 생성 요청 데이터:', surveyData);
       console.log('JSON 변환:', JSON.stringify(surveyData));
       
-      // 임시로 테스트 API 사용
-      // const response = await axios.post<ApiResponse<Survey>>('/api/submitLetter', surveyData);
-      const response = await axios.post<ApiResponse<Survey>>('/api/submitLetter-v2', surveyData);
+      const response = await axios.post<ApiResponse<Survey>>('/api/submitLetter', surveyData);
       
       console.log('설문 생성 응답:', response);
       

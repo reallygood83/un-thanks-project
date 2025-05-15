@@ -1,5 +1,5 @@
 // 간단한 테스트 엔드포인트
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   console.log('=== submitLetter-test 시작 ===');
   console.log('Method:', req.method);
   console.log('Headers:', JSON.stringify(req.headers, null, 2));
