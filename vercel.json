@@ -75,6 +75,16 @@
       "methods": ["POST", "OPTIONS"]
     },
     {
+      "src": "/api/submitLetter-v2",
+      "dest": "api/submitLetter-v2.js",
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/submitLetter-test",
+      "dest": "api/submitLetter-test.js",
+      "methods": ["GET", "POST", "OPTIONS"]
+    },
+    {
       "src": "/api/submitLetter-debug",
       "dest": "api/submitLetter-debug.js",
       "methods": ["POST", "OPTIONS"]

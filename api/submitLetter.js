@@ -4,6 +4,15 @@ const { MongoClient } = require('mongodb');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
+// Vercel에서 body parsing을 비활성화
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+};
+
 // CORS 헤더 설정
 function setCorsHeaders(res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -270,12 +279,17 @@ module.exports = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('submitLetter MongoDB 처리 중 오류:', error);
+    console.error('[submitLetter] MongoDB 처리 중 오류:', error);
+    console.error('[submitLetter] 오류 스택:', error.stack);
     
     return res.status(500).json({
       success: false,
       error: '서버 내부 오류',
-      message: error.message
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };
+
+// Vercel API 설정 내보내기
+module.exports.config = config;
