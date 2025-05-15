@@ -30,10 +30,62 @@ module.exports = async (req, res) => {
   }
   
   try {
-    const { surveyId, responses } = req.body;
+    // 요청 데이터 파싱
+    const requestData = req.body;
+    console.log('[submitSurveyResponse] 원본 요청 데이터:', JSON.stringify(requestData));
     
-    console.log(`[submitSurveyResponse] 설문 ID: ${surveyId}`);
-    console.log(`[submitSurveyResponse] 응답 데이터:`, JSON.stringify(responses));
+    // 데이터 형식 확인
+    let surveyId, responses;
+    
+    // 프론트엔드에서 전송하는 다양한 형식 처리
+    if (requestData.surveyId && requestData.responses) {
+      // 기존 형식: { surveyId, responses }
+      surveyId = requestData.surveyId;
+      responses = requestData.responses;
+    } else if (requestData.surveyId && requestData.answers) {
+      // 다른 형식: { surveyId, answers: [{questionId, value},...] }
+      surveyId = requestData.surveyId;
+      responses = {};
+      
+      // answers 배열을 responses 객체로 변환
+      if (Array.isArray(requestData.answers)) {
+        requestData.answers.forEach(answer => {
+          if (answer.questionId) {
+            responses[answer.questionId] = answer.value;
+          }
+        });
+      }
+    } else if (requestData.respondentInfo && requestData.answers) {
+      // SurveyDetailPage.tsx에서 사용하는 형식
+      surveyId = req.url.split('/').pop().split('?')[0];
+      
+      // 응답 데이터 구성
+      responses = {
+        respondentInfo: requestData.respondentInfo
+      };
+      
+      // answers 배열을 응답 객체로 변환
+      if (Array.isArray(requestData.answers)) {
+        requestData.answers.forEach(answer => {
+          if (answer.questionId) {
+            responses[answer.questionId] = answer.value;
+          }
+        });
+      }
+    } else {
+      // ID를 URL에서 추출 시도
+      const urlPath = req.url.split('?')[0];
+      if (urlPath.includes('/submitSurveyResponse/')) {
+        surveyId = urlPath.split('/').pop();
+        responses = requestData;
+      } else {
+        surveyId = null;
+        responses = requestData;
+      }
+    }
+    
+    console.log(`[submitSurveyResponse] 처리된 설문 ID: ${surveyId}`);
+    console.log(`[submitSurveyResponse] 처리된 응답 데이터:`, JSON.stringify(responses));
     
     if (!surveyId) {
       return res.status(400).json({
