@@ -75,6 +75,11 @@
       "methods": ["POST", "OPTIONS"]
     },
     {
+      "src": "/api/submit-survey",
+      "dest": "api/submit-survey.js",
+      "methods": ["POST", "OPTIONS", "GET"]
+    },
+    {
       "src": "/api/submitLetter-v2",
       "dest": "api/submitLetter-v2.js",
       "methods": ["POST", "OPTIONS"]
