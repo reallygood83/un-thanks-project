@@ -19,5 +19,9 @@
     "MONGODB_URI": "@mongodb_uri",
     "MONGODB_DB_NAME": "@mongodb_db_name",
     "GEMINI_API_KEY": "@gemini_api_key"
+  },
+  "github": {
+    "enabled": true,
+    "silent": false
   }
 }
