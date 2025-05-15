@@ -39,6 +39,13 @@ const SurveyResultPage: React.FC = () => {
         
         // 관리자 모드인 경우 비밀번호와 함께 요청
         const data = await surveyApi.getSurveyResults(id, isAdmin ? password : undefined);
+        console.log('API 응답 데이터:', data);
+        
+        if (data && data.analytics) {
+          console.log('총 응답수:', data.analytics.totalResponses);
+          console.log('질문 통계:', data.analytics.questionStats);
+        }
+        
         setResults(data);
       } catch (err) {
         console.error(`Error fetching survey results for ${id}:`, err);
