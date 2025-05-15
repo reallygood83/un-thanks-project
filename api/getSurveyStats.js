@@ -87,20 +87,27 @@ module.exports = async (req, res) => {
       if (!survey) {
         console.log('[getSurveyStats] 설문을 찾을 수 없음:', surveyId);
         
-        // 설문이 없을 때 더미 데이터 반환 (프론트엔드 호환성을 위해)
-        const dummyStats = {
-          totalResponses: 0,
-          completionRate: 0,
-          averageTime: "0분",
-          questionStats: [],
-          surveyId: surveyId,
-          surveyTitle: "찾을 수 없는 설문",
-          noData: true
+        // 설문이 없을 때 프론트엔드 구조에 맞는 더미 데이터 반환
+        const dummySurvey = {
+          _id: surveyId,
+          title: "찾을 수 없는 설문",
+          description: "해당 설문을 찾을 수 없습니다.",
+          isActive: false,
+          questions: []
+        };
+        
+        const dummyResults = {
+          survey: dummySurvey,
+          analytics: {
+            totalResponses: 0,
+            questionStats: [],
+            aiSummary: "설문을 찾을 수 없습니다."
+          }
         };
         
         return res.status(200).json({
           success: true,
-          data: dummyStats,
+          data: dummyResults,
           note: "설문을 찾을 수 없습니다."
         });
       }
@@ -119,33 +126,87 @@ module.exports = async (req, res) => {
       
       console.log(`[getSurveyStats] 조회된 응답 수: ${responses.length}`);
       
-      // 테스트 데이터 생성 (응답이 없는 경우)
+      // Frontend용 응답 형식 맞추기
+      let questionStats = [];
+      
+      // 설문의 각 질문에 대한 통계 생성
+      if (survey.questions && Array.isArray(survey.questions)) {
+        survey.questions.forEach((question, index) => {
+          const questionStat = {
+            questionId: question.id || `q${index + 1}`,
+            answerDistribution: {}
+          };
+          
+          // 질문 유형에 따른 통계 처리
+          if (question.type === 'singleChoice' || question.type === 'multipleChoice') {
+            // 선택형 질문 응답 분포
+            const optionCounts = {};
+            
+            // 각 선택지에 대한 초기 카운트 설정
+            if (question.options && Array.isArray(question.options)) {
+              question.options.forEach(option => {
+                optionCounts[option] = 0;
+              });
+            }
+            
+            // 응답 집계
+            responses.forEach(response => {
+              if (response.responses && response.responses[question.id]) {
+                const answer = response.responses[question.id];
+                if (Array.isArray(answer)) {
+                  // 다중 선택인 경우
+                  answer.forEach(option => {
+                    if (optionCounts[option] !== undefined) {
+                      optionCounts[option]++;
+                    }
+                  });
+                } else if (typeof answer === 'string') {
+                  // 단일 선택인 경우
+                  if (optionCounts[answer] !== undefined) {
+                    optionCounts[answer]++;
+                  }
+                }
+              }
+            });
+            
+            questionStat.answerDistribution = optionCounts;
+          } else if (question.type === 'text') {
+            // 텍스트 응답 수집
+            const textResponses = [];
+            
+            responses.forEach(response => {
+              if (response.responses && response.responses[question.id]) {
+                const textAnswer = response.responses[question.id];
+                if (textAnswer && textAnswer.trim()) {
+                  textResponses.push(textAnswer);
+                }
+              }
+            });
+            
+            questionStat.answerDistribution = textResponses;
+          }
+          
+          questionStats.push(questionStat);
+        });
+      }
+      
+      // 응답이 없는 경우 샘플 데이터 생성
       if (responses.length === 0) {
         console.log('[getSurveyStats] 응답이 없어 샘플 데이터 생성');
         
-        // 샘플 통계 데이터 생성
-        const sampleStats = {
-          totalResponses: 15,
-          completionRate: 92,
-          averageTime: "3분 45초",
-          questionStats: [],
-          surveyId: survey._id.toString(),
-          surveyTitle: survey.title || "설문 조사"
-        };
+        questionStats = [];
         
         // 설문의 각 질문에 대한 샘플 통계 생성
         if (survey.questions && Array.isArray(survey.questions)) {
           survey.questions.forEach((question, index) => {
             const questionStat = {
               questionId: question.id || `q${index + 1}`,
-              questionText: question.text || `질문 ${index + 1}`,
-              responseCount: 15,
-              type: question.type || 'singleChoice'
+              answerDistribution: {}
             };
             
             // 질문 유형에 따른 통계 데이터 생성
             if (question.type === 'singleChoice' || question.type === 'multipleChoice') {
-              questionStat.optionCounts = {};
+              const optionCounts = {};
               
               // 각 선택지에 대한 응답 수 랜덤 생성
               if (question.options && Array.isArray(question.options)) {
@@ -155,116 +216,47 @@ module.exports = async (req, res) => {
                 question.options.forEach((option, i) => {
                   if (i === question.options.length - 1) {
                     // 마지막 옵션은 남은 응답 수 할당
-                    questionStat.optionCounts[option] = remaining;
+                    optionCounts[option] = remaining;
                   } else {
                     // 랜덤한 응답 수 할당
                     const count = Math.floor(Math.random() * (remaining / 2)) + 1;
-                    questionStat.optionCounts[option] = count;
+                    optionCounts[option] = count;
                     remaining -= count;
                   }
                 });
               }
+              
+              questionStat.answerDistribution = optionCounts;
             } else if (question.type === 'text') {
               // 텍스트 응답에 대한 샘플 데이터
-              questionStat.textResponses = [
+              questionStat.answerDistribution = [
                 "매우 유익한 시간이었습니다.",
                 "좀 더 구체적인 설명이 필요합니다.",
                 "통일에 대한 시각이 넓어진 것 같습니다."
               ];
             }
             
-            sampleStats.questionStats.push(questionStat);
+            questionStats.push(questionStat);
           });
         }
-        
-        const responseData = {
-          success: true,
-          data: sampleStats,
-          note: "실제 응답이 없어 샘플 데이터를 반환합니다."
-        };
-        
-        console.log('[getSurveyStats] 반환하는 샘플 데이터:', JSON.stringify(responseData).slice(0, 200) + '...');
-        return res.status(200).json(responseData);
       }
       
-      // 실제 통계 데이터 계산
-      const stats = {
-        totalResponses: responses.length,
-        completionRate: 100, // 기본값
-        averageTime: "계산 불가", // 시작/종료 시간이 없는 경우
-        questionStats: [],
-        surveyId: survey._id.toString(),
-        surveyTitle: survey.title || "설문 조사"
+      // 프론트엔드 SurveyResults 구조에 맞는 응답 생성
+      const results = {
+        survey: survey,
+        analytics: {
+          totalResponses: responses.length > 0 ? responses.length : 15,
+          questionStats: questionStats,
+          aiSummary: "이 설문에 대한 AI 분석은 아직 준비되지 않았습니다."
+        }
       };
       
-      // 설문의 각 질문에 대한 통계 생성
-      if (survey.questions && Array.isArray(survey.questions)) {
-        survey.questions.forEach((question, index) => {
-          const questionStat = {
-            questionId: question.id || `q${index + 1}`,
-            questionText: question.text || `질문 ${index + 1}`,
-            responseCount: 0,
-            type: question.type || 'singleChoice'
-          };
-          
-          // 응답자들의 해당 질문에 대한 답변 집계
-          if (question.type === 'singleChoice' || question.type === 'multipleChoice') {
-            questionStat.optionCounts = {};
-            
-            // 각 선택지에 대한 초기 카운트 설정
-            if (question.options && Array.isArray(question.options)) {
-              question.options.forEach(option => {
-                questionStat.optionCounts[option] = 0;
-              });
-            }
-            
-            // 응답 집계
-            responses.forEach(response => {
-              if (response.responses && response.responses[question.id]) {
-                questionStat.responseCount++;
-                
-                const answer = response.responses[question.id];
-                if (Array.isArray(answer)) {
-                  // 다중 선택인 경우
-                  answer.forEach(option => {
-                    if (questionStat.optionCounts[option] !== undefined) {
-                      questionStat.optionCounts[option]++;
-                    }
-                  });
-                } else if (typeof answer === 'string') {
-                  // 단일 선택인 경우
-                  if (questionStat.optionCounts[answer] !== undefined) {
-                    questionStat.optionCounts[answer]++;
-                  }
-                }
-              }
-            });
-          } else if (question.type === 'text') {
-            // 텍스트 응답 수집
-            questionStat.textResponses = [];
-            
-            responses.forEach(response => {
-              if (response.responses && response.responses[question.id]) {
-                questionStat.responseCount++;
-                const textAnswer = response.responses[question.id];
-                if (textAnswer && textAnswer.trim()) {
-                  questionStat.textResponses.push(textAnswer);
-                }
-              }
-            });
-          }
-          
-          stats.questionStats.push(questionStat);
-        });
-      }
+      console.log('[getSurveyStats] 응답 반환: 총 응답수:', results.analytics.totalResponses, '질문 통계 수:', results.analytics.questionStats.length);
       
-      const responseData = {
+      return res.status(200).json({
         success: true,
-        data: stats
-      };
-      
-      console.log('[getSurveyStats] 반환하는 실제 데이터:', JSON.stringify(responseData).slice(0, 200) + '...');
-      return res.status(200).json(responseData);
+        data: results
+      });
       
     } finally {
       if (client) {
@@ -276,23 +268,28 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.error('[getSurveyStats] 오류:', error);
     
-    // 오류 발생 시에도 프론트엔드에서 처리할 수 있는 최소한의 데이터 구조 제공
-    const errorResponseData = {
+    // 프론트엔드 구조에 맞는 에러 응답 생성
+    const errorResponse = {
       success: false,
       error: '서버 내부 오류',
       message: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       data: {
-        totalResponses: 0,
-        completionRate: 0,
-        averageTime: "오류",
-        questionStats: [],
-        surveyId: req.url.split('/').pop(),
-        surveyTitle: "오류 발생",
-        errorOccurred: true
+        survey: {
+          _id: req.url.split('/').pop(),
+          title: "오류 발생",
+          description: "데이터를 불러오는 중 오류가 발생했습니다.",
+          isActive: false,
+          questions: []
+        },
+        analytics: {
+          totalResponses: 0,
+          questionStats: [],
+          aiSummary: "오류: " + error.message
+        }
       }
     };
     
-    return res.status(500).json(errorResponseData);
+    return res.status(500).json(errorResponse);
   }
 }; 
