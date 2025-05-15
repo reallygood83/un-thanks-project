@@ -45,7 +45,7 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.get('/api/getLetters?type=surveys');
+      const response = await axios.get('/api/getSurveys');
       
       // HTML이 반환된 경우를 체크
       if (typeof response.data === 'string' && response.data.includes('<!DOCTYPE html>')) {

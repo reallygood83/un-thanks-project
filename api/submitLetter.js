@@ -40,6 +40,13 @@ module.exports = async (req, res) => {
   }
   
   try {
+    console.log('submitLetter 요청 받음:', {
+      method: req.method,
+      body: req.body,
+      query: req.query,
+      headers: req.headers['content-type']
+    });
+    
     // 요청 본문 확인
     if (!req.body) {
       return res.status(400).json({
@@ -50,6 +57,7 @@ module.exports = async (req, res) => {
     
     // type 파라미터 확인
     const type = req.body.type || req.query?.type;
+    console.log('요청 타입:', type);
     
     // 설문 생성 요청인 경우
     if (type === 'survey') {
@@ -58,7 +66,15 @@ module.exports = async (req, res) => {
       if (!title || !questions || !Array.isArray(questions) || questions.length === 0 || !creationPassword) {
         return res.status(400).json({
           success: false,
-          error: '필수 필드가 누락되었습니다'
+          error: '필수 필드가 누락되었습니다',
+          details: {
+            hasTitle: !!title,
+            hasQuestions: !!questions,
+            isQuestionsArray: Array.isArray(questions),
+            questionsLength: questions?.length || 0,
+            hasPassword: !!creationPassword,
+            receivedData: Object.keys(req.body)
+          }
         });
       }
       
