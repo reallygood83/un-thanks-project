@@ -1,4 +1,5 @@
 import Letter, { ILetter } from '../models/letter';
+import mongoose from 'mongoose';
 
 // 편지 생성
 export const createLetter = async (letterData: any): Promise<ILetter> => {

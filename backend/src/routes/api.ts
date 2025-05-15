@@ -2,6 +2,7 @@ import express from 'express';
 import { getLetters, createLetter, getLetterById } from '../services/letterService';
 import { getAllCountries, getCountryById, getCountryByCode } from '../services/countryService';
 import { translateText } from '../services/translationService';
+import handleGenerateSurvey from '../api/generateSurvey';
 
 const router = express.Router();
 
@@ -169,5 +170,8 @@ router.post('/', async (req, res) => {
     });
   }
 });
+
+// AI로 설문 생성 API
+router.post('/generate-survey', handleGenerateSurvey);
 
 export default router;

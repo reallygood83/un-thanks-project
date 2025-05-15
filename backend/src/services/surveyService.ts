@@ -1,4 +1,4 @@
-import { Survey, ISurvey, SurveyResponse, ISurveyResponse, IAnswer } from '../models/survey';
+import { Survey, ISurvey, SurveyResponse, ISurveyResponse, IAnswer, IQuestion } from '../models/survey';
 import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
@@ -48,10 +48,11 @@ export const createSurvey = async (surveyData: Partial<ISurvey>): Promise<ISurve
 
     // 질문 ID 할당
     if (surveyData.questions) {
-      surveyData.questions = surveyData.questions.map(q => ({
+      const questions: Array<any> = surveyData.questions.map(q => ({
         ...q,
         id: q.id || uuidv4()
       }));
+      surveyData.questions = questions as any;
     }
 
     const newSurvey = new Survey(surveyData);
@@ -91,10 +92,11 @@ export const updateSurvey = async (
 
     // 질문 ID 유지 및 새 질문에 ID 할당
     if (updates.questions) {
-      updates.questions = updates.questions.map(q => ({
+      const questions: Array<any> = updates.questions.map(q => ({
         ...q,
         id: q.id || uuidv4()
       }));
+      updates.questions = questions as any;
     }
 
     // 수정 시간 업데이트
@@ -179,14 +181,14 @@ export const submitSurveyResponse = async (
     
     // 응답 유효성 검증
     const requiredQuestions = survey.questions
-      .filter(q => q.required)
-      .map(q => q.id);
+      .filter((q: any) => q.required)
+      .map((q: any) => q.id);
     
     const answeredQuestions = responseData.answers.map(a => a.questionId);
     
     // 필수 질문 응답 확인
     const missingRequiredAnswers = requiredQuestions.filter(
-      qId => !answeredQuestions.includes(qId)
+      (qId: string) => !answeredQuestions.includes(qId)
     );
     
     if (missingRequiredAnswers.length > 0) {
@@ -259,7 +261,7 @@ export const getSurveyResults = async (
     const totalResponses = allResponses.length;
     
     // 질문별 통계
-    const questionStats = survey.questions.map(question => {
+    const questionStats = survey.questions.map((question: any) => {
       const allAnswers = allResponses
         .map(r => r.answers.find(a => a.questionId === question.id)?.value)
         .filter(Boolean);
@@ -268,7 +270,7 @@ export const getSurveyResults = async (
       
       if (question.type === 'multipleChoice' && question.options) {
         // 선택지별 카운트
-        question.options.forEach(option => {
+        question.options.forEach((option: string) => {
           answerDistribution[option] = allAnswers.filter(a => a === option).length;
         });
       } else if (question.type === 'scale') {
@@ -341,15 +343,13 @@ export const getSurveyResults = async (
 export const verifyPassword = async (surveyId: string, password: string): Promise<boolean> => {
   try {
     const survey = await Survey.findById(surveyId);
-    
     if (!survey) {
-      throw new Error('Survey not found');
+      return false;
     }
     
-    const passwordMatch = await bcrypt.compare(password, survey.creationPassword);
-    return passwordMatch;
+    return bcrypt.compare(password, survey.creationPassword);
   } catch (error) {
     console.error(`Error verifying password for survey ${surveyId}:`, error);
-    return false;
+    throw error;
   }
 };

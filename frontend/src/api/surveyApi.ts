@@ -251,16 +251,36 @@ export const surveyApi = {
   generateSurveyWithAI: async (prompt: string): Promise<Survey> => {
     try {
       const request: GenerateSurveyRequest = { prompt };
-      const response = await axios.post<ApiResponse<Survey>>(
-        '/api/generateSurvey', 
+      
+      // 새로 만든 Gemini API 엔드포인트 사용
+      const response = await axios.post<ApiResponse<any>>(
+        '/api/generate-survey', 
         request
       );
       
       if (!response.data.success) {
-        throw new Error(response.data.error || 'AI 설문 생성에 실패했습니다.');
+        throw new Error(response.data.message || 'AI 설문 생성에 실패했습니다.');
       }
       
-      return response.data.data as Survey;
+      // 반환된 JSON 데이터 처리
+      const surveyData = response.data.data;
+      
+      // 형식 변환 (필요한 경우)
+      const questions = surveyData.questions.map((q: any, index: number) => ({
+        id: `q_${Date.now()}_${index}`,
+        text: q.question,
+        type: q.type === 'single' ? 'singleChoice' : 
+              q.type === 'multiple' ? 'multipleChoice' : 'text',
+        options: q.options || [],
+        required: q.required || true
+      }));
+      
+      return {
+        title: surveyData.title,
+        description: surveyData.description,
+        questions: questions,
+        isActive: true
+      };
     } catch (error) {
       console.error('Error generating survey with AI:', error);
       throw error;

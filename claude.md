@@ -72,7 +72,7 @@
 ```bash
 # 프론트엔드 개발 서버
 cd frontend
-npm install
+npm install concurrently
 npm run dev
 
 # 백엔드 (Vercel Functions)
