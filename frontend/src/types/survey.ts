@@ -7,13 +7,15 @@ export interface Question {
 }
 
 export interface Survey {
-  id: string;
+  _id?: string;
+  id?: string;
   title: string;
   description: string;
   questions: Question[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   isActive: boolean;
+  creationPassword?: string;
   password?: string;
 }
 
@@ -50,4 +52,27 @@ export interface AIGenerationRequest {
   topic: string;
   questionCount: number;
   additionalInstructions?: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+
+export interface SurveyResults {
+  survey: Survey;
+  analytics: {
+    totalResponses: number;
+    questionStats: Array<{
+      questionId: string;
+      answerDistribution: any;
+    }>;
+    aiSummary?: string;
+  };
+}
+
+export interface GenerateSurveyRequest {
+  prompt: string;
 }
