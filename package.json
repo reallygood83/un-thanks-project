@@ -15,8 +15,8 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run dev",
     "dev": "npm run dev:frontend",
-    "dev:full": "npx concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:old": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:all": "./node_modules/.bin/concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:fallback": "npm run dev:frontend",
     "init-db": "node api/init-db.js",
     "test-api": "node api/test.js",
     "vercel-dev": "vercel dev"
