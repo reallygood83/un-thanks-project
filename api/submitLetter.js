@@ -142,8 +142,18 @@ module.exports = async (req, res) => {
       originalRequest: JSON.stringify(req.body).substring(0, 200) // 디버깅용 원본 요청 일부
     });
     
-    // 편지 필수 필드 검증 (설문이 아닌 경우에만)
-    if (type !== 'survey' && (!writerName || !content || !targetCountry)) {
+    // 설문인 경우 편지 필드 검증 건너뛰기
+    if (type === 'survey') {
+      console.log('설문 타입이므로 편지 필드 검증을 건너뜁니다');
+      return res.status(200).json({
+        success: true,
+        message: '설문이 성공적으로 생성되었습니다',
+        type: 'survey'
+      });
+    }
+    
+    // 편지 필수 필드 검증
+    if (!writerName || !content || !targetCountry) {
       return res.status(400).json({
         success: false,
         error: 'Missing required fields',

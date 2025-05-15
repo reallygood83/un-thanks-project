@@ -123,7 +123,13 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.post<ApiResponse<Survey>>('/api/getLetters', survey);
+      // submitLetter API 사용, type: 'survey' 추가
+      const surveyData = {
+        ...survey,
+        type: 'survey'
+      };
+      
+      const response = await axios.post<ApiResponse<Survey>>('/api/submitLetter', surveyData);
       
       if (!response.data.success) {
         throw new Error(response.data.error || '설문 생성에 실패했습니다.');
