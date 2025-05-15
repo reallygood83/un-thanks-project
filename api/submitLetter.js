@@ -61,9 +61,19 @@ module.exports = async (req, res) => {
     
     // 설문 생성 요청인 경우
     if (type === 'survey') {
+      console.log('설문 생성 요청 감지');
       const { title, description, questions, isActive, creationPassword } = req.body;
       
+      console.log('설문 필드 추출:', {
+        title,
+        description,
+        questionsCount: questions?.length,
+        isActive,
+        hasPassword: !!creationPassword
+      });
+      
       if (!title || !questions || !Array.isArray(questions) || questions.length === 0 || !creationPassword) {
+        console.log('필수 필드 누락 오류');
         return res.status(400).json({
           success: false,
           error: '필수 필드가 누락되었습니다',
@@ -120,13 +130,16 @@ module.exports = async (req, res) => {
         // 비밀번호 필드 제거한 응답 데이터
         const { creationPassword: _, ...responseData } = survey;
         
-        return res.status(200).json({
+        const responsePayload = {
           success: true,
           data: {
             _id: result.insertedId,
             ...responseData
           }
-        });
+        };
+        
+        console.log('설문 생성 응답:', JSON.stringify(responsePayload));
+        return res.status(200).json(responsePayload);
       } finally {
         if (client) {
           await client.close();
@@ -158,14 +171,10 @@ module.exports = async (req, res) => {
       originalRequest: JSON.stringify(req.body).substring(0, 200) // 디버깅용 원본 요청 일부
     });
     
-    // 설문인 경우 편지 필드 검증 건너뛰기
+    // 설문인 경우 편지 처리 건너뛰고 위에서 이미 처리됨
     if (type === 'survey') {
-      console.log('설문 타입이므로 편지 필드 검증을 건너뜁니다');
-      return res.status(200).json({
-        success: true,
-        message: '설문이 성공적으로 생성되었습니다',
-        type: 'survey'
-      });
+      // 이미 위에서 설문 처리가 완료됨
+      return;
     }
     
     // 편지 필수 필드 검증
