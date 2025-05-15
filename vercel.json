@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/*.js",
-      "use": "@vercel/node"
-    }
-  ],
+  "framework": null,
+  "outputDirectory": ".",
+  "buildCommand": "cd frontend && npm install && npm run build && cp -r dist/* ..",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "routes": [
     {
       "src": "/api/submit-letter",
@@ -13,26 +14,26 @@
       "methods": ["POST", "OPTIONS"]
     },
     {
-      "src": "/api/get-letters",
+      "src": "/api/get-letters", 
       "dest": "api/get-letters.js",
       "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/health",
-      "dest": "api/health.js",
+      "dest": "api/health.js", 
       "methods": ["GET", "OPTIONS"]
     },
     {
       "src": "/api/(.*)",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
-      }
+      "status": 404
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/$1"
+      "dest": "/index.html"
     }
   ],
   "env": {
