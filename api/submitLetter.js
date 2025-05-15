@@ -40,15 +40,17 @@ module.exports = async (req, res) => {
   }
   
   try {
-    console.log('submitLetter 요청 받음:', {
+    console.log('[submitLetter] 요청 받음:', {
       method: req.method,
-      body: req.body,
+      bodyKeys: Object.keys(req.body || {}),
+      bodyType: req.body?.type,
       query: req.query,
       headers: req.headers['content-type']
     });
     
     // 요청 본문 확인
     if (!req.body) {
+      console.log('[submitLetter] 요청 본문이 비어있음');
       return res.status(400).json({
         success: false,
         error: '요청 본문이 비어있습니다'
@@ -57,11 +59,11 @@ module.exports = async (req, res) => {
     
     // type 파라미터 확인
     const type = req.body.type || req.query?.type;
-    console.log('요청 타입:', type);
+    console.log('[submitLetter] 요청 타입:', type);
     
     // 설문 생성 요청인 경우
     if (type === 'survey') {
-      console.log('설문 생성 요청 감지');
+      console.log('[submitLetter] 설문 생성 프로세스 시작');
       const { title, description, questions, isActive, creationPassword } = req.body;
       
       console.log('설문 필드 추출:', {
@@ -140,6 +142,13 @@ module.exports = async (req, res) => {
         
         console.log('설문 생성 응답:', JSON.stringify(responsePayload));
         return res.status(200).json(responsePayload);
+      } catch (error) {
+        console.error('설문 생성 중 오류:', error);
+        return res.status(500).json({
+          success: false,
+          error: '설문 생성 중 오류가 발생했습니다',
+          message: error.message
+        });
       } finally {
         if (client) {
           await client.close();
