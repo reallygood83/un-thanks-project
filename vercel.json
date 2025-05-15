@@ -23,7 +23,7 @@
   "env": {
     "MONGODB_URI": "mongodb+srv://admin:Mira4071!!@un-thanks-project.jjxbgkr.mongodb.net/unthanks-db?retryWrites=true&w=majority&appName=un-thanks-project",
     "MONGODB_DB_NAME": "unthanks-db",
-    "GEMINI_API_KEY": "AIzaSyBKH5xuKbMa6gvB9zYMZHXOojBnU3dE0"
+    "GEMINI_API_KEY": ""
   },
   "github": {
     "enabled": true,
