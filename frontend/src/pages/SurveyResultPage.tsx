@@ -56,11 +56,38 @@ const SurveyResultPage: React.FC = () => {
     };
     
     fetchResults();
-  }, [id, isAdmin, password]);
+  }, [id]); // isAdmin과 password는 의존성에서 제거
   
-  const handleAdminAccess = (e: React.FormEvent) => {
+  const handleAdminAccess = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsAdmin(true);
+    if (!password) {
+      alert('비밀번호를 입력해주세요.');
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // 비밀번호와 함께 결과 다시 가져오기
+      const data = await surveyApi.getSurveyResults(id!, password);
+      console.log('관리자 인증 후 데이터:', data);
+      
+      // 인증 여부 확인
+      if ((data as any).isAuthenticated) {
+        setIsAdmin(true);
+        setResults(data);
+        setShowPasswordForm(false);
+      } else {
+        alert('잘못된 비밀번호입니다.');
+        setPassword('');
+      }
+    } catch (err) {
+      console.error(`Error authenticating as admin:`, err);
+      alert('비밀번호 확인 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
   
   // 질문별로 적절한 차트 컴포넌트 렌더링

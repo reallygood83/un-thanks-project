@@ -227,9 +227,10 @@ export const surveyApi = {
     }
     
     try {
-      const response = await axios.get<ApiResponse<SurveyResults>>(
-        `/api/getSurveyStats/${surveyId}`
-      );
+      const url = `/api/getSurveyStats/${surveyId}`;
+      const params = password ? { password } : {};
+      
+      const response = await axios.get<ApiResponse<SurveyResults>>(url, { params });
       
       if (!response.data.success) {
         throw new Error(response.data.error || '결과를 불러오는데 실패했습니다.');

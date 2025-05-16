@@ -71,6 +71,13 @@ export interface SurveyResults {
     }>;
     aiSummary?: string;
   };
+  isAuthenticated?: boolean;
+  adminData?: {
+    totalResponses: number;
+    responses: any[];
+    createdAt: Date;
+    updatedAt: Date;
+  };
 }
 
 export interface RespondentInfo {

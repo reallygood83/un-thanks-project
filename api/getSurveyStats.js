@@ -57,6 +57,10 @@ module.exports = async (req, res) => {
       });
     }
     
+    // 비밀번호 확인 (쿼리 파라미터에서)
+    const adminPassword = req.query && req.query.password;
+    console.log(`[getSurveyStats] 관리자 비밀번호 제공 여부: ${!!adminPassword}`);
+    
     const MONGODB_URI = process.env.MONGODB_URI;
     const DB_NAME = process.env.MONGODB_DB_NAME || 'unthanks-db';
     
@@ -82,6 +86,21 @@ module.exports = async (req, res) => {
         console.log('[getSurveyStats] ObjectId 변환 실패, 문자열 ID로 시도:', e.message);
         // 문자열 ID로 조회 시도
         survey = await surveysCollection.findOne({ _id: surveyId });
+      }
+      
+      // 비밀번호 검증
+      let isAuthenticated = false;
+      
+      if (survey && adminPassword) {
+        console.log('[getSurveyStats] 관리자 비밀번호 검증 시도');
+        // 실제 비밀번호 검증 로직
+        // 설문 생성 시 설정된 비밀번호와 비교
+        if (survey.creationPassword === adminPassword) {
+          isAuthenticated = true;
+          console.log('[getSurveyStats] 관리자 인증 성공');
+        } else {
+          console.log('[getSurveyStats] 관리자 인증 실패');
+        }
       }
       
       // 설문이 없을 경우 하드코딩된 샘플 데이터 반환 (테스트용)
@@ -368,10 +387,22 @@ module.exports = async (req, res) => {
           totalResponses: allResponses.length,
           questionStats: questionStats,
           aiSummary: "이 설문에 대한 AI 분석은 아직 준비되지 않았습니다."
-        }
+        },
+        // 관리자 인증 여부 추가
+        isAuthenticated: isAuthenticated
       };
       
-      console.log(`[getSurveyStats] 최종 응답: 설문 제목 "${survey.title}", 총 응답수 ${allResponses.length}, 질문 통계 수 ${questionStats.length}`);
+      // 관리자인 경우 추가 정보 제공
+      if (isAuthenticated) {
+        result.adminData = {
+          totalResponses: allResponses.length,
+          responses: allResponses, // 실제 응답 데이터
+          createdAt: survey.createdAt,
+          updatedAt: survey.updatedAt
+        };
+      }
+      
+      console.log(`[getSurveyStats] 최종 응답: 설문 제목 "${survey.title}", 총 응답수 ${allResponses.length}, 질문 통계 수 ${questionStats.length}, 관리자 인증: ${isAuthenticated}`);
       
       return res.status(200).json({
         success: true,
