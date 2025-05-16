@@ -96,6 +96,9 @@ const SurveyListPage: React.FC = () => {
         <Link to="/survey/create" className="create-button">
           <span className="button-icon">+</span> 새 설문 만들기
         </Link>
+        <Link to="/admin" className="admin-button">
+          <span className="button-icon">⚙️</span> 관리자 페이지
+        </Link>
       </div>
       
       {loading ? (
