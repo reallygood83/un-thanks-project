@@ -118,6 +118,15 @@ module.exports = async (req, res) => {
       const actualSurveyId = survey._id;
       console.log('[getSurveyStats] 설문의 실제 ID:', actualSurveyId);
       console.log('[getSurveyStats] 설문 ID 타입:', typeof actualSurveyId);
+      console.log('[getSurveyStats] 요청된 surveyId:', surveyId);
+      
+      // 디버깅: 모든 응답 조회
+      const allResponsesDebug = await responsesCollection.find({}).toArray();
+      console.log('[getSurveyStats] 전체 응답 수:', allResponsesDebug.length);
+      if (allResponsesDebug.length > 0) {
+        console.log('[getSurveyStats] 첫 번째 응답의 surveyId:', allResponsesDebug[0].surveyId);
+        console.log('[getSurveyStats] 첫 번째 응답의 surveyId 타입:', typeof allResponsesDebug[0].surveyId);
+      }
       
       try {
         // 설문의 실제 ID를 사용하여 조회
@@ -136,7 +145,7 @@ module.exports = async (req, res) => {
         }
         
         // ObjectId로도 시도
-        if (allResponses.length === 0) {
+        if (allResponses.length === 0 && typeof surveyId === 'string') {
           try {
             const objectId = new ObjectId(surveyId);
             const objIdResponses = await responsesCollection.find({ surveyId: objectId }).toArray();
@@ -146,6 +155,16 @@ module.exports = async (req, res) => {
             }
           } catch (e) { 
             console.log('[getSurveyStats] ObjectId 변환 실패:', e.message);
+          }
+        }
+        
+        // actualSurveyId를 문자열로 변환해서도 시도
+        if (allResponses.length === 0) {
+          const stringActualId = String(actualSurveyId);
+          const stringActualResponses = await responsesCollection.find({ surveyId: stringActualId }).toArray();
+          console.log(`[getSurveyStats] 문자열 변환 actualSurveyId로 조회된 응답 수: ${stringActualResponses.length}`);
+          if (stringActualResponses.length > 0) {
+            allResponses = stringActualResponses;
           }
         }
         
@@ -248,9 +267,15 @@ module.exports = async (req, res) => {
               const answerData = response.responses || response.answers || {};
               
               if (responseIndex === 0) {
-                console.log(`[getSurveyStats] 첫 번째 응답의 데이터 구조:`, JSON.stringify(response).slice(0, 300));
-                console.log(`[getSurveyStats] answerData 전체:`, JSON.stringify(answerData));
-                console.log(`[getSurveyStats] 찾고 있는 questionId:`, questionId);
+                console.log(`[getSurveyStats] === 첫 번째 응답 분석 ===`);
+                console.log(`[getSurveyStats] response 전체:`, JSON.stringify(response));
+                console.log(`[getSurveyStats] answerData 키들:`, Object.keys(answerData));
+                console.log(`[getSurveyStats] 찾고 있는 questionId: "${questionId}" (타입: ${typeof questionId})`);
+                
+                // 각 키의 타입도 확인
+                Object.keys(answerData).forEach(key => {
+                  console.log(`[getSurveyStats] answerData["${key}"] = ${answerData[key]} (타입: ${typeof key})`);
+                });
               }
               
               // 직접 속성으로 접근
@@ -259,8 +284,6 @@ module.exports = async (req, res) => {
               // 다양한 경로로 답변 찾기
               if (typeof answerData === 'object' && answerData !== null) {
                 // 먼저 정확한 questionId 확인
-                console.log(`[getSurveyStats] answerData의 키들:`, Object.keys(answerData));
-                
                 if (answerData[questionId] !== undefined) {
                   // 직접 매핑된 경우
                   answer = answerData[questionId];
@@ -273,11 +296,19 @@ module.exports = async (req, res) => {
                     console.log(`[getSurveyStats] 배열에서 찾음: ${questionId} = ${answer}`);
                   }
                 } else {
-                  // 중첩된 객체인 경우 모든 키 순회
+                  // 모든 키를 순회하면서 다양한 방법으로 매칭 시도
                   for (const key in answerData) {
-                    if (key === questionId || key === `question_${questionId}` || key === `q_${questionId}`) {
+                    // 대소문자 구분 없이 비교
+                    if (key.toLowerCase() === questionId.toLowerCase()) {
                       answer = answerData[key];
-                      console.log(`[getSurveyStats] 변형된 키로 찾음: ${key} = ${answer}`);
+                      console.log(`[getSurveyStats] 대소문자 무시 매칭: ${key} = ${answer}`);
+                      break;
+                    }
+                    
+                    // 문자열 비교
+                    if (String(key) === String(questionId)) {
+                      answer = answerData[key];
+                      console.log(`[getSurveyStats] 문자열 변환 매칭: ${key} = ${answer}`);
                       break;
                     }
                   }
