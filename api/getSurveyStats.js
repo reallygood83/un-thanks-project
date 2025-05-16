@@ -93,9 +93,8 @@ module.exports = async (req, res) => {
       
       if (survey && adminPassword) {
         console.log('[getSurveyStats] 관리자 비밀번호 검증 시도');
-        // 실제 비밀번호 검증 로직
-        // 설문 생성 시 설정된 비밀번호와 비교
-        if (survey.creationPassword === adminPassword) {
+        // 하드코딩된 관리자 비밀번호 확인
+        if (adminPassword === '19500625') {
           isAuthenticated = true;
           console.log('[getSurveyStats] 관리자 인증 성공');
         } else {
@@ -103,54 +102,12 @@ module.exports = async (req, res) => {
         }
       }
       
-      // 설문이 없을 경우 하드코딩된 샘플 데이터 반환 (테스트용)
+      // 설문이 없을 경우 오류 반환
       if (!survey) {
-        console.log('[getSurveyStats] 설문을 찾을 수 없음 - 샘플 데이터 반환');
-        
-        // 테스트 데이터
-        const sampleSurvey = {
-          _id: surveyId,
-          title: "통일 교육 인식 조사",
-          description: "통일 교육의 효과와 개선 방향에 대한 학생들의 의견을 수집하기 위한 설문조사입니다.",
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          questions: [
-            {
-              id: "q1",
-              text: "통일이 되면 가장 가고 싶은 북한",
-              type: "singleChoice",
-              required: true,
-              options: ["백두산", "금강산", "개성", "평양", "원산"]
-            }
-          ]
-        };
-        
-        // 샘플 응답 통계
-        const sampleStats = {
-          survey: sampleSurvey,
-          analytics: {
-            totalResponses: 25,
-            questionStats: [
-              {
-                questionId: "q1",
-                answerDistribution: {
-                  "백두산": 5,
-                  "금강산": 10,
-                  "개성": 3,
-                  "평양": 4,
-                  "원산": 3
-                }
-              }
-            ],
-            aiSummary: "이 설문의 응답자들은 통일 후 가장 가고 싶은 북한 지역으로 금강산(40%)을, 그 다음으로 백두산(20%)을 선택했습니다. 이는 남한 국민들의 북한 관광지에 대한 선호도를 잘 보여줍니다."
-          }
-        };
-        
-        return res.status(200).json({
-          success: true,
-          data: sampleStats,
-          note: "설문을 찾을 수 없어 샘플 데이터를 반환합니다."
+        console.log('[getSurveyStats] 설문을 찾을 수 없음');
+        return res.status(404).json({
+          success: false,
+          error: '해당 설문을 찾을 수 없습니다.'
         });
       }
       
@@ -212,11 +169,11 @@ module.exports = async (req, res) => {
         console.log('[getSurveyStats] 첫 번째 응답 예시:', JSON.stringify(allResponses[0]).slice(0, 300) + '...');
       }
       
-      // 응답이 없는 경우 대체 데이터 생성
+      // 응답이 없는 경우 빈 결과 반환
       if (allResponses.length === 0) {
-        console.log('[getSurveyStats] 응답이 없음 - 대체 데이터 생성');
+        console.log('[getSurveyStats] 응답이 없음 - 빈 결과 반환');
         
-        // 샘플 데이터 생성
+        // 빈 통계 데이터 생성
         const questionStats = [];
         
         if (survey.questions && Array.isArray(survey.questions)) {
@@ -224,32 +181,20 @@ module.exports = async (req, res) => {
             const questionId = question.id;
             const questionStat = { questionId };
             
-            // 질문 유형에 따른 샘플 데이터 생성
+            // 질문 유형에 따른 빈 데이터 생성
             if (question.type === 'singleChoice' || question.type === 'multipleChoice') {
               const distribution = {};
               
               if (question.options && Array.isArray(question.options)) {
-                const total = 20;
-                let remaining = total;
-                
-                question.options.forEach((option, i) => {
-                  if (i === question.options.length - 1) {
-                    distribution[option] = remaining;
-                  } else {
-                    const count = Math.floor(Math.random() * Math.min(remaining, 10)) + 1;
-                    distribution[option] = count;
-                    remaining -= count;
-                  }
+                // 모든 옵션을 0으로 초기화
+                question.options.forEach(option => {
+                  distribution[option] = 0;
                 });
               }
               
               questionStat.answerDistribution = distribution;
             } else if (question.type === 'text') {
-              questionStat.answerDistribution = [
-                "매우 유익한 시간이었습니다.",
-                "좀 더 구체적인 설명이 필요합니다.",
-                "통일에 대한 시각이 넓어진 것 같습니다."
-              ];
+              questionStat.answerDistribution = [];
             }
             
             questionStats.push(questionStat);
@@ -260,13 +205,13 @@ module.exports = async (req, res) => {
         const result = {
           survey: survey,
           analytics: {
-            totalResponses: 20, // 가상의 응답 수
+            totalResponses: 0,
             questionStats: questionStats,
-            aiSummary: "이 설문에 대한 AI 분석은 실제 응답이 없어 생성되지 않았습니다."
+            aiSummary: "아직 응답이 없습니다."
           }
         };
         
-        console.log('[getSurveyStats] 응답 반환: 가상 데이터');
+        console.log('[getSurveyStats] 응답 반환: 빈 데이터');
         
         return res.status(200).json({
           success: true,
@@ -437,24 +382,10 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.error('[getSurveyStats] 오류:', error);
     
-    // 오류 발생 시에도 클라이언트가 처리할 수 있는 형식으로 응답
     return res.status(500).json({
       success: false,
       error: '서버 내부 오류',
-      message: error.message,
-      data: {
-        survey: {
-          _id: "error",
-          title: "오류 발생",
-          description: "설문 결과를 불러오는 중 오류가 발생했습니다.",
-          questions: []
-        },
-        analytics: {
-          totalResponses: 0,
-          questionStats: [],
-          aiSummary: "오류: " + error.message
-        }
-      }
+      message: error.message
     });
   }
 }; 
