@@ -16,6 +16,8 @@
   background-color: #f8f9fa;
   padding: 1rem;
   border-radius: 8px;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .country-filter {
@@ -161,4 +163,40 @@
   .letter-country {
     margin-top: 0.5rem;
   }
+}
+
+/* 버튼 스타일 */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #0078ff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0060cc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 120, 255, 0.25);
+}
+
+.btn-admin {
+  background-color: #718096;
+  color: white;
+}
+
+.btn-admin:hover {
+  background-color: #4a5568;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(113, 128, 150, 0.25);
 }

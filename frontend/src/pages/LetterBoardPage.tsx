@@ -109,6 +109,9 @@ const LetterBoardPage: React.FC = () => {
           <Link to="/write-letter" className="btn btn-primary">
             편지 작성하기
           </Link>
+          <Link to="/letters/admin" className="btn btn-admin">
+            관리자 페이지
+          </Link>
         </div>
         
         {loading ? (
