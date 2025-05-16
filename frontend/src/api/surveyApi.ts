@@ -194,12 +194,16 @@ export const surveyApi = {
     }
     
     try {
+      const submitData = {
+        surveyId,
+        responses: response
+      };
+      
+      console.log('[surveyApi] 제출할 설문 응답:', JSON.stringify(submitData));
+      
       const result = await axios.post<ApiResponse<{ responseId: string }>>(
         '/api/submitSurveyResponse', 
-        {
-          surveyId,
-          responses: response
-        }
+        submitData
       );
       
       if (!result.data.success) {

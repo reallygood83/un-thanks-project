@@ -160,6 +160,11 @@ module.exports = async (req, res) => {
         createdAt: new Date()
       };
       
+      // 디버깅: 최종 응답 데이터 구조 출력
+      console.log('[submitSurveyResponse] 최종 응답 데이터:', JSON.stringify(responseData));
+      console.log('[submitSurveyResponse] surveyId 형식:', typeof responseData.surveyId, responseData.surveyId);
+      console.log('[submitSurveyResponse] responses 구조:', JSON.stringify(finalResponses));
+      
       const result = await responsesCollection.insertOne(responseData);
       
       console.log(`[submitSurveyResponse] 응답 저장 성공: ${result.insertedId}`);

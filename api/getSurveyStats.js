@@ -157,33 +157,40 @@ module.exports = async (req, res) => {
       // 해당 설문에 대한 모든 응답 조회
       let allResponses = [];
       
+      // 설문의 실제 ID 타입 확인
+      const actualSurveyId = survey._id;
+      console.log('[getSurveyStats] 설문의 실제 ID:', actualSurveyId);
+      console.log('[getSurveyStats] 설문 ID 타입:', typeof actualSurveyId);
+      
       try {
-        // 모든 가능한 ID 형식으로 조회
+        // 설문의 실제 ID를 사용하여 조회
+        const responses = await responsesCollection.find({ surveyId: actualSurveyId }).toArray();
+        console.log(`[getSurveyStats] surveyId(${actualSurveyId})로 조회된 응답 수: ${responses.length}`);
+        allResponses = responses;
         
-        // 1. ObjectId로 시도
-        try {
-          const objectId = new ObjectId(surveyId);
-          const objIdResponses = await responsesCollection.find({ surveyId: objectId }).toArray();
-          allResponses.push(...objIdResponses);
-          console.log(`[getSurveyStats] ObjectId로 조회된 응답 수: ${objIdResponses.length}`);
-        } catch (e) { /* 무시하고 계속 진행 */ }
-        
-        // 2. 문자열 ID로 시도
-        const stringResponses = await responsesCollection.find({ surveyId: surveyId }).toArray();
-        if (stringResponses.length > 0) {
+        // 추가로 다른 ID 형식으로도 시도
+        if (allResponses.length === 0) {
+          // 문자열 ID로 시도
+          const stringResponses = await responsesCollection.find({ surveyId: surveyId }).toArray();
           console.log(`[getSurveyStats] 문자열 ID로 조회된 응답 수: ${stringResponses.length}`);
-          allResponses.push(...stringResponses);
+          if (stringResponses.length > 0) {
+            allResponses = stringResponses;
+          }
         }
         
-        // 3. 문자열로 변환된 ObjectId로 시도
-        try {
-          const objIdString = surveyId.toString();
-          const objIdStringResponses = await responsesCollection.find({ surveyId: objIdString }).toArray();
-          if (objIdStringResponses.length > 0) {
-            console.log(`[getSurveyStats] 문자열 변환 ObjectId로 조회된 응답 수: ${objIdStringResponses.length}`);
-            allResponses = [...allResponses, ...objIdStringResponses];
+        // ObjectId로도 시도
+        if (allResponses.length === 0) {
+          try {
+            const objectId = new ObjectId(surveyId);
+            const objIdResponses = await responsesCollection.find({ surveyId: objectId }).toArray();
+            console.log(`[getSurveyStats] ObjectId로 조회된 응답 수: ${objIdResponses.length}`);
+            if (objIdResponses.length > 0) {
+              allResponses = objIdResponses;
+            }
+          } catch (e) { 
+            console.log('[getSurveyStats] ObjectId 변환 실패:', e.message);
           }
-        } catch (e) { /* 무시하고 계속 진행 */ }
+        }
         
         // 중복 제거
         const seen = new Set();
@@ -291,30 +298,41 @@ module.exports = async (req, res) => {
             }
             
             // 전체 응답 분석
-            allResponses.forEach(response => {
+            allResponses.forEach((response, responseIndex) => {
               // 응답 데이터가 있는지 확인 (다양한 형식 지원)
               const answerData = response.responses || response.answers || {};
-              console.log(`[getSurveyStats] 응답 데이터 구조:`, Object.keys(answerData).slice(0, 5));
+              
+              if (responseIndex === 0) {
+                console.log(`[getSurveyStats] 첫 번째 응답의 데이터 구조:`, JSON.stringify(response).slice(0, 300));
+                console.log(`[getSurveyStats] answerData 전체:`, JSON.stringify(answerData));
+                console.log(`[getSurveyStats] 찾고 있는 questionId:`, questionId);
+              }
               
               // 직접 속성으로 접근
               let answer = null;
               
               // 다양한 경로로 답변 찾기
               if (typeof answerData === 'object' && answerData !== null) {
+                // 먼저 정확한 questionId 확인
+                console.log(`[getSurveyStats] answerData의 키들:`, Object.keys(answerData));
+                
                 if (answerData[questionId] !== undefined) {
                   // 직접 매핑된 경우
                   answer = answerData[questionId];
+                  console.log(`[getSurveyStats] 직접 매핑으로 찾음: ${questionId} = ${answer}`);
                 } else if (Array.isArray(answerData)) {
                   // answers 배열인 경우
                   const foundAnswer = answerData.find(a => a.questionId === questionId);
                   if (foundAnswer) {
                     answer = foundAnswer.value;
+                    console.log(`[getSurveyStats] 배열에서 찾음: ${questionId} = ${answer}`);
                   }
                 } else {
                   // 중첩된 객체인 경우 모든 키 순회
                   for (const key in answerData) {
                     if (key === questionId || key === `question_${questionId}` || key === `q_${questionId}`) {
                       answer = answerData[key];
+                      console.log(`[getSurveyStats] 변형된 키로 찾음: ${key} = ${answer}`);
                       break;
                     }
                   }

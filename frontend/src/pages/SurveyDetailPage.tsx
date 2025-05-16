@@ -42,6 +42,13 @@ const SurveyDetailPage: React.FC = () => {
   const handleSubmit = async (respondentInfo: RespondentInfo, answers: Answer[]) => {
     if (!id || !survey) return;
     
+    // 디버깅: 제출 데이터 확인
+    console.log('[SurveyDetailPage] 제출할 응답 데이터:', {
+      surveyId: id,
+      respondentInfo,
+      answers
+    });
+    
     try {
       setIsSubmitting(true);
       await surveyApi.submitResponse(id, {
