@@ -63,15 +63,19 @@ module.exports = async (req, res) => {
     }
     
     // 하드코딩된 관리자 비밀번호 확인
-    if (password !== '19500625') {
-      console.log('[deleteSurvey] 비밀번호 불일치');
+    const isAdmin = password === '19500625';
+    
+    if (!isAdmin) {
+      console.log('[deleteSurvey] 일반 사용자 - 설문 비밀번호 필요');
+      // 일반 사용자인 경우 설문 비밀번호 확인 필요
+      // 이 부분은 추후 구현
       return res.status(401).json({
         success: false,
-        error: '잘못된 비밀번호입니다.'
+        error: '관리자 비밀번호가 필요합니다.'
       });
     }
     
-    console.log('[deleteSurvey] 비밀번호 확인 완료');
+    console.log('[deleteSurvey] 관리자 확인 완료 - 강제 삭제 권한 부여');
     
     const MONGODB_URI = process.env.MONGODB_URI;
     const DB_NAME = process.env.MONGODB_DB_NAME || 'unthanks-db';

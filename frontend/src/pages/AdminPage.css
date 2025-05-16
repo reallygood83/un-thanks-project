@@ -128,30 +128,24 @@
   box-shadow: 0 4px 10px rgba(74, 85, 104, 0.2);
 }
 
-/* 삭제 비밀번호 섹션 */
-.delete-password-section {
+/* 관리자 공지 섹션 */
+.admin-notice {
   max-width: 1200px;
   margin: 0 auto 2rem;
-  background-color: #fff;
+  background-color: #f0f7ff;
   padding: 1.5rem;
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #d0e8ff;
+  box-shadow: 0 4px 16px rgba(0, 120, 255, 0.08);
+}
+
+.admin-notice p {
+  margin: 0;
+  color: #0060cc;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 1rem;
-}
-
-.delete-password-section label {
-  font-weight: 600;
-  color: #333;
-}
-
-.delete-password-section input {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 1rem;
-  min-width: 300px;
+  gap: 0.5rem;
 }
 
 /* 설문 목록 */
@@ -310,14 +304,9 @@
     text-align: center;
   }
   
-  .delete-password-section {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  .delete-password-section input {
-    width: 100%;
-    min-width: auto;
+  .admin-notice {
+    padding: 1rem;
+    font-size: 0.95rem;
   }
   
   .surveys-table {

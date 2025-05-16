@@ -12,7 +12,6 @@ const AdminPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(true);
-  const [deletePassword, setDeletePassword] = useState('');
   const [deletingSurveyId, setDeletingSurveyId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -47,28 +46,23 @@ const AdminPage: React.FC = () => {
   };
 
   const handleDeleteSurvey = async (surveyId: string) => {
-    if (!deletePassword) {
-      alert('삭제 비밀번호를 입력해주세요.');
-      return;
-    }
-
     if (window.confirm('정말로 이 설문을 삭제하시겠습니까?')) {
       try {
         setDeletingSurveyId(surveyId);
-        const success = await surveyApi.deleteSurvey(surveyId, deletePassword);
+        // 관리자 비밀번호로 강제 삭제
+        const success = await surveyApi.deleteSurvey(surveyId, '19500625');
         
         if (success) {
           alert('설문이 성공적으로 삭제되었습니다.');
           fetchSurveys(); // 목록 새로고침
         } else {
-          alert('설문 삭제에 실패했습니다. 비밀번호를 확인해주세요.');
+          alert('설문 삭제에 실패했습니다.');
         }
       } catch (err) {
         console.error('Error deleting survey:', err);
         alert('설문 삭제 중 오류가 발생했습니다.');
       } finally {
         setDeletingSurveyId(null);
-        setDeletePassword('');
       }
     }
   };
@@ -135,15 +129,8 @@ const AdminPage: React.FC = () => {
         </div>
       )}
 
-      <div className="delete-password-section">
-        <label htmlFor="deletePassword">삭제 비밀번호:</label>
-        <input
-          type="password"
-          id="deletePassword"
-          value={deletePassword}
-          onChange={(e) => setDeletePassword(e.target.value)}
-          placeholder="설문 삭제 시 필요한 비밀번호"
-        />
+      <div className="admin-notice">
+        <p>🔐 관리자 권한으로 로그인되었습니다. 모든 설문을 강제 삭제할 수 있습니다.</p>
       </div>
 
       <div className="surveys-list">
