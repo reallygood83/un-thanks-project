@@ -8,6 +8,7 @@ UN Thanks Project의 MongoDB 직접 연결을 위해 Vercel에 설정해야 할 
 |---------|------|------|
 | `MONGODB_URI` | MongoDB 연결 문자열 | `mongodb+srv://username:password@cluster.mongodb.net/dbname?retryWrites=true&w=majority` |
 | `MONGODB_DB_NAME` | 사용할 MongoDB 데이터베이스 이름 | `unthanks-db` |
+| `GEMINI_API_KEY` | Google Gemini AI API 키 | `AIzaSyC...` |
 
 ## Vercel에 환경변수 설정하는 방법
 

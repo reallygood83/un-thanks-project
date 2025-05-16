@@ -274,36 +274,46 @@ module.exports = async (req, res) => {
             // 전체 응답 분석
             allResponses.forEach(response => {
               // 응답 데이터가 있는지 확인 (다양한 형식 지원)
-              const answers = response.responses || response.answers || {};
+              const answerData = response.responses || response.answers || {};
+              console.log(`[getSurveyStats] 응답 데이터 구조:`, Object.keys(answerData).slice(0, 5));
               
               // 직접 속성으로 접근
               let answer = null;
               
               // 다양한 경로로 답변 찾기
-              if (typeof answers === 'object') {
-                if (answers[questionId] !== undefined) {
+              if (typeof answerData === 'object' && answerData !== null) {
+                if (answerData[questionId] !== undefined) {
                   // 직접 매핑된 경우
-                  answer = answers[questionId];
-                } else if (Array.isArray(answers)) {
+                  answer = answerData[questionId];
+                } else if (Array.isArray(answerData)) {
                   // answers 배열인 경우
-                  const foundAnswer = answers.find(a => a.questionId === questionId);
+                  const foundAnswer = answerData.find(a => a.questionId === questionId);
                   if (foundAnswer) {
                     answer = foundAnswer.value;
+                  }
+                } else {
+                  // 중첩된 객체인 경우 모든 키 순회
+                  for (const key in answerData) {
+                    if (key === questionId || key === `question_${questionId}` || key === `q_${questionId}`) {
+                      answer = answerData[key];
+                      break;
+                    }
                   }
                 }
               }
               
-              if (answer) {
-                console.log(`[getSurveyStats] 답변 찾음: ${typeof answer === 'object' ? JSON.stringify(answer) : answer}`);
+              if (answer !== undefined && answer !== null) {
+                console.log(`[getSurveyStats] 질문 ${questionId}에 대한 답변 찾음: ${typeof answer === 'object' ? JSON.stringify(answer) : answer}`);
                 
                 if (Array.isArray(answer)) {
                   // 다중 선택인 경우
                   answer.forEach(option => {
                     distribution[option] = (distribution[option] || 0) + 1;
                   });
-                } else if (typeof answer === 'string') {
+                } else if (typeof answer === 'string' || typeof answer === 'number') {
                   // 단일 선택인 경우
-                  distribution[answer] = (distribution[answer] || 0) + 1;
+                  const answerStr = String(answer);
+                  distribution[answerStr] = (distribution[answerStr] || 0) + 1;
                 }
               }
             });

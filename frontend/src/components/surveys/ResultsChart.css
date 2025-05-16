@@ -16,6 +16,122 @@
   border-bottom: 1px solid #eee;
 }
 
+/* 막대 그래프 스타일 */
+.simple-bar-chart {
+  margin-top: 1rem;
+}
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.chart-label {
+  width: 120px;
+  text-align: right;
+  padding-right: 1rem;
+  font-weight: 500;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.chart-value-container {
+  flex: 1;
+  position: relative;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  overflow: hidden;
+  height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.chart-value-bar {
+  background: linear-gradient(to right, #4A90E2, #7CB5EC);
+  height: 100%;
+  transition: width 0.5s ease-out;
+  border-radius: 5px 0 0 5px;
+}
+
+.chart-value-label {
+  position: absolute;
+  right: 10px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+/* 파이 차트 스타일 */
+.simple-pie-chart {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.pie-chart-legend {
+  flex: 1;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  margin-right: 0.75rem;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.legend-text {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.pie-chart-visualization {
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pie-chart-simple {
+  text-align: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.total-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #0078FF;
+  line-height: 1;
+}
+
+.total-label {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* 척도 차트 스타일 (scale chart) */
+.scale-chart .chart-label {
+  width: 80px;
+}
+
 .average-display {
   text-align: center;
   margin-bottom: 1.5rem;

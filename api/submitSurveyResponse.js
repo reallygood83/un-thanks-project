@@ -133,10 +133,30 @@ module.exports = async (req, res) => {
         });
       }
       
+      // responses 형식 변환 (answers 배열을 questionId 기반 객체로 변환)
+      let finalResponses = {};
+      
+      if (responses.answers && Array.isArray(responses.answers)) {
+        // { respondentInfo, answers: [{questionId, value}...] } 형식 처리
+        responses.answers.forEach(answer => {
+          if (answer.questionId && answer.value !== undefined) {
+            finalResponses[answer.questionId] = answer.value;
+          }
+        });
+        
+        // respondentInfo가 있으면 추가
+        if (responses.respondentInfo) {
+          finalResponses.respondentInfo = responses.respondentInfo;
+        }
+      } else if (typeof responses === 'object') {
+        // 이미 questionId 기반 객체인 경우 그대로 사용
+        finalResponses = responses;
+      }
+      
       // 설문 응답 저장
       const responseData = {
         surveyId: survey._id,
-        responses: responses,
+        responses: finalResponses,
         createdAt: new Date()
       };
       

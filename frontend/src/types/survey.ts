@@ -73,6 +73,24 @@ export interface SurveyResults {
   };
 }
 
+export interface RespondentInfo {
+  name?: string;
+  email?: string;
+  studentId?: string;
+  school?: string;
+  grade?: string;
+}
+
+export interface Answer {
+  questionId: string;
+  value: string | string[];
+}
+
+export interface QuestionStat {
+  questionId: string;
+  answerDistribution: Record<string, number> | string[] | { average: number; counts: { value: number; count: number }[] };
+}
+
 export interface GenerateSurveyRequest {
   prompt: string;
 }
